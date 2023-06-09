@@ -1,4 +1,4 @@
-package com.example.weatherapi.exceptions;
+package com.example.weatherapi.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

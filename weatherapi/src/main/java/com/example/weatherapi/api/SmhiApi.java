@@ -3,6 +3,7 @@ package com.example.weatherapi.api;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.WeatherCache;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
+import com.example.weatherapi.exceptions.ApiConnectionException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
@@ -49,14 +50,14 @@ public class SmhiApi {
             cache.put(key, entry);
             return weatherSmhi;
         } catch (IOException e){
-            e.printStackTrace();
-            return null;
+            throw new ApiConnectionException("Could not connect to SMHI API");
         }
     }
 
-    public ResponseEntity<Object> getWeatherByCity(City city){
+    public ResponseEntity<Object> getWeatherByCity(City city) {
         logger.info("getWeather called with city: " + city.getName());
         logger.info("City found: " + city);
+
         // Get the temperatures from the API
         Map<String, Float> temps = getTempsSmhi(city.getLon(), city.getLat());
 
@@ -73,10 +74,6 @@ public class SmhiApi {
 
         WeatherSmhi weatherSmhi = getWeatherSmhi(lon, lat);
 
-        if(weatherSmhi == null){
-            return null;
-        }
-
         List<LocalDateTime> validTimes = weatherSmhi.timeSeries().stream()
                 .map(WeatherSmhi.TimeSerie::validTime).toList();
 
@@ -90,7 +87,6 @@ public class SmhiApi {
         for (int i = 0; i < validTimes.size() && i < temperatures.size(); i++) {
             temps.put(validTimes.get(i).toString(), temperatures.get(i));
         }
-
         return temps;
     }
 }

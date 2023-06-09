@@ -1,0 +1,43 @@
+version: "3.9"
+
+networks:
+  api-network:
+    driver: bridge
+
+services:
+  citydb:
+    build:
+      context: dbcity
+      dockerfile: Dockerfile
+    container_name: citydatabase
+    networks:
+      - api-network
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_SCHEMA}
+    healthcheck:
+      test: [ "CMD-SHELL", "exit" ]
+      interval: 20s
+      timeout: 30s
+
+  weatherapi:
+    build:
+      context: weatherapi
+      dockerfile: Dockerfile
+    container_name: apiweather
+    networks:
+      - api-network
+    ports:
+      - "8080:8080"
+    depends_on:
+      citydb:
+        condition: service_healthy
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_SCHEMA=${DB_SCHEMA}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}

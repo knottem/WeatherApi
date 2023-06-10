@@ -5,10 +5,24 @@ import java.time.LocalDateTime;
 public class WeatherCache {
 
     private final WeatherSmhi weatherSmhi;
+    private final WeatherYr weatherYr;
     private final LocalDateTime timestamp;
+
+    public WeatherCache(WeatherSmhi weatherSmhi, WeatherYr weatherYr){
+        this.weatherSmhi = weatherSmhi;
+        this.weatherYr = weatherYr;
+        this.timestamp = LocalDateTime.now();
+    }
 
     public WeatherCache(WeatherSmhi weatherSmhi) {
         this.weatherSmhi = weatherSmhi;
+        this.weatherYr = null;
+        this.timestamp = LocalDateTime.now();
+    }
+
+    public WeatherCache(WeatherYr weatherYr) {
+        this.weatherSmhi = null;
+        this.weatherYr = weatherYr;
         this.timestamp = LocalDateTime.now();
     }
 
@@ -18,5 +32,9 @@ public class WeatherCache {
 
     public WeatherSmhi getWeather() {
         return weatherSmhi;
+    }
+
+    public WeatherYr getWeatherYr() {
+        return weatherYr;
     }
 }

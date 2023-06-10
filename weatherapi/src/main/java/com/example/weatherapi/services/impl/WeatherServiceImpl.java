@@ -22,7 +22,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public ResponseEntity<Object> getWeatherByCity(String city) {
+    public ResponseEntity<Object> getWeatherBySmhiCity(String city) {
         City cityObject = cityService.getCityByName(city);
         return smhiApi.getWeatherByCity(cityObject);
     }

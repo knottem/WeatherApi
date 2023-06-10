@@ -18,9 +18,9 @@ public class WeatherController {
     }
 
 
-    @GetMapping(path = "/weather/{city}")
+    @GetMapping(path = "/weather/smhi/{city}")
     public ResponseEntity<Object> getWeatherByCity(@PathVariable final String city){
-        return weatherService.getWeatherByCity(city);
+        return weatherService.getWeatherBySmhiCity(city);
     }
 
     @GetMapping(path = "/weather/yr/{city}")

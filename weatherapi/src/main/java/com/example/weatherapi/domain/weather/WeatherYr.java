@@ -1,7 +1,5 @@
 package com.example.weatherapi.domain.weather;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.List;
 
 //Added this how the api from yr will look like

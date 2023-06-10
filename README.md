@@ -5,8 +5,13 @@ This is a weather restapi that returns the weather of a city. For now it only re
 
 This project is just a side hobby project that I use to learn more about spring boot and rest APIs.
 
-## TODO
+## DONE
 - [X] Fetch from multiple weather APIs
+- [X] Add basic spring security
+- [X] Add basic logging
+- [X] Add basic error handling
+
+## TODO
 - [ ] Compare the results from the different APIs
 - [ ] Add more endpoints
 

@@ -43,3 +43,5 @@ services:
       - CACHE_TIME_IN_HOURS=${CACHE_TIME_IN_HOURS}
       - DOMAIN=${DOMAIN}
       - GITHUB=${GITHUB}
+      - USER_NAME=${USER_NAME}
+      - USER_PASSWORD=${USER_PASSWORD}

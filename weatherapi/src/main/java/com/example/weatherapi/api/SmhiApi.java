@@ -22,6 +22,8 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.*;
 
+
+//TODO - Split this class into two classes, one for each API or make it more generic
 @Component
 public class SmhiApi {
 

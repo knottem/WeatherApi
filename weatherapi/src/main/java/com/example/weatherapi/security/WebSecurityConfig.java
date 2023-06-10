@@ -1,7 +1,5 @@
 package com.example.weatherapi.security;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,18 +8,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -29,6 +22,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
     @Value("${spring.security.user.name}")
     private String username;
@@ -48,6 +42,14 @@ public class WebSecurityConfig {
         //Using Basic Auth just for simplicity for now.
         http.httpBasic(withDefaults());
 
+        //Setting up a custom authentication failure handler.
+        //TODO - Fix getRequestURI() to return the correct path and not just /error.
+        http.exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException) -> {
+            logger.error("Unauthorized access attempt: " + authException.getMessage());
+            logger.error("IP: " + request.getRemoteAddr() + " attempted to access: " + request.getRequestURI() + " with method: " + request.getMethod() + " and user agent: " + request.getHeader("User-Agent"));
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
+        }));
+
         return http.build();
     }
 
@@ -66,5 +68,6 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
 }

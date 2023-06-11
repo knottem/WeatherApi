@@ -10,9 +10,11 @@ This project is just a side hobby project that I use to learn more about spring 
 - [X] Add basic spring security
 - [X] Add basic logging
 - [X] Add basic error handling
+- [X] Compare the results from the different APIs
 
 ## TODO
-- [ ] Compare the results from the different APIs
+- [ ] Add more weather APIs
+- [ ] Make use of more from each API instead of just the temperature
 - [ ] Add more endpoints
 
 ## Made by

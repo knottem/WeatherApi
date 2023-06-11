@@ -53,18 +53,57 @@ public class SmhiApi {
     }
 
     public Weather getWeatherByCity(City cityObject) {
-        logger.info("getWeather called with city: " + cityObject.getName());
-        logger.info("City found: " + cityObject);
-        return getWeatherFromSmhi(cityObject.getLon(), cityObject.getLat(), cityObject);
+        logger.info("getWeather called with city: " + cityObject.getName() + ", Lon: " + cityObject.getLon() + ", Lat: " + cityObject.getLat());
+        return getWeatherSmhi(cityObject.getLon(), cityObject.getLat(), cityObject);
     }
 
     public Weather getWeatherbyCoordinates(double lon, double lat) {
-        logger.info("getWeather called with coordinates: " + lon + ", " + lat);
-        return getWeatherFromSmhi(lon, lat, null);
+        logger.info("getWeather called with coordinates: Lon: " + lon + ", Lat: " + lat);
+        return getWeatherSmhi(lon, lat, null);
+    }
+
+    public Weather getWeatherYrByCity(double lon, double lat, City cityObject) {
+        logger.info("getWeatherYr called with coordinates: Lon: " + lon + ", Lat: " + lat);
+        return getWeatherYr(lon, lat, cityObject);
+    }
+
+    public Weather getWeatherYrByCoordinates(double lon, double lat) {
+        logger.info("getWeatherYr called with coordinates: Lon: " + lon + ", Lat: " + lat);
+        return getWeatherYr(lon, lat, null);
+    }
+
+    //Merges the weather from SMHI and YR, for now it only merges the temperatures
+    public Weather mergeWeather(City cityObject) {
+        Weather weatherYr = getWeatherYr(cityObject.getLon(), cityObject.getLat(), cityObject);
+        Weather weatherSmhi = getWeatherSmhi(cityObject.getLon(), cityObject.getLat(), cityObject);
+
+        Map<LocalDateTime, Float> smhiTemperatures = weatherSmhi.getTemperatures();
+        Map<LocalDateTime, Float> yrTemperatures = weatherYr.getTemperatures();
+
+        Map<LocalDateTime, Float> mergedTemperatures = new TreeMap<>();
+
+        mergedTemperatures.putAll(smhiTemperatures);
+
+        for (Map.Entry<LocalDateTime, Float> entry : yrTemperatures.entrySet()) {
+            LocalDateTime key = entry.getKey();
+            Float yrValue = entry.getValue();
+            if (mergedTemperatures.containsKey(key)) {
+                float smhiValue = mergedTemperatures.get(key);
+                float median = (smhiValue + yrValue) / 2;
+                mergedTemperatures.put(key, median);
+            } else {
+                mergedTemperatures.put(key, yrValue);
+            }
+        }
+
+        Weather mergedWeather = Weather.builder()
+                .message("Merged weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
+        mergedWeather.setTemperatures(mergedTemperatures);
+        return mergedWeather;
     }
 
     //The Smhi API doesnt need custom headers so this method is a lot simpler than the one in YrApi
-    private Weather getWeatherFromSmhi(double lon, double lat, City cityObject) {
+    private Weather getWeatherSmhi(double lon, double lat, City cityObject) {
         String key = lon + "," + lat;
         WeatherCache entry = cache.get(key);
         if(entry != null && entry.isValid(CACHE_TIME_IN_HOURS)) {
@@ -89,16 +128,12 @@ public class SmhiApi {
                 weather = Weather.builder()
                         .message("Weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
             }
-            List<WeatherSmhi.TimeSerie> timeSeries = weatherSmhi.timeSeries();
-            for (WeatherSmhi.TimeSerie timeSerie : timeSeries) {
-                LocalDateTime validTime = timeSerie.validTime();
-                float temperature = timeSerie.parameters().stream()
-                        .filter(p -> p.name().equals("t"))
-                        .map(p -> p.values().get(0))
-                        .findFirst()
-                        .orElse(0f);
-                weather.addTemperature(validTime, temperature);
-            }
+            weatherSmhi.timeSeries().stream().forEach(t ->
+                    weather.addTemperature(t.validTime(), t.parameters().stream()
+                            .filter(p -> p.name().equals("t"))
+                            .map(p -> p.values().get(0))
+                            .findFirst()
+                            .orElse(0f)));
             entry = new WeatherCache(weather);
             cache.put(key, entry);
             return weather;
@@ -109,16 +144,13 @@ public class SmhiApi {
     }
 
     // The YR API requires a custom User-Agent header, otherwise it will return 403 Forbidden. So we need both our domain and contact info which is provided by the application.properties file.
-    //TODO - Change to private when done testing and compile the results from smhi and yr to one Weather object
-    public WeatherYr getWeatherYr(double lon, double lat){
-        String key = lon + "," + lat;
+    private Weather getWeatherYr(double lon, double lat, City cityObject) {
+        String key = lon + "," + lat + ",yr";
         WeatherCache entry = cache.get(key);
-        if(entry != null && entry.isValid(CACHE_TIME_IN_HOURS) && entry.getWeatherYr() != null) {
+        if(entry != null && entry.isValid(CACHE_TIME_IN_HOURS)) {
             logger.info("Cache hit for key: " + key + ", returning cached data");
-            return entry.getWeatherYr();
-        } else if(entry.getWeatherYr() == null) {
-            logger.info("Cache hit for key: " + key + ", but no data was found in cache");
-        } else if(entry != null) {
+            return entry.getWeather();
+        }  else if(entry != null) {
             logger.info("Cache expired for key: " + key + ", fetching new data");
         } else {
             logger.info("Cache doesn't exist for key: " + key + ", fetching new data");
@@ -141,9 +173,22 @@ public class SmhiApi {
             }
 
             WeatherYr weatherYr = mapper.readValue(response.body(), WeatherYr.class);
-            entry = new WeatherCache(weatherYr);
+            if(weatherYr == null) {
+                throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
+            }
+            Weather weather;
+            if(cityObject == null){
+                weather = Weather.builder()
+                        .message("Weather for location Lon: " + lon + " and Lat: " + lat).build();
+            } else {
+                weather = Weather.builder()
+                        .message("Weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
+            }
+            weatherYr.properties().timeseries().stream().forEach(t ->
+                    weather.addTemperature(t.time(), (float) t.data().instant().details().air_temperature()));
+            entry = new WeatherCache(weather);
             cache.put(key, entry);
-            return weatherYr;
+            return weather;
         } catch (Exception e){
             e.printStackTrace();
             throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");

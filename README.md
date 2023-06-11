@@ -7,8 +7,8 @@ This project is just a side hobby project that I use to learn more about spring 
 
 ## DONE
 - [X] Fetch from multiple weather APIs
-- [X] Add basic spring security
-- [X] Add basic logging
+- [X] Add spring security
+- [X] Add logging
 - [X] Add basic error handling
 - [X] Compare the results from the different APIs
 

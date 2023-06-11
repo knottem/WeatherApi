@@ -13,6 +13,7 @@ This project is just a side hobby project that I use to learn more about spring 
 - [X] Compare the results from the different APIs
 
 ## TODO
+- [ ] Change my basic caching to use spring boot caching
 - [ ] Add more weather APIs
 - [ ] Make use of more from each API instead of just the temperature
 - [ ] Add more endpoints

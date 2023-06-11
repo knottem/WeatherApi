@@ -45,8 +45,7 @@ public class WebSecurityConfig {
         //Setting up a custom authentication failure handler.
         //TODO - Fix getRequestURI() to return the correct path and not just /error.
         http.exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException) -> {
-            logger.error("Unauthorized access attempt: " + authException.getMessage());
-            logger.error("IP: " + request.getRemoteAddr() + " attempted to access: " + request.getRequestURI() + " with method: " + request.getMethod() + " and user agent: " + request.getHeader("User-Agent"));
+            logger.error("Unauthorized access attempt: ->\n" + authException.getMessage() + "\nIP: " + request.getRemoteAddr() + " attempted to access: " + request.getRequestURI() + " with method: " + request.getMethod() + " and user agent: " + request.getHeader("User-Agent"));
             response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
         }));
 
@@ -68,6 +67,4 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
 }

@@ -2,6 +2,7 @@ package com.example.weatherapi.services.impl;
 
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
@@ -22,7 +23,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public ResponseEntity<Object> getWeatherBySmhiCity(String city) {
+    public Weather getWeatherBySmhiCity(String city) {
         City cityObject = cityService.getCityByName(city);
         return smhiApi.getWeatherByCity(cityObject);
     }
@@ -32,4 +33,5 @@ public class WeatherServiceImpl implements WeatherService {
         City cityObject = cityService.getCityByName(city);
         return smhiApi.getWeatherYr(cityObject.getLon(), cityObject.getLat());
     }
+
 }

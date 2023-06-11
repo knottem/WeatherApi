@@ -1,9 +1,9 @@
 package com.example.weatherapi.controllers;
 
 
+import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
 import com.example.weatherapi.services.WeatherService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ public class WeatherController {
 
 
     @GetMapping(path = "/weather/smhi/{city}")
-    public ResponseEntity<Object> getWeatherByCity(@PathVariable final String city){
+    public Weather getWeatherByCity(@PathVariable final String city){
         return weatherService.getWeatherBySmhiCity(city);
     }
 

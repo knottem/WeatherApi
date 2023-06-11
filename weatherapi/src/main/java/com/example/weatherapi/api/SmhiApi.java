@@ -1,6 +1,7 @@
 package com.example.weatherapi.api;
 
 import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherCache;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.domain.weather.WeatherYr;
@@ -9,9 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -53,8 +52,19 @@ public class SmhiApi {
         return new URL("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=" + lat + "&lon=" + lon);
     }
 
+    public Weather getWeatherByCity(City cityObject) {
+        logger.info("getWeather called with city: " + cityObject.getName());
+        logger.info("City found: " + cityObject);
+        return getWeatherFromSmhi(cityObject.getLon(), cityObject.getLat(), cityObject);
+    }
+
+    public Weather getWeatherbyCoordinates(double lon, double lat) {
+        logger.info("getWeather called with coordinates: " + lon + ", " + lat);
+        return getWeatherFromSmhi(lon, lat, null);
+    }
+
     //The Smhi API doesnt need custom headers so this method is a lot simpler than the one in YrApi
-    private WeatherSmhi getWeatherFromSmhi(double lon, double lat){
+    private Weather getWeatherFromSmhi(double lon, double lat, City cityObject) {
         String key = lon + "," + lat;
         WeatherCache entry = cache.get(key);
         if(entry != null && entry.isValid(CACHE_TIME_IN_HOURS)) {
@@ -67,12 +77,34 @@ public class SmhiApi {
         }
         try {
             WeatherSmhi weatherSmhi = mapper.readValue(getUrlSmhi(lon, lat), WeatherSmhi.class);
-            entry = new WeatherCache(weatherSmhi);
+            if(weatherSmhi == null) {
+                throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
+            }
+
+            Weather weather;
+            if(cityObject == null){
+                weather = Weather.builder()
+                        .message("Weather for location Lon: " + lon + " and Lat: " + lat).build();
+            } else {
+                weather = Weather.builder()
+                        .message("Weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
+            }
+            List<WeatherSmhi.TimeSerie> timeSeries = weatherSmhi.timeSeries();
+            for (WeatherSmhi.TimeSerie timeSerie : timeSeries) {
+                LocalDateTime validTime = timeSerie.validTime();
+                float temperature = timeSerie.parameters().stream()
+                        .filter(p -> p.name().equals("t"))
+                        .map(p -> p.values().get(0))
+                        .findFirst()
+                        .orElse(0f);
+                weather.addTemperature(validTime, temperature);
+            }
+            entry = new WeatherCache(weather);
             cache.put(key, entry);
-            return weatherSmhi;
+            return weather;
         } catch (IOException e){
             e.printStackTrace();
-            throw new ApiConnectionException("Could not connect to SMHI API");
+            throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
         }
     }
 
@@ -81,9 +113,11 @@ public class SmhiApi {
     public WeatherYr getWeatherYr(double lon, double lat){
         String key = lon + "," + lat;
         WeatherCache entry = cache.get(key);
-        if(entry != null && entry.isValid(CACHE_TIME_IN_HOURS)) {
+        if(entry != null && entry.isValid(CACHE_TIME_IN_HOURS) && entry.getWeatherYr() != null) {
             logger.info("Cache hit for key: " + key + ", returning cached data");
             return entry.getWeatherYr();
+        } else if(entry.getWeatherYr() == null) {
+            logger.info("Cache hit for key: " + key + ", but no data was found in cache");
         } else if(entry != null) {
             logger.info("Cache expired for key: " + key + ", fetching new data");
         } else {
@@ -112,43 +146,9 @@ public class SmhiApi {
             return weatherYr;
         } catch (Exception e){
             e.printStackTrace();
-            throw new ApiConnectionException("Could not connect to YR API");
+            throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
         }
     }
 
-    public ResponseEntity<Object> getWeatherByCity(City city) {
-        logger.info("getWeather called with city: " + city.getName());
-        logger.info("City found: " + city);
 
-        // Get the temperatures from the API
-        Map<String, Float> temps = getTempsSmhi(city.getLon(), city.getLat());
-
-        // Creates a map with the data to return to the client
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("city", city.getName());
-        data.put("lon", city.getLon());
-        data.put("lat", city.getLat());
-        data.put("temperatures", temps);
-        return ResponseEntity.ok(data);
-    }
-
-    private Map<String, Float> getTempsSmhi(double lon, double lat) {
-
-        WeatherSmhi weatherSmhi = getWeatherFromSmhi(lon, lat);
-
-        List<LocalDateTime> validTimes = weatherSmhi.timeSeries().stream()
-                .map(WeatherSmhi.TimeSerie::validTime).toList();
-
-        List<Float> temperatures = weatherSmhi.timeSeries().stream()
-                .flatMap(t -> t.parameters().stream())
-                .filter(p -> p.name().equals("t"))
-                .map(p -> p.values().get(0)).toList();
-
-        Map<String, Float> temps = new LinkedHashMap<>();
-
-        for (int i = 0; i < validTimes.size() && i < temperatures.size(); i++) {
-            temps.put(validTimes.get(i).toString(), temperatures.get(i));
-        }
-        return temps;
-    }
 }

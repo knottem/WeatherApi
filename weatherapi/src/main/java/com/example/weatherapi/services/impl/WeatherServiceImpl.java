@@ -61,10 +61,10 @@ public class WeatherServiceImpl implements WeatherService {
             }
         }
 
-        Weather mergedWeather = Weather.builder()
-                .message("Merged weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
-        mergedWeather.setTemperatures(mergedTemperatures);
-        return mergedWeather;
+        return Weather.builder()
+                .message("Merged weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat())
+                .temperatures(mergedTemperatures)
+                .build();
 
     }
 

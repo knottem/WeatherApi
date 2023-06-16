@@ -12,6 +12,7 @@ import java.util.*;
 public class Weather {
 
     private String message;
+
     @Builder.Default
     private Map<LocalDateTime, Float> temperatures = new LinkedHashMap<>();
 

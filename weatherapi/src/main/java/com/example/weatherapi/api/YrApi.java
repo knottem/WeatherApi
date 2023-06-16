@@ -48,6 +48,7 @@ public class YrApi {
                     .version(HttpClient.Version.HTTP_1_1)
                     .build();
 
+            // Adds User-Agent and sitename to header since YR requires it
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(getUrlYr(lon, lat).toURI())
                     .header("User-Agent", domain)

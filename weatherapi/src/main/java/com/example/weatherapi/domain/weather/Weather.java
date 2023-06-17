@@ -14,10 +14,24 @@ public class Weather {
     private String message;
 
     @Builder.Default
-    private Map<LocalDateTime, Float> temperatures = new LinkedHashMap<>();
+    private Map<LocalDateTime, WeatherData> weatherData = new LinkedHashMap<>();
 
-    public void addTemperature(LocalDateTime validTime, float temperature) {
-        temperatures.put(validTime, temperature);
+    public void addWeatherData(LocalDateTime validTime, float temperature, int weatherCode, float windSpeed, float windDirection) {
+        weatherData.put(validTime, WeatherData.builder()
+                .temperature(temperature)
+                .weatherCode(weatherCode)
+                .windSpeed(windSpeed)
+                .windDirection(windDirection)
+                .build());
+    }
+
+    @Data
+    @Builder
+    public static class WeatherData {
+        private float temperature;
+        private int weatherCode;
+        private float windSpeed;
+        private float windDirection;
     }
 
 }

@@ -45,23 +45,26 @@ public class WeatherServiceImpl implements WeatherService {
         Weather weatherYr = yrApi.getWeatherYr(cityObject.getLon(), cityObject.getLat(), cityObject);
         Weather weatherSmhi = smhiApi.getWeatherSmhi(cityObject.getLon(), cityObject.getLat(), cityObject);
 
-        Map<LocalDateTime, Float> smhiTemperatures = weatherSmhi.getTemperatures();
-        Map<LocalDateTime, Float> yrTemperatures = weatherYr.getTemperatures();
+        Map<LocalDateTime, Weather.WeatherData> smhiWeatherData = weatherSmhi.getWeatherData();
+        Map<LocalDateTime, Weather.WeatherData> yrWeatherData = weatherYr.getWeatherData();
 
-        Map<LocalDateTime, Float> mergedTemperatures = new TreeMap<>(smhiTemperatures);
-        for (Map.Entry<LocalDateTime, Float> entry : yrTemperatures.entrySet()) {
+
+        Map<LocalDateTime, Weather.WeatherData> mergedWeatherData = new TreeMap<>(smhiWeatherData);
+        for (Map.Entry<LocalDateTime, Weather.WeatherData> entry : yrWeatherData.entrySet()) {
             LocalDateTime key = entry.getKey();
-            Float yrValue = entry.getValue();
-            if (mergedTemperatures.containsKey(key)) {
-                mergedTemperatures.put(key, (mergedTemperatures.get(key) + yrValue)/2);
+            Weather.WeatherData yrData = entry.getValue();
+            if (mergedWeatherData.containsKey(key)) {
+                Weather.WeatherData smhiData = mergedWeatherData.get(key);
+                float mergedTemperature = (smhiData.getTemperature() + yrData.getTemperature()) / 2;
+                smhiData.setTemperature(mergedTemperature);
             } else {
-                mergedTemperatures.put(key, yrValue);
+                mergedWeatherData.put(key, yrData);
             }
         }
 
         return Weather.builder()
                 .message("Merged weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat())
-                .temperatures(mergedTemperatures)
+                .weatherData(mergedWeatherData)
                 .build();
 
     }

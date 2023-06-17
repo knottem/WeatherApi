@@ -36,6 +36,7 @@ public class YrApi {
     }
 
     // The YR API requires a custom User-Agent header, otherwise it will return 403 Forbidden. So we need both our domain and contact info which is provided by the application.properties file.
+    //TODO: Add support for weathercodes
     public Weather getWeatherYr(double lon, double lat, City cityObject) {
         String key = lon + "," + lat + ",yr";
         Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
@@ -73,7 +74,13 @@ public class YrApi {
                         .message("Weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
             }
             weatherYr.properties().timeseries().forEach(t ->
-                    weather.addTemperature(t.time(), (float) t.data().instant().details().air_temperature()));
+                    // just setting the weatherCode to 0 for now since I haven't added support for it yet
+                    weather.addWeatherData(
+                            t.time(),
+                            (float) t.data().instant().details().air_temperature(),
+                            0,
+                            (float) t.data().instant().details().wind_speed(),
+                            (float) t.data().instant().details().wind_from_direction()));
             Cache.getInstance().put(key, weather);
             return weather;
         } catch (Exception e){

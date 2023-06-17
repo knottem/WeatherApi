@@ -56,24 +56,21 @@ public class SmhiApi {
                 weather = Weather.builder()
                         .message("Weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
             }
-            weather.setTemperatures(temperatures(weatherSmhi));
+
+
+            weatherSmhi.timeSeries().forEach(t -> {
+                weather.addWeatherData(t.validTime(),
+                       t.parameters().stream().filter(p -> p.name().equals("t")).map(p -> p.values().get(0)).findFirst().orElse(0f),
+                        t.parameters().stream().filter(p -> p.name().equals("Wsymb2")).map(p -> p.values().get(0).intValue()).findFirst().orElse(0),
+                        t.parameters().stream().filter(p -> p.name().equals("ws")).map(p -> p.values().get(0)).findFirst().get(),
+                        t.parameters().stream().filter(p -> p.name().equals("wd")).map(p -> p.values().get(0)).findFirst().orElse(0f));
+            });
             Cache.getInstance().put(key, weather);
             return weather;
         } catch (IOException e){
             e.printStackTrace();
             throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
         }
-    }
-
-    private Map<LocalDateTime, Float> temperatures (WeatherSmhi weatherSmhi) {
-        Map<LocalDateTime, Float> temperatures = new LinkedHashMap<>();
-        weatherSmhi.timeSeries().stream().forEach(t ->
-                temperatures.put(t.validTime(), t.parameters().stream()
-                        .filter(p -> p.name().equals("t"))
-                        .map(p -> p.values().get(0))
-                        .findFirst()
-                        .orElse(0f)));
-        return temperatures;
     }
 
 }

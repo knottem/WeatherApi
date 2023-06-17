@@ -2,7 +2,6 @@ package com.example.weatherapi.api;
 
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
-import com.example.weatherapi.domain.weather.WeatherCache;
 import com.example.weatherapi.domain.weather.WeatherYr;
 import com.example.weatherapi.exceptions.ApiConnectionException;
 import com.example.weatherapi.util.Cache;
@@ -75,7 +74,7 @@ public class YrApi {
             }
             weatherYr.properties().timeseries().forEach(t ->
                     weather.addTemperature(t.time(), (float) t.data().instant().details().air_temperature()));
-            Cache.getInstance().put(key, new WeatherCache(weather));
+            Cache.getInstance().put(key, weather);
             return weather;
         } catch (Exception e){
             e.printStackTrace();

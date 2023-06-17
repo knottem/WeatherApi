@@ -1,10 +1,10 @@
 package com.example.weatherapi.util;
 
 import com.example.weatherapi.domain.weather.Weather;
-import com.example.weatherapi.domain.weather.WeatherCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,8 +39,28 @@ public class Cache {
         return null;
     }
 
-    public void put(String key, WeatherCache entry) {
-        cache.put(key, entry);
+    public void put(String key, Weather weather) {
+        cache.put(key, new WeatherCache(weather));
+    }
+
+    private static class WeatherCache {
+
+        private final LocalDateTime timestamp;
+
+        private final Weather weather;
+
+        public WeatherCache(Weather weather) {
+            this.weather = weather;
+            this.timestamp = LocalDateTime.now();
+        }
+
+        public boolean isValid(int hours) {
+            return LocalDateTime.now().minusHours(hours).isBefore(timestamp);
+        }
+
+        public Weather getWeather() {
+            return weather;
+        }
     }
 
 }

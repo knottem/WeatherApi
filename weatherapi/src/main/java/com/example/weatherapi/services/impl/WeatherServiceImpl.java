@@ -53,9 +53,7 @@ public class WeatherServiceImpl implements WeatherService {
             LocalDateTime key = entry.getKey();
             Float yrValue = entry.getValue();
             if (mergedTemperatures.containsKey(key)) {
-                float smhiValue = mergedTemperatures.get(key);
-                float median = (smhiValue + yrValue) / 2;
-                mergedTemperatures.put(key, median);
+                mergedTemperatures.put(key, (mergedTemperatures.get(key) + yrValue)/2);
             } else {
                 mergedTemperatures.put(key, yrValue);
             }

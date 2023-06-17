@@ -2,7 +2,6 @@ package com.example.weatherapi.api;
 
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
-import com.example.weatherapi.domain.weather.WeatherCache;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.domain.weather.WeatherYr;
 import com.example.weatherapi.exceptions.ApiConnectionException;
@@ -58,7 +57,7 @@ public class SmhiApi {
                         .message("Weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
             }
             weather.setTemperatures(temperatures(weatherSmhi));
-            Cache.getInstance().put(key, new WeatherCache(weather));
+            Cache.getInstance().put(key, weather);
             return weather;
         } catch (IOException e){
             e.printStackTrace();

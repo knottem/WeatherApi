@@ -10,10 +10,9 @@ This project is just a side hobby project that I use to learn more about spring 
 - [X] Add spring security
 - [X] Add logging
 - [X] Add basic error handling
-- [X] Compare the results from the different APIs
+- [X] Compare the results from the different APIs and return a merged result
 
 ## TODO
-- [ ] Add OpenApi documentation
 - [ ] Change my basic caching to use spring boot caching
 - [ ] Add more weather APIs
 - [ ] Make use of more from each API instead of just the temperature

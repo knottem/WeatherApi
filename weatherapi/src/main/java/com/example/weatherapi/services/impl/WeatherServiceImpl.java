@@ -53,10 +53,12 @@ public class WeatherServiceImpl implements WeatherService {
         for (Map.Entry<LocalDateTime, Weather.WeatherData> entry : yrWeatherData.entrySet()) {
             LocalDateTime key = entry.getKey();
             Weather.WeatherData yrData = entry.getValue();
+            // If the key already exists in the merged map, we need to merge the data, otherwise we just add it
             if (mergedWeatherData.containsKey(key)) {
                 Weather.WeatherData smhiData = mergedWeatherData.get(key);
-                float mergedTemperature = (smhiData.getTemperature() + yrData.getTemperature()) / 2;
-                smhiData.setTemperature(mergedTemperature);
+                smhiData.setTemperature((smhiData.getTemperature() + yrData.getTemperature()) / 2);
+                smhiData.setWindDirection((smhiData.getWindDirection() + yrData.getWindDirection()) / 2);
+                smhiData.setWindSpeed((smhiData.getWindSpeed() + yrData.getWindSpeed()) / 2);
             } else {
                 mergedWeatherData.put(key, yrData);
             }

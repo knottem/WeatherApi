@@ -48,17 +48,19 @@ public class WeatherServiceImpl implements WeatherService {
         Map<LocalDateTime, Weather.WeatherData> smhiWeatherData = weatherSmhi.getWeatherData();
         Map<LocalDateTime, Weather.WeatherData> yrWeatherData = weatherYr.getWeatherData();
 
-
+        //Add all smhi data to the merged map from the start, then we can just add yr data to the merged map
         Map<LocalDateTime, Weather.WeatherData> mergedWeatherData = new TreeMap<>(smhiWeatherData);
+
         for (Map.Entry<LocalDateTime, Weather.WeatherData> entry : yrWeatherData.entrySet()) {
             LocalDateTime key = entry.getKey();
             Weather.WeatherData yrData = entry.getValue();
             // If the key already exists in the merged map, we need to merge the data, otherwise we just add it
             if (mergedWeatherData.containsKey(key)) {
-                Weather.WeatherData smhiData = mergedWeatherData.get(key);
-                smhiData.setTemperature((smhiData.getTemperature() + yrData.getTemperature()) / 2);
-                smhiData.setWindDirection((smhiData.getWindDirection() + yrData.getWindDirection()) / 2);
-                smhiData.setWindSpeed((smhiData.getWindSpeed() + yrData.getWindSpeed()) / 2);
+                Weather.WeatherData data = mergedWeatherData.get(key);
+                data.setTemperature((data.getTemperature() + yrData.getTemperature()) / 2);
+                data.setWindDirection((data.getWindDirection() + yrData.getWindDirection()) / 2);
+                data.setWindSpeed((data.getWindSpeed() + yrData.getWindSpeed()) / 2);
+                data.setPrecipitation((data.getPrecipitation() + yrData.getPrecipitation()) / 2);
             } else {
                 mergedWeatherData.put(key, yrData);
             }

@@ -62,8 +62,10 @@ public class SmhiApi {
                 weather.addWeatherData(t.validTime(),
                        t.parameters().stream().filter(p -> p.name().equals("t")).map(p -> p.values().get(0)).findFirst().orElse(0f),
                         t.parameters().stream().filter(p -> p.name().equals("Wsymb2")).map(p -> p.values().get(0).intValue()).findFirst().orElse(0),
-                        t.parameters().stream().filter(p -> p.name().equals("ws")).map(p -> p.values().get(0)).findFirst().get(),
-                        t.parameters().stream().filter(p -> p.name().equals("wd")).map(p -> p.values().get(0)).findFirst().orElse(0f));
+                        t.parameters().stream().filter(p -> p.name().equals("ws")).map(p -> p.values().get(0)).findFirst().orElse(0f),
+                        t.parameters().stream().filter(p -> p.name().equals("wd")).map(p -> p.values().get(0)).findFirst().orElse(0f),
+                        (t.parameters().stream().filter(p -> p.name().equals("pmin")).map(p -> p.values().get(0)).findFirst().orElse(0f)
+                            + t.parameters().stream().filter(p -> p.name().equals("pmax")).map(p -> p.values().get(0)).findFirst().orElse(0f)) / 2);
             });
             Cache.getInstance().put(key, weather);
             return weather;

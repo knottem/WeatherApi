@@ -74,13 +74,15 @@ public class YrApi {
                         .message("Weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
             }
             weatherYr.properties().timeseries().forEach(t ->
+
                     // just setting the weatherCode to 0 for now since I haven't added support for it yet
                     weather.addWeatherData(
                             t.time(),
-                            (float) t.data().instant().details().air_temperature(),
+                            t.data().instant().details().air_temperature(),
                             0,
-                            (float) t.data().instant().details().wind_speed(),
-                            (float) t.data().instant().details().wind_from_direction()));
+                            t.data().instant().details().wind_speed(),
+                            t.data().instant().details().wind_from_direction(),
+                            t.data().instant().details().precipitation_amount()));
             Cache.getInstance().put(key, weather);
             return weather;
         } catch (Exception e){

@@ -15,9 +15,9 @@ public record WeatherYr(Geometry geometry, Properties properties, String type) {
     public record Data(Instant instant, NextHours next_1_hours, NextHours next_6_hours, NextHours next_12_hours) {}
     public record Instant(Details details) {}
     public record NextHours(Summary summary, Details details) {}
-    public record Details(double air_pressure_at_sea_level, double air_temperature, double cloud_area_fraction,
-                          double precipitation_amount, double relative_humidity, double wind_from_direction,
-                          double wind_speed) {}
+    public record Details(float air_pressure_at_sea_level, float air_temperature, float cloud_area_fraction,
+                          float precipitation_amount, float relative_humidity, float wind_from_direction,
+                          float wind_speed) {}
     public record Summary(String symbol_code) {}
 
 }

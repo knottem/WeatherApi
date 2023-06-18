@@ -43,7 +43,11 @@ public class Cache {
         cache.put(key, new WeatherCache(weather));
     }
 
-    private static class WeatherCache {
+    public void clear() {
+        cache.clear();
+    }
+
+    static class WeatherCache {
 
         private final LocalDateTime timestamp;
 

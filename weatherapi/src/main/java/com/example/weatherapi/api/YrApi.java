@@ -75,7 +75,7 @@ public class YrApi {
             }
             weatherYr.properties().timeseries().forEach(t ->
 
-                    // just setting the weatherCode to 0 for now since I haven't added support for it yet
+                    // just setting the weatherCode to 0 for now since I haven't added support for it yet, since it returns a String not an Integer
                     weather.addWeatherData(
                             t.time(),
                             t.data().instant().details().air_temperature(),

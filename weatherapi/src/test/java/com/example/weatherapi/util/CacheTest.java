@@ -13,15 +13,6 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 public class CacheTest {
 
-
-    @Mock
-    Cache.WeatherCache weatherCache;
-
-    @BeforeEach
-    public void setUp(){
-        weatherCache = mock(Cache.WeatherCache.class);
-    }
-
     @AfterEach
     public void tearDown(){
         Cache.getInstance().clear();

@@ -45,7 +45,7 @@ public class SmhiApi {
             return weatherFromCache;
         }
         try {
-            //Gets the weather from the smhi api
+            //Gets the weather from the smhi api and maps it to a weatherSmhi object
             WeatherSmhi weatherSmhi = mapper.readValue(getUrlSmhi(lon, lat), WeatherSmhi.class);
             if(weatherSmhi == null) {
                 throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
@@ -60,7 +60,7 @@ public class SmhiApi {
                         .message("Weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
             }
 
-            //Adds the weather data to the weather object
+            //Adds the weather data from the weatherSmhi object to the weather object
             weatherSmhi.timeSeries().forEach(t -> {
                 weather.addWeatherData(t.validTime(),
                        t.parameters().stream().filter(p -> p.name().equals("t")).map(p -> p.values().get(0)).findFirst().orElse(0f),

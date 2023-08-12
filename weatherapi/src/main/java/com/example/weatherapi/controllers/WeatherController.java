@@ -6,7 +6,7 @@ import com.example.weatherapi.services.WeatherService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
+//Simple controller that handles the requests to the api, redirects the requests to the service layer
 @RestController
 public class WeatherController {
 

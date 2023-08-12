@@ -1,4 +1,5 @@
 -- noinspection SqlNoDataSourceInspectionForFile
+-- Simple database with lon and lat for locations in sweden, can be easily extended with just adding new values.
 
 CREATE SCHEMA IF NOT EXISTS `weatherdb`;
 USE `weatherdb`;

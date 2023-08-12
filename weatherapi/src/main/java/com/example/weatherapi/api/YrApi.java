@@ -16,6 +16,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+//YrAPI class that handles all the communication with the yr api
 @Component
 public class YrApi {
 
@@ -24,6 +25,7 @@ public class YrApi {
     public YrApi() {
         this.mapper = JsonMapper.builder().findAndAddModules().build();
     }
+    // Gets the domain and contact info from the application.properties file, contact info is required by the YR API
     @Value("${your.domain}")
     private String domain = "localhost";
     @Value("${contact.github}")
@@ -31,6 +33,7 @@ public class YrApi {
     @Value("${cache.time.in.hours}")
     private int CACHE_TIME_IN_HOURS;
 
+    // Method that creates the url for the yr api
     private URL getUrlYr(double lon, double lat) throws IOException {
         return new URL("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=" + lat + "&lon=" + lon);
     }
@@ -39,6 +42,7 @@ public class YrApi {
     //TODO: Add support for weathercodes
     public Weather getWeatherYr(double lon, double lat, City cityObject) {
         String key = lon + "," + lat + ",yr";
+        // Checks if the weather is in the cache, if it is it returns it
         Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
         if(weatherFromCache != null) {
             return weatherFromCache;
@@ -65,6 +69,7 @@ public class YrApi {
             if(weatherYr == null) {
                 throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
             }
+            // Creates a new weather object and adds the location and message to it
             Weather weather;
             if(cityObject == null){
                 weather = Weather.builder()
@@ -73,9 +78,9 @@ public class YrApi {
                 weather = Weather.builder()
                         .message("Weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
             }
+            //just setting the weatherCode to 0 for now since I haven't added support for it yet, since it returns a String not an Integer
+            //Adds the weather to the weather object
             weatherYr.properties().timeseries().forEach(t ->
-
-                    // just setting the weatherCode to 0 for now since I haven't added support for it yet, since it returns a String not an Integer
                     weather.addWeatherData(
                             t.time(),
                             t.data().instant().details().air_temperature(),
@@ -83,9 +88,12 @@ public class YrApi {
                             t.data().instant().details().wind_speed(),
                             t.data().instant().details().wind_from_direction(),
                             t.data().instant().details().precipitation_amount()));
+            // Adds the weather to the cache
             Cache.getInstance().put(key, weather);
             return weather;
         } catch (Exception e){
+            // If the API is down or something else goes wrong, it will throw an ApiConnectionException
+            //TODO add logging instead of printing stacktrace
             e.printStackTrace();
             throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
         }

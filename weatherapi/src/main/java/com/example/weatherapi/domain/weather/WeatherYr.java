@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 //Added this how the api from yr will look like
+//The JSON object is a bit complex, so took some time to figure out how to represent it in Java, but I think this is a good solution.
+//For future reference, this is a good tool to use when converting JSON to Java: https://json2csharp.com/json-to-pojo
+//converted everything to records to make it more compact
 public record WeatherYr(Geometry geometry, Properties properties, String type) {
     public record Geometry(String type, List<Double> coordinates) {}
     public record Properties(Meta meta, List<TimeSeries> timeseries) {}

@@ -9,6 +9,7 @@ import java.util.*;
 
 @Data
 @Builder
+//This is the final representation of the data that is returned to the user after the data has been fetched from the APIs and merged
 public class Weather {
 
     private String message;

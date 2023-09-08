@@ -1,8 +1,23 @@
 -- noinspection SqlNoDataSourceInspectionForFile
 -- Simple database with lon and lat for locations in sweden, can be easily extended with just adding new values.
+-- Added a few users for testing purposes, can be extended with more users.
 
 CREATE SCHEMA IF NOT EXISTS `weatherdb`;
 USE `weatherdb`;
+
+DROP TABLE IF EXISTS `auth`;
+
+CREATE TABLE `auth` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `role` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO `auth` VALUES
+    (1,'admin','$2a$10$Eq3yxcRlqmIaxBv7w9qkDuZCfw7lhgYS12ndADouoUogkNMWGmELK', 'admin'), -- pass123 for testing
+    (2,'user','$2a$10$OMsvTvB3K5kHX6cTrSDEIuMFfKj2XASnIUPe/jPw.Fk6Vk9zQNK5W', 'user');
 
 DROP TABLE IF EXISTS `city`;
 CREATE TABLE `city` (

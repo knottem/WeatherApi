@@ -1,11 +1,14 @@
 package com.example.weatherapi.security;
 
+import com.example.weatherapi.exceptions.CustomAccessDeniedHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -22,13 +25,15 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
+    @Bean
+    public CustomAccessDeniedHandler customAccessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
-
-    @Value("${spring.security.user.name}")
-    private String username;
-
-    @Value("${spring.security.user.password}")
-    private String password;
 
     //Setting up security for the endpoints.
     @Bean
@@ -36,35 +41,24 @@ public class WebSecurityConfig {
 
         //Setting roles for endpoints, nothing should be accessible without a role.
         http.authorizeHttpRequests(r -> r
-                .requestMatchers("/weather/**").hasRole("USER")
-                .requestMatchers("/city/**").hasRole("USER"));
+                .requestMatchers("/error").permitAll()
+                .requestMatchers("/weather/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/city/**").hasRole("ADMIN")
+        );
+
+        http.exceptionHandling(e -> e
+                .accessDeniedHandler(customAccessDeniedHandler())
+        );
 
         //Using Basic Auth just for simplicity for now.
         http.httpBasic(withDefaults());
 
-        //Setting up a custom authentication failure handler.
-        //TODO - Fix getRequestURI() to return the correct path and not just /error.
-        http.exceptionHandling(e -> e.authenticationEntryPoint((request, response, authException) -> {
-            logger.error("Unauthorized access attempt: ->\n" + authException.getMessage() + "\nIP: " + request.getRemoteAddr() + " attempted to access: " + request.getRequestURI() + " with method: " + request.getMethod() + " and user agent: " + request.getHeader("User-Agent"));
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
-        }));
-
         return http.build();
     }
 
-    //Setting up a user with a role. More users can be added here, but for now we only need one.
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername(username)
-                .password(passwordEncoder().encode(password))
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth, PasswordEncoder passwordEncoder) throws Exception {
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
     }
 
-    //Using BCrypt for password encoding.
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }

@@ -18,8 +18,6 @@ CACHE_TIME_IN_HOURS= # The time in hours that the cache should be valid
 DOMAIN= # The domain of the api, used for yr api, can be ip address as well, 
         # just needs to be a valid url that the program will be running on
 GITHUB= # The github link to this project, used for yr api
-USER_NAME= # The username for the api, used for spring security
-USER_PASSWORD= # The password for the api, used for spring security
 ```
 Here's an example of a .env file:
 ```bash
@@ -31,8 +29,6 @@ DB_PASSWORD=password
 CACHE_TIME_IN_HOURS=3
 DOMAIN=https://example.com
 GITHUB=https://github.com/yourusername
-USER_NAME=test
-USER_PASSWORD=test
 ```
 This step is only if you want to run the program without docker compose. If you want to run it with docker compose, skip this step and go to the next one.
 ```bash

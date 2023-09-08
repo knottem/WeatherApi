@@ -17,10 +17,12 @@ import java.time.LocalDateTime;
 //Class that represents an error response
 public class ErrorResponse {
 
-    private String message;
+    private String error;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
 
     private HttpStatus status;
+
+    private String path;
 }

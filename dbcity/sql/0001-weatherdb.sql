@@ -1,23 +1,12 @@
 -- noinspection SqlNoDataSourceInspectionForFile
 -- Simple database with lon and lat for locations in sweden, can be easily extended with just adding new values.
--- Added a few users for testing purposes, can be extended with more users.
+
+
+-- SET NAMES in the beginning to make sure we can use åäö for example.
+SET NAMES 'utf8mb4';
 
 CREATE SCHEMA IF NOT EXISTS `weatherdb`;
 USE `weatherdb`;
-
-DROP TABLE IF EXISTS `auth`;
-
-CREATE TABLE `auth` (
-    `id` BIGINT NOT NULL AUTO_INCREMENT,
-    `username` VARCHAR(255) NOT NULL,
-    `password` VARCHAR(255) NOT NULL,
-    `role` ENUM('ADMIN', 'USER', 'SUPERUSER') NOT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-INSERT INTO `auth` VALUES
-    (1,'admin','$2a$10$Eq3yxcRlqmIaxBv7w9qkDuZCfw7lhgYS12ndADouoUogkNMWGmELK', 'ADMIN' ), -- pass123 for testing
-    (2,'user','$2a$10$OMsvTvB3K5kHX6cTrSDEIuMFfKj2XASnIUPe/jPw.Fk6Vk9zQNK5W', 'USER');
 
 DROP TABLE IF EXISTS `city`;
 CREATE TABLE `city` (
@@ -26,7 +15,7 @@ CREATE TABLE `city` (
   `lon` double NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `city` VALUES 
     (1,59.3294,18.0686,'Stockholm'),

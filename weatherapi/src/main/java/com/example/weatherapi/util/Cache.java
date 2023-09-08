@@ -1,6 +1,7 @@
 package com.example.weatherapi.util;
 
 import com.example.weatherapi.domain.weather.Weather;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class Cache {
     static class WeatherCache {
 
         private final LocalDateTime timestamp;
-
+        @Getter
         private final Weather weather;
 
         public WeatherCache(Weather weather) {
@@ -62,9 +63,6 @@ public class Cache {
             return LocalDateTime.now().minusHours(hours).isBefore(timestamp);
         }
 
-        public Weather getWeather() {
-            return weather;
-        }
     }
 
 }

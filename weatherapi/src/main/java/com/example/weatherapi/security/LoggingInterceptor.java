@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class LoggingInterceptor implements HandlerInterceptor {
@@ -15,7 +17,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous";
-        logger.info("User '{}' accessed endpoint: {}", username, request.getRequestURI());
+        logger.info("User '{}' accessed endpoint: {}", username,URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8));
         return true;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.weatherapi.security;
+package com.example.weatherapi.security.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

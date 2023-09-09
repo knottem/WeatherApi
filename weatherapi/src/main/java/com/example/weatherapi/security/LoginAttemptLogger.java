@@ -15,13 +15,13 @@ public class LoginAttemptLogger {
 
     @EventListener
     public void handleAuthenticationSuccess(AuthenticationSuccessEvent event) {
-        String username = ((UserDetails) event.getAuthentication().getPrincipal()).getUsername();
-        logger.info("Login successful, Username: {}", username);
+        logger.info("Login successful, Username: {}, Role: {}",
+                ((UserDetails) event.getAuthentication().getPrincipal()).getUsername(),
+                event.getAuthentication().getAuthorities().toString().replace("[", "").replace("]", "").substring(5));
     }
 
     @EventListener
     public void handleAuthenticationFailure(AuthenticationFailureBadCredentialsEvent event) {
-        String username = (String) event.getAuthentication().getPrincipal();
-        logger.warn("Login failed, Username: {}", username);
+        logger.warn("Login failed, Username: {}", event.getAuthentication().getPrincipal());
     }
 }

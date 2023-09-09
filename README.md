@@ -55,7 +55,7 @@ docker-compose up -d
 - [ ] Add more weather APIs(Danish - DMI, Finnish - FMI)
 - [ ] Make use of more from each API instead of just the temperature
 - [ ] Add more endpoints
-- [ ] Clean up the code, make it more readable and remove unused code
+- [ ] Clean up the code, make it more readable and remove unused code.
 
 ## Made by
 - [Erik Wallenius](https://github.com/knottem)

@@ -1,7 +1,7 @@
 package com.example.weatherapi.security.configs;
 
 
-import com.example.weatherapi.security.LoggingInterceptor;
+import com.example.weatherapi.security.loggers.LoggingInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

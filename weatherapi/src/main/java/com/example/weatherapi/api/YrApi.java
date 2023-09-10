@@ -3,7 +3,7 @@ package com.example.weatherapi.api;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
-import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.exceptions.exceptions.ApiConnectionException;
 import com.example.weatherapi.util.Cache;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;

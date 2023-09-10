@@ -1,7 +1,7 @@
 package com.example.weatherapi.services.impl;
 
 import com.example.weatherapi.domain.City;
-import com.example.weatherapi.exceptions.CityNotFoundException;
+import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
 import com.example.weatherapi.repositories.CityRepository;
 import com.example.weatherapi.services.CityService;
 import org.springframework.beans.factory.annotation.Autowired;

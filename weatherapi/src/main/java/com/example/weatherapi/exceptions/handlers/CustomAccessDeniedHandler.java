@@ -1,4 +1,4 @@
-package com.example.weatherapi.exceptions;
+package com.example.weatherapi.exceptions.handlers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

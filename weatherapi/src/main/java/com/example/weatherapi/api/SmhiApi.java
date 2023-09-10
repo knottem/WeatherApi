@@ -3,11 +3,10 @@ package com.example.weatherapi.api;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
-import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.exceptions.exceptions.ApiConnectionException;
 import com.example.weatherapi.util.Cache;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import org.hibernate.type.format.jackson.JacksonXmlFormatMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

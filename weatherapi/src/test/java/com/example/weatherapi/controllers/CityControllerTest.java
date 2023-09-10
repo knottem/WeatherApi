@@ -1,7 +1,7 @@
 package com.example.weatherapi.controllers;
 
 import com.example.weatherapi.domain.City;
-import com.example.weatherapi.exceptions.CityNotFoundException;
+import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
 import com.example.weatherapi.services.CityService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

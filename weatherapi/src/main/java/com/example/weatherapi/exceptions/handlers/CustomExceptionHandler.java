@@ -1,6 +1,7 @@
-package com.example.weatherapi.exceptions;
+package com.example.weatherapi.exceptions.handlers;
 
 import com.example.weatherapi.domain.ErrorResponse;
+import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,10 +25,12 @@ public class CustomExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .error(ex.getMessage())
                 .status(HttpStatus HERE)
-                .path(request.getDescription(false).substring(4))
+                .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
                 .build());
 
         The only different thing should be the HttpStatus on each.
+
+        Made custom exceptions, so I can have different error messages for different situations.
      */
 
     @ExceptionHandler(Exception.class)
@@ -37,7 +40,7 @@ public class CustomExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .error(ex.getMessage())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .path(request.getDescription(false).substring(4))
+                .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
                 .build());
     }
 

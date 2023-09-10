@@ -1,6 +1,6 @@
 package com.example.weatherapi.security.configs;
 
-import com.example.weatherapi.exceptions.CustomAccessDeniedHandler;
+import com.example.weatherapi.exceptions.handlers.CustomAccessDeniedHandler;
 import com.example.weatherapi.security.CustomUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

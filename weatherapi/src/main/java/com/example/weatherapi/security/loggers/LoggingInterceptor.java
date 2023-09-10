@@ -1,4 +1,4 @@
-package com.example.weatherapi.security;
+package com.example.weatherapi.security.loggers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,7 +15,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(LoggingInterceptor.class);
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous";
         logger.info("User '{}' accessed endpoint: {}", username,URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8));
         return true;

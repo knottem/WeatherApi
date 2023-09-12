@@ -42,7 +42,7 @@ docker-compose up -d
 
 To stop the program and remove the containers and images, run the following command:
 ```bash
-docker-compose down --rmi all
+docker-compose down --rmi local
 ```
 
 

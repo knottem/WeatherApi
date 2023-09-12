@@ -40,6 +40,11 @@ Then you just run the docker-compose file, be sure to be in the same directory a
 docker-compose up -d
 ```
 
+To stop the program and remove the containers and images, run the following command:
+```bash
+docker-compose down --rmi all
+```
+
 
 ## DONE
 - [X] Fetch from multiple weather APIs

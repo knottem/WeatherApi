@@ -17,7 +17,12 @@ public class LoggingInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous";
-        logger.info("User '{}' accessed endpoint: {}", username,URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8));
+        String endpoint = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
+        //Don't log the error endpoint, since it's where the user is redirected to when they try to access a page they don't have access to
+        if(endpoint.contains("error")) {
+            return true;
+        }
+        logger.info("User '{}' accessed endpoint: {}", username, endpoint);
         return true;
     }
 }

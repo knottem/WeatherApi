@@ -14,15 +14,14 @@ public class LoggingInterceptor implements HandlerInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingInterceptor.class);
 
+    //Don't log the error endpoint, since it's where the user is redirected to when they try to access a page they don't have access to
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous";
         String endpoint = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
-        //Don't log the error endpoint, since it's where the user is redirected to when they try to access a page they don't have access to
-        if(endpoint.contains("error")) {
-            return true;
+        if (!endpoint.contains("error")) {
+            logger.info("User '{}' accessed endpoint: {}", username, endpoint);
         }
-        logger.info("User '{}' accessed endpoint: {}", username, endpoint);
         return true;
     }
 }

@@ -28,8 +28,6 @@ public class WebSecurityConfig {
         return new CustomAccessDeniedHandler();
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
-
     //Setting up security for the endpoints.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

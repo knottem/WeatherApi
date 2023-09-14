@@ -54,6 +54,8 @@ docker-compose down --rmi local
 - [X] Compare the results from the different APIs and return a merged result
 
 ## TODO
+- [ ] Use custom properties with h2 for tests
+- [ ] Add GitHub actions for testing.
 - [ ] Add documentation to every class and method - PRIO 1
 - [ ] Add more tests.
 - [ ] Change my basic caching to use spring boot caching (https://spring.io/guides/gs/caching/)

@@ -1,6 +1,7 @@
 package com.example.weatherapi.controllers;
 
 import com.example.weatherapi.api.SmhiApi;
+import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.domain.weather.Weather;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,9 +32,14 @@ public class WeatherControllerTest {
     @Autowired
     private SmhiApi smhiApi;
 
+    @Autowired
+    private YrApi yrApi;
+
     @BeforeEach
     public void setupBeforeEach() {
         smhiApi.setTestMode(true);
+        yrApi.setTestMode(true);
+
     }
 
     // Test Case 1: Check that the response is correct

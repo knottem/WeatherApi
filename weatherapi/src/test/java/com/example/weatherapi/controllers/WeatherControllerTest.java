@@ -58,14 +58,14 @@ public class WeatherControllerTest {
         assertThat(response.getBody().getInformation().getPrecipitation()).isEqualTo("mm/hr - kg/m2/h");
         assertThat(response.getBody().getInformation().getTime()).isEqualTo("UTC");
 
-        Weather.WeatherData firstWeatherData = response.getBody().getWeatherData()
-                .get(response.getBody().getWeatherData().keySet().iterator().next());
-
-        assertThat(firstWeatherData.getTemperature()).isEqualTo(15.7f);
-        assertThat(firstWeatherData.getWeatherCode()).isEqualTo(6);
-        assertThat(firstWeatherData.getWindSpeed()).isEqualTo(4.6f);
-        assertThat(firstWeatherData.getWindDirection()).isEqualTo(198.0f);
-        assertThat(firstWeatherData.getPrecipitation()).isEqualTo(0.0f);
+        assertThat(response.getBody().getWeatherData().get(LocalDateTime.parse("2023-09-15T19:00")))
+                .isEqualTo(Weather.WeatherData.builder()
+                        .temperature(15.7f)
+                        .weatherCode(6)
+                        .windSpeed(4.6f)
+                        .windDirection(198.0f)
+                        .precipitation(0.0f)
+                        .build());
     }
 
     // Test Case 2: Check case sensitivity
@@ -83,15 +83,14 @@ public class WeatherControllerTest {
         assertThat(response.getBody().getInformation().getWindSpeed()).isEqualTo("m/s");
         assertThat(response.getBody().getInformation().getPrecipitation()).isEqualTo("mm/hr - kg/m2/h");
         assertThat(response.getBody().getInformation().getTime()).isEqualTo("UTC");
-
-        Weather.WeatherData firstWeatherData = response.getBody().getWeatherData()
-                .get(response.getBody().getWeatherData().keySet().iterator().next());
-
-        assertThat(firstWeatherData.getTemperature()).isEqualTo(15.7f);
-        assertThat(firstWeatherData.getWeatherCode()).isEqualTo(6);
-        assertThat(firstWeatherData.getWindSpeed()).isEqualTo(4.6f);
-        assertThat(firstWeatherData.getWindDirection()).isEqualTo(198.0f);
-        assertThat(firstWeatherData.getPrecipitation()).isEqualTo(0.0f);
+        assertThat(response.getBody().getWeatherData().get(LocalDateTime.parse("2023-09-15T19:00")))
+                .isEqualTo(Weather.WeatherData.builder()
+                        .temperature(15.7f)
+                        .weatherCode(6)
+                        .windSpeed(4.6f)
+                        .windDirection(198.0f)
+                        .precipitation(0.0f)
+                        .build());
     }
 
 

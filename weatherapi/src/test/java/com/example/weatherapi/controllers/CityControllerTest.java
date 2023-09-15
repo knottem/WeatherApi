@@ -1,64 +1,108 @@
 package com.example.weatherapi.controllers;
 
 import com.example.weatherapi.domain.City;
-import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
-import com.example.weatherapi.services.CityService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.example.weatherapi.domain.ErrorResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.time.OffsetDateTime;
 
-@WebMvcTest(CityController.class)
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class CityControllerTest {
 
+    @LocalServerPort
+    private int port;
+
     @Autowired
-    private MockMvc mockMvc;
+    private TestRestTemplate restTemplate;
 
-    @MockBean
-    private CityService cityService;
-
-    @BeforeEach
-    public void setUp() {
-        when(cityService.getCityByName("Stockholm")).thenReturn(new City(1L, "Stockholm", 59.3293, 18.0686));
-        when(cityService.getCityByName("Uppsala")).thenReturn(new City(2L, "Uppsala", 59.8586, 17.6389));
-        when(cityService.getCityByName("Karlstad")).thenReturn(new City(3L, "Karlstad", 59.3793, 13.5036));
-        when(cityService.getCityByName("cityNotFound")).thenThrow(new CityNotFoundException("City not found: cityNotFound"));
-    }
-
-    @AfterEach
-    public void tearDown() {
-        cityService = null;
-    }
-
+    // Test Case 1: retrieve city that exists
     @Test
-    public void retrieveCityTestValid() throws Exception {
-        mockMvc.perform(get("/city/Stockholm")
-                        .contentType("application/json")
-                        .with(httpBasic("user", "password")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Stockholm"))
-                .andExpect(jsonPath("$.lon").value(59.3293))
-                .andExpect(jsonPath("$.lat").value(18.0686));
+    public void retrieveCityTestValid() {
+        ResponseEntity<City> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .getForEntity("http://localhost:" + port + "/city/Stockholm", City.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getId()).isEqualTo(1L);
+        assertThat(response.getBody().getName()).isEqualTo("Stockholm");
+        assertThat(response.getBody().getLat()).isEqualTo(59.3294);
+        assertThat(response.getBody().getLon()).isEqualTo(18.0686);
     }
 
+    // Test Case 2: retrieve city that doesn't exist
     @Test
-    public void retrieveCityTestFaulty() throws Exception {
-        mockMvc.perform(get("/city/cityNotFound")
-                        .contentType("application/json")
-                        .with(httpBasic("user", "password")))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("City not found: cityNotFound"))
-                .andExpect(jsonPath("$.timestamp").isNotEmpty())
-                .andExpect(jsonPath("$.status").value("NOT_FOUND"));
+    public void retrieveCityTestFaulty() {
+        String cityToTest = "CITYNOTFOUND";
+
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .getForEntity("http://localhost:" + port + "/city/" + cityToTest, ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("City not found: " + cityToTest);
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city/" + cityToTest);
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 3: forbidden request to city by a user that is not admin
+    @Test
+    public void forbiddenRequestToCity(){
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("user", "pass123")
+                .getForEntity("http://localhost:" + port + "/city/Stockholm", ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Forbidden");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city/Stockholm");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 4: no auth request to city
+    @Test
+    public void noAuthRequestToCity(){
+      ResponseEntity<ErrorResponse> response = restTemplate
+              .getForEntity("http://localhost:" + port + "/city/Stockholm", ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Unauthorized");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city/Stockholm");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 6: Wrong password
+    @Test
+    public void wrongPassword(){
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "wrongpassword")
+                .getForEntity("http://localhost:" + port + "/city/Stockholm", ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Unauthorized");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city/Stockholm");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 }

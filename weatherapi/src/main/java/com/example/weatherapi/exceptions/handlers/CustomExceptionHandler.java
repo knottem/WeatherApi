@@ -8,11 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @ControllerAdvice
 public class CustomExceptionHandler {
@@ -37,9 +39,9 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
         logger.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(OffsetDateTime.now())
                 .error(ex.getMessage())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
                 .build());
     }
@@ -49,9 +51,9 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorResponse> handleCityNotFoundException(CityNotFoundException ex, WebRequest request) {
         logger.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(OffsetDateTime.now())
                 .error(ex.getMessage())
-                .status(HttpStatus.NOT_FOUND)
+                .status(HttpStatus.NOT_FOUND.value())
                 .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
                 .build());
     }

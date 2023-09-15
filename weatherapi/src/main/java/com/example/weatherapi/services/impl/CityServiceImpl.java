@@ -19,7 +19,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public City getCityByName(String name) {
-        return cityRepository.findByName(name)
+        return cityRepository.findByNameIgnoreCase(name)
                 .orElseThrow(() -> new CityNotFoundException("City not found: " + name));
     }
 }

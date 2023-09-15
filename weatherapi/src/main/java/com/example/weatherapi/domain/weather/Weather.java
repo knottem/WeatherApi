@@ -3,6 +3,7 @@ package com.example.weatherapi.domain.weather;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -34,13 +35,14 @@ public class Weather {
                 .precipitation(precipitation)
                 .build());
     }
-
+    
     @Data
-    private static class Information {
+    public static class Information {
         private final String Temperature = "Celsius";
-        private final String windSpeed = "m/s";
+        private final String WindSpeed = "m/s";
         private final String Precipitation = "mm/hr - kg/m2/h";
         private final String Time = "UTC";
+
     }
 
     @Data

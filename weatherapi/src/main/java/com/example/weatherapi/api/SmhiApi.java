@@ -7,6 +7,8 @@ import com.example.weatherapi.exceptions.exceptions.ApiConnectionException;
 import com.example.weatherapi.util.Cache;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,11 +20,18 @@ public class SmhiApi {
 
     ObjectMapper mapper;
 
+    private static final Logger logger = LoggerFactory.getLogger(SmhiApi.class);
+
     public SmhiApi() {
         this.mapper = JsonMapper.builder().findAndAddModules().build();
     }
     @Value("${cache.time.in.hours}")
     private int CACHE_TIME_IN_HOURS;
+
+    private boolean isTestMode = false;
+    public void setTestMode(boolean isTestMode) {
+        this.isTestMode = isTestMode;
+    }
 
     // Method that creates the url for the smhi api
     private URL getUrlSmhi(double lon, double lat) throws IOException {
@@ -38,9 +47,15 @@ public class SmhiApi {
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
+        WeatherSmhi weatherSmhi;
         try {
             //Gets the weather from the smhi api and maps it to a weatherSmhi object
-            WeatherSmhi weatherSmhi = mapper.readValue(getUrlSmhi(lon, lat), WeatherSmhi.class);
+            if(isTestMode){
+                logger.info("Using test data for SMHI");
+                weatherSmhi = mapper.readValue(getClass().getResourceAsStream("/smhiexample.json"), WeatherSmhi.class);
+            } else {
+                weatherSmhi = mapper.readValue(getUrlSmhi(lon, lat), WeatherSmhi.class);
+            }
             if(weatherSmhi == null) {
                 throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
             }

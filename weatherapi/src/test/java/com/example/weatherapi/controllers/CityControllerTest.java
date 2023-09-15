@@ -150,13 +150,14 @@ public class CityControllerTest {
     // Test Case 9: Add a new city with a name that is null
     @Test
     public void addCityWithNullName(){
-        City city = new City();
-        city.setName(null);
-        city.setLat(1.0);
-        city.setLon(1.0);
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/city", city, ErrorResponse.class);
+                .postForEntity("http://localhost:" + port + "/city", City
+                        .builder()
+                        .name(null)
+                        .lat(1.0)
+                        .lon(1.0)
+                        .build(), ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -170,13 +171,14 @@ public class CityControllerTest {
     // Test Case 10: Add a new city with a name that is empty
     @Test
     public void addCityWithEmptyName(){
-        City city = new City();
-        city.setName("");
-        city.setLat(1.0);
-        city.setLon(1.0);
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/city", city, ErrorResponse.class);
+                .postForEntity("http://localhost:" + port + "/city", City
+                        .builder()
+                        .name("")
+                        .lat(1.0)
+                        .lon(1.0)
+                        .build(), ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -190,13 +192,14 @@ public class CityControllerTest {
     // Test Case 11: Add a new city with a Lat that is wrong
     @Test
     public void addCityWithWrongLat(){
-        City city = new City();
-        city.setName("TestCity");
-        city.setLat(91.0);
-        city.setLon(1.0);
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/city", city, ErrorResponse.class);
+                .postForEntity("http://localhost:" + port + "/city", City
+                        .builder()
+                        .name("TestCity")
+                        .lon(1.0)
+                        .lat(91.0)
+                        .build(), ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -210,13 +213,14 @@ public class CityControllerTest {
     // Test Case 12: Add a new city with a Lon that is wrong
     @Test
     public void addCityWithWrongLon(){
-        City city = new City();
-        city.setName("TestCity");
-        city.setLat(1.0);
-        city.setLon(181.0);
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/city", city, ErrorResponse.class);
+                .postForEntity("http://localhost:" + port + "/city", City
+                        .builder()
+                        .name("TestCity")
+                        .lon(181.0)
+                        .lat(1.0)
+                        .build(), ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);

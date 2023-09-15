@@ -21,6 +21,7 @@ public class CacheTest {
         Cache.getInstance().clear();
     }
 
+    // Test Case 1: Check that the cache we get is the same as the one we put in
     @Test
     public void getWeatherFromCacheTest_Valid(){
         Weather weather = Weather.builder().build();
@@ -28,6 +29,7 @@ public class CacheTest {
         assertEquals(weather, Cache.getInstance().getWeatherFromCache("key", 1));
     }
 
+    // Test Case 2: Check that the cache is expired
     @Test
     public void getWeatherFromCacheTest_Expired(){
         Weather weather = Weather.builder().build();
@@ -35,16 +37,9 @@ public class CacheTest {
         assertNull(Cache.getInstance().getWeatherFromCache("key", -1));
     }
 
+    // Test Case 3: Check that the cache doesn't exist
     @Test
     public void getWeatherFromCacheTest_DoesntExist() {
         assertNull(Cache.getInstance().getWeatherFromCache("key", 1));
     }
-
-    @Test
-    public void putTest(){
-        Weather weather = Weather.builder().build();
-        Cache.getInstance().put("key", weather);
-        assertEquals(weather, Cache.getInstance().getWeatherFromCache("key", 1));
-    }
-
 }

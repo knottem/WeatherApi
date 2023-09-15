@@ -105,4 +105,25 @@ public class CityControllerTest {
         assertThat(response.getBody().getPath()).isEqualTo("/city/Stockholm");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
+
+
+    // Test Case 7: Add a new city
+    @Test
+    public void addCity(){
+        City city = new City();
+        city.setName("TestCity");
+        city.setLat(1.0);
+        city.setLon(1.0);
+        ResponseEntity<City> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/city", city, City.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getId()).isEqualTo(9L);
+        assertThat(response.getBody().getName()).isEqualTo("TestCity");
+        assertThat(response.getBody().getLat()).isEqualTo(1.0);
+        assertThat(response.getBody().getLon()).isEqualTo(1.0);
+    }
 }

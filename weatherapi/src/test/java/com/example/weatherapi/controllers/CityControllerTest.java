@@ -126,4 +126,24 @@ public class CityControllerTest {
         assertThat(response.getBody().getLat()).isEqualTo(1.0);
         assertThat(response.getBody().getLon()).isEqualTo(1.0);
     }
+
+    // Test Case 8: Add a new city with a name that already exists
+    @Test
+    public void addCityWithExistingName(){
+        City city = new City();
+        city.setName("Stockholm");
+        city.setLat(1.0);
+        city.setLon(1.0);
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/city", city, ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("City already exists: " + city.getName());
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
 }

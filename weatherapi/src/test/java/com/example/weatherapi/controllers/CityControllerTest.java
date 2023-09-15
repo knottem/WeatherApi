@@ -146,4 +146,85 @@ public class CityControllerTest {
         assertThat(response.getBody().getPath()).isEqualTo("/city");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
+
+    // Test Case 9: Add a new city with a name that is null
+    @Test
+    public void addCityWithNullName(){
+        City city = new City();
+        city.setName(null);
+        city.setLat(1.0);
+        city.setLon(1.0);
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/city", city, ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("City name cannot be null");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 10: Add a new city with a name that is empty
+    @Test
+    public void addCityWithEmptyName(){
+        City city = new City();
+        city.setName("");
+        city.setLat(1.0);
+        city.setLon(1.0);
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/city", city, ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("City name cannot be empty");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 11: Add a new city with a Lat that is wrong
+    @Test
+    public void addCityWithWrongLat(){
+        City city = new City();
+        city.setName("TestCity");
+        city.setLat(91.0);
+        city.setLon(1.0);
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/city", city, ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Latitude must be between -90 and 90");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 12: Add a new city with a Lon that is wrong
+    @Test
+    public void addCityWithWrongLon(){
+        City city = new City();
+        city.setName("TestCity");
+        city.setLat(1.0);
+        city.setLon(181.0);
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/city", city, ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Longitude must be between -180 and 180");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
 }

@@ -1,7 +1,7 @@
 # WeatherAPI
 
 ## Description
-This is a weather restapi that returns the weather of a city. For now, it only returns the temperature for the next few days. The api is built using spring boot and fetches from smhi's open api.
+This is a weather restapi that returns the weather of a cityEntity. For now, it only returns the temperature for the next few days. The api is built using spring boot and fetches from smhi's open api.
 
 This project is just a side hobby project that I use to learn more about spring boot and rest APIs.
 
@@ -52,11 +52,12 @@ docker-compose down --rmi local
 - [X] Add logging
 - [X] Add basic error handling
 - [X] Compare the results from the different APIs and return a merged result
+- [X] Use custom properties with h2 for tests
 
 ## TODO
-- [ ] Use custom properties with h2 for tests
+
 - [ ] Add GitHub actions for testing.
-- [ ] Add documentation to every class and method - PRIO 1
+- [ ] Add documentation to every class and method
 - [ ] Add more tests.
 - [ ] Change my basic caching to use spring boot caching (https://spring.io/guides/gs/caching/)
 - [ ] Add more weather APIs(Danish - DMI, Finnish - FMI)

@@ -1,12 +1,12 @@
 package com.example.weatherapi.repositories;
 
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.CityEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface CityRepository extends JpaRepository<City, String> {
-    Optional<City> findByNameIgnoreCase(String name);
+public interface CityRepository extends JpaRepository<CityEntity, String> {
+    Optional<CityEntity> findByNameIgnoreCase(String name);
 }

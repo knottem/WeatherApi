@@ -2,18 +2,17 @@ package com.example.weatherapi.exceptions.handlers;
 
 import com.example.weatherapi.domain.ErrorResponse;
 import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
+import com.example.weatherapi.exceptions.exceptions.InvalidCityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @ControllerAdvice
@@ -54,6 +53,17 @@ public class CustomExceptionHandler {
                 .timestamp(OffsetDateTime.now())
                 .error(ex.getMessage())
                 .status(HttpStatus.NOT_FOUND.value())
+                .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
+                .build());
+    }
+
+    @ExceptionHandler(InvalidCityException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCityException(InvalidCityException ex, WebRequest request) {
+        logger.error(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder()
+                .timestamp(OffsetDateTime.now())
+                .error(ex.getMessage())
+                .status(HttpStatus.BAD_REQUEST.value())
                 .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
                 .build());
     }

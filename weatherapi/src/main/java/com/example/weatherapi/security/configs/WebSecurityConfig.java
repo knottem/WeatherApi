@@ -5,6 +5,7 @@ import com.example.weatherapi.security.CustomUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -28,6 +29,9 @@ public class WebSecurityConfig {
         return new CustomAccessDeniedHandler();
     }
 
+    @Value("${app.test-mode}")
+    private boolean testMode;
+
     //Setting up security for the endpoints.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,6 +42,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/weather/**").hasAnyRole("ADMIN", "USER")
                 .requestMatchers("/city/**").hasRole("ADMIN")
+                .requestMatchers("/addCity/**").hasRole("ADMIN")
         );
 
         //Adding custom access denied handler to be able to log unauthorized access attempts.
@@ -48,8 +53,10 @@ public class WebSecurityConfig {
         //Using Basic Auth just for simplicity for now.
         http.httpBasic(withDefaults());
 
-        //Disable csrf if needed for testing, should never be disabled in production.
-        //http.csrf(AbstractHttpConfigurer::disable);
+        //If test mode is on, disable csrf.
+        if(testMode){
+            http.csrf(AbstractHttpConfigurer::disable);
+        }
 
         return http.build();
     }

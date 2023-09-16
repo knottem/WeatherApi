@@ -1,6 +1,6 @@
 package com.example.weatherapi.api;
 
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.CityEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.exceptions.exceptions.ApiConnectionException;
@@ -40,7 +40,7 @@ public class SmhiApi {
     }
 
     //The Smhi API doesn't need custom headers so this method is a lot simpler than the one in YrApi
-    public Weather getWeatherSmhi(double lon, double lat, City cityObject) {
+    public Weather getWeatherSmhi(double lon, double lat, CityEntity cityEntityObject) {
         String key = lon + "," + lat;
         //Checks if the weather is in the cache and if it is return it, else get the weather from the smhi api
         Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
@@ -61,12 +61,12 @@ public class SmhiApi {
             }
             //Creates a new weather object and adds the city name to the message if the cityObject is not null
             Weather weather;
-            if(cityObject == null){
+            if(cityEntityObject == null){
                 weather = Weather.builder()
                         .message("Weather for location Lon: " + lon + " and Lat: " + lat).build();
             } else {
                 weather = Weather.builder()
-                        .message("Weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat()).build();
+                        .message("Weather for " + cityEntityObject.getName() + " with location Lon: " + cityEntityObject.getLon() + " and Lat: " + cityEntityObject.getLat()).build();
             }
 
             //Adds the weather data from the weatherSmhi object to the weather object

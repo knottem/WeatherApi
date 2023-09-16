@@ -1,32 +1,28 @@
 package com.example.weatherapi.controllers;
 
 import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.CityEntity;
 import com.example.weatherapi.services.CityService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class CityController {
 
     private final CityService cityService;
 
-    public CityController(final CityService cityService){
+    public CityController(final CityService cityService) {
         this.cityService = cityService;
     }
 
     @GetMapping(path = "/city/{name}")
-    public City retrieveCity(@PathVariable final String name){
+    public CityEntity retrieveCity(@PathVariable final String name) {
         return cityService.getCityByName(name);
     }
 
-    //TODO - post method to add a city
-    /*
-    @PostMapping(path = "/city/{name}")
-    public City addCity(@PathVariable final String name){
-        return cityService.addCity(name);
+    @PostMapping(path = "/addCity")
+    public ResponseEntity<CityEntity> addCity(@RequestBody City city) {
+        return new ResponseEntity<>(cityService.addCity(city), HttpStatus.CREATED);
     }
-    
-     */
 }

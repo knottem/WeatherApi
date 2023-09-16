@@ -1,10 +1,10 @@
--- Create city table
+-- Create cityEntity table
 CREATE TABLE `city` (
-                        `id` bigint NOT NULL,
-                        `lat` double NOT NULL,
-                        `lon` double NOT NULL,
-                        `name` varchar(255) DEFAULT NULL,
-                        PRIMARY KEY (`id`)
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `lat` double NOT NULL,
+    `lon` double NOT NULL,
+    `name` varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 );
 
 -- Create auth table

@@ -2,7 +2,7 @@ package com.example.weatherapi.services.impl;
 
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.CityEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
@@ -29,21 +29,21 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public Weather getWeatherBySmhiCity(String city) {
-        City cityObject = cityService.getCityByName(city);
-        return smhiApi.getWeatherSmhi(cityObject.getLon(), cityObject.getLat(), cityObject);
+        CityEntity cityEntityObject = cityService.getCityByName(city);
+        return smhiApi.getWeatherSmhi(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
     }
 
     @Override
     public Weather getWeatherByYrCity(String city) {
-        City cityObject = cityService.getCityByName(city);
-        return yrApi.getWeatherYr(cityObject.getLon(), cityObject.getLat(), cityObject);
+        CityEntity cityEntityObject = cityService.getCityByName(city);
+        return yrApi.getWeatherYr(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
     }
 
     @Override
     public Weather getWeatherMerged(String city) {
-        City cityObject = cityService.getCityByName(city);
-        Weather weatherYr = yrApi.getWeatherYr(cityObject.getLon(), cityObject.getLat(), cityObject);
-        Weather weatherSmhi = smhiApi.getWeatherSmhi(cityObject.getLon(), cityObject.getLat(), cityObject);
+        CityEntity cityEntityObject = cityService.getCityByName(city);
+        Weather weatherYr = yrApi.getWeatherYr(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
+        Weather weatherSmhi = smhiApi.getWeatherSmhi(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
 
         Map<LocalDateTime, Weather.WeatherData> smhiWeatherData = weatherSmhi.getWeatherData();
         Map<LocalDateTime, Weather.WeatherData> yrWeatherData = weatherYr.getWeatherData();
@@ -67,7 +67,7 @@ public class WeatherServiceImpl implements WeatherService {
         }
 
         return Weather.builder()
-                .message("Merged weather for " + cityObject.getName() + " with location Lon: " + cityObject.getLon() + " and Lat: " + cityObject.getLat())
+                .message("Merged weather for " + cityEntityObject.getName() + " with location Lon: " + cityEntityObject.getLon() + " and Lat: " + cityEntityObject.getLat())
                 .weatherData(mergedWeatherData)
                 .build();
 

@@ -1,7 +1,7 @@
 # WeatherAPI
 
 ## Description
-This is a weather restapi that returns the weather of a cityEntity. For now, it only returns the temperature for the next few days. The api is built using spring boot and fetches from smhi's open api.
+This is a weather restapi that returns the weather of a city. For now, it only returns the temperature for the next few days. The api is built using spring boot and fetches from smhi's open api.
 
 This project is just a side hobby project that I use to learn more about spring boot and rest APIs.
 

@@ -1,10 +1,14 @@
 package com.example.weatherapi.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Auth {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,7 +18,7 @@ public class Auth {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private enum Role {
+    public enum Role {
         USER,
         ADMIN,
         SUPERUSER

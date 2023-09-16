@@ -1,4 +1,4 @@
-package com.example.weatherapi.domain;
+package com.example.weatherapi.domain.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -2,7 +2,7 @@ package com.example.weatherapi.services.impl;
 
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
-import com.example.weatherapi.domain.CityEntity;
+import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;

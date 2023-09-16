@@ -1,14 +1,14 @@
 package com.example.weatherapi.controllers;
 
-import com.example.weatherapi.domain.CityEntity;
+import com.example.weatherapi.domain.Auth;
+import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.ErrorResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.OffsetDateTime;
@@ -64,7 +64,7 @@ public class CityEntityControllerTest {
     public void addCity(){
         ResponseEntity<CityEntity> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/addCity", CityEntity
+                .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("TestCity")
                         .lat(1.0)
@@ -85,7 +85,7 @@ public class CityEntityControllerTest {
     public void addCityWithExistingName(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/addCity", CityEntity
+                .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("Stockholm")
                         .lat(1.0)
@@ -97,7 +97,7 @@ public class CityEntityControllerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("City already exists: Stockholm");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/addCity");
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -106,7 +106,7 @@ public class CityEntityControllerTest {
     public void addCityWithNullName(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/addCity", CityEntity
+                .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name(null)
                         .lat(1.0)
@@ -118,7 +118,7 @@ public class CityEntityControllerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/addCity");
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -127,7 +127,7 @@ public class CityEntityControllerTest {
     public void addCityWithEmptyName(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/addCity", CityEntity
+                .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("")
                         .lat(1.0)
@@ -139,7 +139,7 @@ public class CityEntityControllerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/addCity");
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -148,7 +148,7 @@ public class CityEntityControllerTest {
     public void addCityWithWrongLat(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/addCity", CityEntity
+                .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("TestCity")
                         .lon(1.0)
@@ -160,7 +160,7 @@ public class CityEntityControllerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("Invalid latitude value: 91.0, must be between -90 and 90");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/addCity");
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -169,7 +169,7 @@ public class CityEntityControllerTest {
     public void addCityWithWrongLon(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/addCity", CityEntity
+                .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("TestCity")
                         .lon(181.0)
@@ -181,7 +181,7 @@ public class CityEntityControllerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("Invalid longitude value: 181.0, must be between -180 and 180");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/addCity");
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -190,7 +190,7 @@ public class CityEntityControllerTest {
     public void addCityWithoutLon(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/addCity", CityEntity
+                .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("TestCity")
                         .lat(1.0)
@@ -201,7 +201,7 @@ public class CityEntityControllerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("Longitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/addCity");
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -210,7 +210,7 @@ public class CityEntityControllerTest {
     public void addCityWithoutLat(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/addCity", CityEntity
+                .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("TestCity")
                         .lon(1.0)
@@ -221,7 +221,7 @@ public class CityEntityControllerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("Latitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/addCity");
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -230,7 +230,7 @@ public class CityEntityControllerTest {
     public void addCityWithoutName(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/addCity", CityEntity
+                .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .lat(1.0)
                         .lon(1.0)
@@ -241,7 +241,7 @@ public class CityEntityControllerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/addCity");
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -250,7 +250,7 @@ public class CityEntityControllerTest {
     public void addCityWithoutNameLatLon(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .postForEntity("http://localhost:" + port + "/addCity", CityEntity
+                .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .build(), ErrorResponse.class);
 
@@ -259,7 +259,7 @@ public class CityEntityControllerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/addCity");
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -279,4 +279,83 @@ public class CityEntityControllerTest {
         assertThat(response.getBody().getLon()).isEqualTo(18.0686);
     }
 
+    // Test Case 14: Try to add a city without sending a body
+    @Test
+    public void addCityWithoutBody(){
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/city/addCity", null, ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError())
+                .isEqualTo("Unsupported Media Type: Content-Type 'application/x-www-form-urlencoded;charset=UTF-8' is not supported");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 15: Try to add a city with a wrong body type
+    @Test
+    public void addCityWithWrongContentType(){
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/city/addCity",
+                        new Auth(10,
+                                "test",
+                                "test",
+                                Auth.Role.USER), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError())
+                .isEqualTo("City name cannot be null or empty");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 16: Try to add a city with lon as a string
+    @Test
+    public void addCityWithLonAsString(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String requestJson = "{\"name\":\"TestCity\", \"lat\":\"1.0\", \"lon\":\"invalidLon\"}";
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/city/addCity",
+                        new HttpEntity<>(requestJson, headers), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError())
+                .isEqualTo("Request body is missing or not readable");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 17: Try to add a city with lat as a string
+    @Test
+    public void addCityWithLatAsString(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String requestJson = "{\"name\":\"TestCity\", \"lat\":\"invalidLat\", \"lon\":\"1.0\"}";
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/city/addCity",
+                        new HttpEntity<>(requestJson, headers), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError())
+                .isEqualTo("Request body is missing or not readable");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
 }

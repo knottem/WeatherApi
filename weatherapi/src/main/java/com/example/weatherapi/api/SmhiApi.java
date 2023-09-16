@@ -1,6 +1,6 @@
 package com.example.weatherapi.api;
 
-import com.example.weatherapi.domain.CityEntity;
+import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.exceptions.exceptions.ApiConnectionException;

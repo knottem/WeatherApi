@@ -1,10 +1,9 @@
 package com.example.weatherapi.services.impl;
 
-import com.example.weatherapi.domain.CityEntity;
+import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
 import com.example.weatherapi.exceptions.exceptions.InvalidCityException;
-import com.example.weatherapi.exceptions.handlers.CustomExceptionHandler;
 import com.example.weatherapi.repositories.CityRepository;
 import com.example.weatherapi.services.CityService;
 import org.slf4j.Logger;
@@ -34,6 +33,9 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public CityEntity addCity(City city) {
+        if(city == null) {
+            throw new InvalidCityException("City cannot be null");
+        }
         if(city.getName() == null || city.getName().isEmpty()) {
             throw new InvalidCityException("City name cannot be null or empty");
         }

@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -64,6 +66,28 @@ public class CustomExceptionHandler {
                 .timestamp(OffsetDateTime.now())
                 .error(ex.getMessage())
                 .status(HttpStatus.BAD_REQUEST.value())
+                .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
+                .build());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, WebRequest request) {
+        logger.error(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder()
+                .timestamp(OffsetDateTime.now())
+                .error("Request body is missing or not readable")
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
+                .build());
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex, WebRequest request) {
+        logger.error(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(ErrorResponse.builder()
+                .timestamp(OffsetDateTime.now())
+                .error("Unsupported Media Type: " + ex.getMessage())
+                .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
                 .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
                 .build());
     }

@@ -1,7 +1,7 @@
 package com.example.weatherapi.controllers;
 
 import com.example.weatherapi.domain.City;
-import com.example.weatherapi.domain.CityEntity;
+import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.services.CityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

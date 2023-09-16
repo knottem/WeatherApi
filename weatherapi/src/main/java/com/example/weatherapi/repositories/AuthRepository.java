@@ -1,6 +1,6 @@
 package com.example.weatherapi.repositories;
 
-import com.example.weatherapi.domain.Auth;
+import com.example.weatherapi.domain.entities.Auth;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

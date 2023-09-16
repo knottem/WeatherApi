@@ -1,6 +1,6 @@
 package com.example.weatherapi.controllers;
 
-import com.example.weatherapi.domain.Auth;
+import com.example.weatherapi.domain.entities.Auth;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.ErrorResponse;
 import org.junit.jupiter.api.Test;

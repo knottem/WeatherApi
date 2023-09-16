@@ -1,15 +1,15 @@
-package com.example.weatherapi.domain;
+package com.example.weatherapi.domain.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Auth {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

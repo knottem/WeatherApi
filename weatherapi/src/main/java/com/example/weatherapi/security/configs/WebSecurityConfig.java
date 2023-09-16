@@ -31,7 +31,7 @@ public class WebSecurityConfig {
         return new CustomAccessDeniedHandler();
     }
 
-    @Value("${app.test-mode}")
+    @Value("${app.test-mode:false}")
     private boolean testMode;
 
     //Setting up security for the endpoints.

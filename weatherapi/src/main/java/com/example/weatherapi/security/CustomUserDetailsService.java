@@ -1,6 +1,6 @@
 package com.example.weatherapi.security;
 
-import com.example.weatherapi.domain.Auth;
+import com.example.weatherapi.domain.entities.Auth;
 import com.example.weatherapi.repositories.AuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

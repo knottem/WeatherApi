@@ -14,6 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -37,12 +39,12 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         //Setting roles for endpoints, nothing should be accessible without a role,
-        // except for the error endpoint which is where the user is redirected to when they try to access a page they don't have access to.
+        //except for the error endpoint which is where the user is redirected to when they try to access a page they don't have access to.
+        //Order matters, so if we put /** for example first, it will override the other endpoints.
         http.authorizeHttpRequests(r -> r
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/weather/**").hasAnyRole("ADMIN", "USER")
                 .requestMatchers("/city/**").hasRole("ADMIN")
-                .requestMatchers("/addCity/**").hasRole("ADMIN")
         );
 
         //Adding custom access denied handler to be able to log unauthorized access attempts.

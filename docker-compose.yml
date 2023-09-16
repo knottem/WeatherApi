@@ -43,3 +43,8 @@ services:
       - CACHE_TIME_IN_HOURS=${CACHE_TIME_IN_HOURS}
       - DOMAIN=${DOMAIN}
       - GITHUB=${GITHUB}
+    volumes:
+      - gradle-cache:/gradle/home
+
+volumes:
+    gradle-cache:

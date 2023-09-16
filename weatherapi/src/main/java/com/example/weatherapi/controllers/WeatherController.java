@@ -31,4 +31,9 @@ public class WeatherController {
     public Weather getWeatherMerged(@PathVariable final String city){
         return weatherService.getWeatherMerged(city);
     }
+
+    @GetMapping(path = "/weather/hello")
+    public String getHello(){
+        return "Hello";
+    }
 }

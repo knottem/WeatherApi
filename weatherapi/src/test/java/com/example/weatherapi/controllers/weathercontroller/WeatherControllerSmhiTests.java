@@ -1,7 +1,6 @@
 package com.example.weatherapi.controllers.weathercontroller;
 
 import com.example.weatherapi.api.SmhiApi;
-import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.domain.weather.Weather;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,14 +30,9 @@ public class WeatherControllerSmhiTests {
     @Autowired
     private SmhiApi smhiApi;
 
-    @Autowired
-    private YrApi yrApi;
-
     @BeforeEach
     public void setupBeforeEach() {
         smhiApi.setTestMode(true);
-        yrApi.setTestMode(true);
-
     }
 
     // Test Case 1: Check that the response is correct
@@ -57,12 +51,12 @@ public class WeatherControllerSmhiTests {
         assertThat(response.getBody().getInformation().getPrecipitation()).isEqualTo("mm/hr - kg/m2/h");
         assertThat(response.getBody().getInformation().getTime()).isEqualTo("UTC");
 
-        assertThat(response.getBody().getWeatherData().get(LocalDateTime.parse("2023-09-15T19:00")))
+        assertThat(response.getBody().getWeatherData().get(LocalDateTime.parse("2023-09-17T10:00")))
                 .isEqualTo(Weather.WeatherData.builder()
-                        .temperature(15.7f)
-                        .weatherCode(6)
-                        .windSpeed(4.6f)
-                        .windDirection(198.0f)
+                        .temperature(14.6f)
+                        .weatherCode(2)
+                        .windSpeed(3.4f)
+                        .windDirection(347.0f)
                         .precipitation(0.0f)
                         .build());
     }
@@ -82,12 +76,13 @@ public class WeatherControllerSmhiTests {
         assertThat(response.getBody().getInformation().getWindSpeed()).isEqualTo("m/s");
         assertThat(response.getBody().getInformation().getPrecipitation()).isEqualTo("mm/hr - kg/m2/h");
         assertThat(response.getBody().getInformation().getTime()).isEqualTo("UTC");
-        assertThat(response.getBody().getWeatherData().get(LocalDateTime.parse("2023-09-15T19:00")))
+
+        assertThat(response.getBody().getWeatherData().get(LocalDateTime.parse("2023-09-17T10:00")))
                 .isEqualTo(Weather.WeatherData.builder()
-                        .temperature(15.7f)
-                        .weatherCode(6)
-                        .windSpeed(4.6f)
-                        .windDirection(198.0f)
+                        .temperature(14.6f)
+                        .weatherCode(2)
+                        .windSpeed(3.4f)
+                        .windDirection(347.0f)
                         .precipitation(0.0f)
                         .build());
     }

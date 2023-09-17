@@ -32,18 +32,16 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 }
 // Test logging - standardOut, started, passed, skipped, failed
-// standardOut - prints the standard(log) output of the test
-// started - prints the name of the test that started
-// passed - prints the name of the test that passed
-// skipped - prints the name of the test that was skipped
-// failed - prints the name of the test that failed
-// afterSuite - prints the results of the test
 tasks.named('test') {
 	useJUnitPlatform()
 	testLogging {
-		events "standardOut", "started", "passed", "skipped", "failed"
+		events "standardOut", // prints the standard(log) output of the test
+				"started", // prints the name of the test that started
+				"passed", // prints the name of the test that passed
+				"skipped", // prints the name of the test that was skipped
+				"failed" // prints the name of the test that failed
 	}
-	afterSuite { desc, result ->
+	afterSuite { desc, result -> // prints the results of the test
 		if (!desc.parent) { // will match the outermost suite
 			def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
 			def startItem = '|  ', endItem = '  |'

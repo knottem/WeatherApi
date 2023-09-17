@@ -16,7 +16,6 @@ public class WeatherController {
         this.weatherService = weatherService;
     }
 
-
     @GetMapping(path = "/weather/smhi/{city}")
     public Weather getWeatherByCity(@PathVariable final String city){
         return weatherService.getWeatherBySmhiCity(city);
@@ -32,8 +31,4 @@ public class WeatherController {
         return weatherService.getWeatherMerged(city);
     }
 
-    @GetMapping(path = "/weather/hello")
-    public String getHello(){
-        return "Hello";
-    }
 }

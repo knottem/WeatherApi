@@ -38,11 +38,11 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 	testLogging {
-		events	"started", // prints the name of the test that started
-				"passed", // prints the name of the test that passed
+		events 	"passed", // prints the name of the test that passed
 				"skipped", // prints the name of the test that was skipped
 				"failed" // prints the name of the test that failed
 				//"standardOut" // prints the standard(log) output of the test
+				//"started" // prints the name of the test that started
 	}
 	afterSuite { desc, result -> // prints the results of the test
 		if (!desc.parent) { // will match the outermost suite

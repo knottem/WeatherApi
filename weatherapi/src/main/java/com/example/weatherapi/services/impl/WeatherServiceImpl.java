@@ -90,7 +90,7 @@ public class WeatherServiceImpl implements WeatherService {
                 .weatherData(mergedWeatherData)
                 .build();
 
-        Cache.getInstance().put(city + "merged", mergedWeather);
+        Cache.getInstance().put(city + "_merged", mergedWeather);
         return mergedWeather;
     }
 

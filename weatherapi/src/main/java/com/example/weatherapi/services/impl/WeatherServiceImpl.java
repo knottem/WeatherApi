@@ -44,13 +44,12 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public Weather getWeatherMerged(String cityIn) {
-        String city = cityIn.toLowerCase();
-        Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(city + "_merged", CACHE_TIME_IN_HOURS);
+    public Weather getWeatherMerged(String city) {
+        CityEntity cityEntityObject = cityService.getCityByName(city);
+        Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(cityEntityObject.getName() + "_merged", CACHE_TIME_IN_HOURS);
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
-        CityEntity cityEntityObject = cityService.getCityByName(city);
         Weather weatherYr = yrApi.getWeatherYr(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
         Weather weatherSmhi = smhiApi.getWeatherSmhi(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
 
@@ -90,7 +89,7 @@ public class WeatherServiceImpl implements WeatherService {
                 .weatherData(mergedWeatherData)
                 .build();
 
-        Cache.getInstance().put(city + "_merged", mergedWeather);
+        Cache.getInstance().put(cityEntityObject.getName() + "_merged", mergedWeather);
         return mergedWeather;
     }
 

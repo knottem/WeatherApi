@@ -1,4 +1,4 @@
-package com.example.weatherapi.controllers;
+package com.example.weatherapi.controllers.weathercontroller;
 
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
@@ -15,13 +15,12 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class WeatherControllerTest {
+public class WeatherControllerSmhiTests {
 
     @LocalServerPort
     private int port;
@@ -44,7 +43,7 @@ public class WeatherControllerTest {
 
     // Test Case 1: Check that the response is correct
     @Test
-    public void getWeatherByCityTest_Valid() {
+    public void getWeatherByCitySmhiTest_Valid() {
         ResponseEntity<Weather> response = restTemplate
                 .withBasicAuth("user", "pass123")
                 .getForEntity("http://localhost:" + port + "/weather/smhi/Stockholm", Weather.class);

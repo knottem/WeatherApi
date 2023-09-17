@@ -50,6 +50,13 @@ tasks.named('test') {
 			def startItem = '|  ', endItem = '  |'
 			def repeatLength = startItem.length() + output.length() + endItem.length()
 			println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+
+			// Adding a link to the Gradle report if all the tests passed, since gradle already does this for failed tests
+			if (result.successfulTestCount == result.testCount) {
+				def reportFile = new File("${project.buildDir}/reports/tests/test/index.html")
+				def reportUri = reportFile.toURI().toString().replaceFirst("file:/", "file:///")
+				println("All tests passed, see the report at: ${reportUri}")
+			}
 		}
 	}
 }

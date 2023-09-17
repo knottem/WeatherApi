@@ -34,6 +34,7 @@ public class Cache {
             return entry.getWeather();
         }  else if(entry != null) {
             logger.info("Cache expired for key: " + key + ", fetching new data");
+            cache.remove(key);
         } else {
             logger.info("Cache doesn't exist for key: " + key + ", fetching new data");
         }

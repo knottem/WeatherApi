@@ -21,6 +21,9 @@ public class WeatherServiceImpl implements WeatherService {
     private final CityService cityService;
     private final SmhiApi smhiApi;
     private final YrApi yrApi;
+
+    @Value("${cache.time.in.hours}")
+    private int CACHE_TIME_IN_HOURS;
     @Autowired
     public WeatherServiceImpl(CityService cityService, SmhiApi smhiApi, YrApi yrApi) {
         this.cityService = cityService;
@@ -41,7 +44,12 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public Weather getWeatherMerged(String city) {
+    public Weather getWeatherMerged(String cityIn) {
+        String city = cityIn.toLowerCase();
+        Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(city + "_merged", CACHE_TIME_IN_HOURS);
+        if(weatherFromCache != null) {
+            return weatherFromCache;
+        }
         CityEntity cityEntityObject = cityService.getCityByName(city);
         Weather weatherYr = yrApi.getWeatherYr(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
         Weather weatherSmhi = smhiApi.getWeatherSmhi(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
@@ -77,11 +85,13 @@ public class WeatherServiceImpl implements WeatherService {
                 mergedWeatherData.put(key, yrData);
             }
         }
-
-        return Weather.builder()
+        Weather mergedWeather = Weather.builder()
                 .message("Merged weather for " + cityEntityObject.getName() + " with location Lon: " + cityEntityObject.getLon() + " and Lat: " + cityEntityObject.getLat())
                 .weatherData(mergedWeatherData)
                 .build();
+
+        Cache.getInstance().put(city + "merged", mergedWeather);
+        return mergedWeather;
     }
 
 }

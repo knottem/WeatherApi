@@ -1,6 +1,7 @@
-package com.example.weatherapi.util;
+package com.example.weatherapi;
 
 import com.example.weatherapi.domain.weather.Weather;
+import com.example.weatherapi.util.Cache;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

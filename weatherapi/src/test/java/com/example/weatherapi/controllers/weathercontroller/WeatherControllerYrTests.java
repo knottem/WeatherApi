@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
+import static com.example.weatherapi.util.WeatherTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -48,19 +49,8 @@ public class WeatherControllerYrTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage())
                 .isEqualTo("Weather for Stockholm with location Lon: 18.0686 and Lat: 59.3294");
-        assertThat(response.getBody().getInformation().getTemperature()).isEqualTo("Celsius");
-        assertThat(response.getBody().getInformation().getWindSpeed()).isEqualTo("m/s");
-        assertThat(response.getBody().getInformation().getPrecipitation()).isEqualTo("mm/hr - kg/m2/h");
-        assertThat(response.getBody().getInformation().getTime()).isEqualTo("UTC");
-
-        assertThat(response.getBody().getWeatherData().get(LocalDateTime.parse("2023-09-17T10:00")))
-                .isEqualTo(Weather.WeatherData.builder()
-                        .temperature(15.0f)
-                        .weatherCode(0)
-                        .windSpeed(3.6f)
-                        .windDirection(350.1f)
-                        .precipitation(0.0f)
-                        .build());
+        assertWeatherInformation(response.getBody());
+        assertWeatherDataYrStockholm(response.getBody());
     }
 
     // Test Case 2: Check case sensitivity
@@ -74,19 +64,8 @@ public class WeatherControllerYrTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage())
                 .isEqualTo("Weather for Stockholm with location Lon: 18.0686 and Lat: 59.3294");
-        assertThat(response.getBody().getInformation().getTemperature()).isEqualTo("Celsius");
-        assertThat(response.getBody().getInformation().getWindSpeed()).isEqualTo("m/s");
-        assertThat(response.getBody().getInformation().getPrecipitation()).isEqualTo("mm/hr - kg/m2/h");
-        assertThat(response.getBody().getInformation().getTime()).isEqualTo("UTC");
-
-        assertThat(response.getBody().getWeatherData().get(LocalDateTime.parse("2023-09-17T10:00")))
-                .isEqualTo(Weather.WeatherData.builder()
-                        .temperature(15.0f)
-                        .weatherCode(0)
-                        .windSpeed(3.6f)
-                        .windDirection(350.1f)
-                        .precipitation(0.0f)
-                        .build());
+        assertWeatherInformation(response.getBody());
+        assertWeatherDataYrStockholm(response.getBody());
     }
 
     // Test Case 3: Check that the response is correct with a city with unicode characters
@@ -100,19 +79,8 @@ public class WeatherControllerYrTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage())
                 .isEqualTo("Weather for Göteborg with location Lon: 11.9675 and Lat: 57.7075");
-        assertThat(response.getBody().getInformation().getTemperature()).isEqualTo("Celsius");
-        assertThat(response.getBody().getInformation().getWindSpeed()).isEqualTo("m/s");
-        assertThat(response.getBody().getInformation().getPrecipitation()).isEqualTo("mm/hr - kg/m2/h");
-        assertThat(response.getBody().getInformation().getTime()).isEqualTo("UTC");
-
-        assertThat(response.getBody().getWeatherData().get(LocalDateTime.parse("2023-09-17T15:00")))
-                .isEqualTo(Weather.WeatherData.builder()
-                        .temperature(19.7f)
-                        .weatherCode(0)
-                        .windSpeed(3.5f)
-                        .windDirection(84.9f)
-                        .precipitation(0.0f)
-                        .build());
+        assertWeatherInformation(response.getBody());
+        assertWeatherDataYrGothenburg(response.getBody());
     }
 
     // Test Case 4: Check that the response is correct if the city is not found

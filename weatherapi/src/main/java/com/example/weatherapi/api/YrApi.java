@@ -17,6 +17,7 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 //YrAPI class that handles all the communication with the yr api
 @Component
@@ -59,8 +60,10 @@ public class YrApi {
         try {
             WeatherYr weatherYr;
             if(isTestMode){
-                logger.info("Using test data for YR");
-                weatherYr = mapper.readValue(getClass().getResourceAsStream("/yrexample.json"), WeatherYr.class);
+                Map<String, String> cityMap = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class);
+                String cityName = cityEntityObject.getName().toLowerCase();
+                logger.info("Using test data for YR: " + cityName);
+                weatherYr = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/yr/" + cityMap.get(cityName)), WeatherYr.class);
             } else {
 
                 HttpClient httpClient = HttpClient.newBuilder()

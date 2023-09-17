@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
+
 //SmhiAPI class that handles all the communication with the smhi api
 @Component
 public class SmhiApi {
@@ -51,8 +53,10 @@ public class SmhiApi {
         try {
             //Gets the weather from the smhi api and maps it to a weatherSmhi object
             if(isTestMode){
-                logger.info("Using test data for SMHI");
-                weatherSmhi = mapper.readValue(getClass().getResourceAsStream("/smhiexample.json"), WeatherSmhi.class);
+                Map<String, String> cityMap = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class);
+                String cityName = cityEntityObject.getName().toLowerCase();
+                logger.info("Using test data for SMHI: " + cityName);
+                weatherSmhi = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/smhi/" + cityMap.get(cityName)), WeatherSmhi.class);
             } else {
                 weatherSmhi = mapper.readValue(getUrlSmhi(lon, lat), WeatherSmhi.class);
             }

@@ -52,7 +52,7 @@ tasks.named('test') {
 			println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
 
 			// Adding a link to the Gradle report if all the tests passed, since gradle already does this for failed tests
-			if (result.successfulTestCount == result.testCount) {
+			if (result.failedTestCount == 0) {
 				def reportFile = new File("${project.buildDir}/reports/tests/test/index.html")
 				def reportUri = reportFile.toURI().toString().replaceFirst("file:/", "file:///")
 				println("All tests passed, see the report at: ${reportUri}")

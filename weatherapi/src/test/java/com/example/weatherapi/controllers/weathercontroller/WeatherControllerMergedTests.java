@@ -4,7 +4,6 @@ import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.domain.ErrorResponse;
 import com.example.weatherapi.domain.weather.Weather;
-import com.example.weatherapi.util.WeatherTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -25,7 +25,7 @@ public class SmhiApiTests {
 
     // Test Case 1: Check that the getWeatherSmhi method returns the correct Weather object
     @Test
-    public void getWeatherSmhiTest_Valid() {
+    public void getWeatherSmhiTestStockholm_Valid() {
         // Arrange
         CityEntity city = new CityEntity(1L, "Stockholm", 59.3294, 18.0686);
         // Assert

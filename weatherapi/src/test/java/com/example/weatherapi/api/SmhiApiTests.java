@@ -1,6 +1,8 @@
 package com.example.weatherapi.api;
 
+import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.CityEntity;
+import com.example.weatherapi.util.CityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +36,9 @@ public class SmhiApiTests {
     @Test
     public void getWeatherSmhiTestGothenburg_Valid() {
         // Arrange
-        CityEntity city = new CityEntity(1L, "Göteborg", 57.7089, 11.9746);
+        City city = new City("Göteborg", 57.7089, 11.9746);
         // Assert
-        assertWeatherDataSmhiGothenburg(smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city));
+        assertWeatherDataSmhiGothenburg(smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), CityMapper.toEntity(city)));
     }
 
 }

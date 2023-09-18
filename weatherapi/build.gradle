@@ -30,19 +30,17 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.yaml:snakeyaml:2.2' // updated to 2.2 since spring boot uses older version which has a vulnerability
 }
 
 
 
-// Test logging - standardOut, started, passed, skipped, failed
+
 tasks.named('test') {
 	useJUnitPlatform()
 	testLogging {
-		events 	"passed", // prints the name of the test that passed
-				"skipped", // prints the name of the test that was skipped
-				"failed" // prints the name of the test that failed
-				//"standardOut" // prints the standard(log) output of the test
-				//"started" // prints the name of the test that started
+		// Test logging - standardOut, started, passed, skipped, failed
+		events "passed", "skipped", "failed"
 	}
 	afterSuite { desc, result -> // prints the results of the test
 		if (!desc.parent) { // will match the outermost suite
@@ -52,6 +50,7 @@ tasks.named('test') {
 			println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
 
 			// Adding a link to the Gradle report if all the tests passed, since gradle already does this for failed tests
+			// Having to format the file path to a URI to be able to open it in the browser and replace the file:/ with file:/// to make it work
 			if (result.failedTestCount == 0) {
 				def reportFile = new File("${project.buildDir}/reports/tests/test/index.html")
 				def reportUri = reportFile.toURI().toString().replaceFirst("file:/", "file:///")

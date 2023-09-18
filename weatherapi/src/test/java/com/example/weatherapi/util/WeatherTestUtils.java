@@ -59,7 +59,4 @@ public class WeatherTestUtils {
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T15:00")))
                 .isEqualTo(buildWeatherData(19.7f, 0, 3.5f, 84.9f, 0.0f));
     }
-
-
-
 }

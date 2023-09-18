@@ -54,7 +54,7 @@ public class WeatherControllerSmhiTests {
 
     // Test Case 2: Check case sensitivity
     @Test
-    public void getWeatherByCityTest_CaseSensitivity() {
+    public void getWeatherByCitySmhiTest_CaseSensitivity() {
         ResponseEntity<Weather> response = restTemplate
                 .withBasicAuth("user", "pass123")
                 .getForEntity("http://localhost:" + port + "/weather/smhi/StoCkHolm", Weather.class);

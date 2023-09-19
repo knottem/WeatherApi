@@ -40,6 +40,7 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests(r -> r
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/weather/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/city/all").hasAnyRole("ADMIN")
                 .requestMatchers("/city/**").hasRole("ADMIN")
         );
 

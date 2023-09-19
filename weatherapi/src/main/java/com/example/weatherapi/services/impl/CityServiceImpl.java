@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class CityServiceImpl implements CityService {
@@ -33,38 +33,20 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public CityEntity addCity(City city) {
-        if(city == null) {
-            throw new InvalidCityException("City cannot be null");
-        }
-        if(city.getName() == null || city.getName().isEmpty()) {
-            throw new InvalidCityException("City name cannot be null or empty");
-        }
-        if(city.getLon() == null) {
-            throw new InvalidCityException("Longitude cannot be null");
-        }
-        if(city.getLat() == null) {
-            throw new InvalidCityException("Latitude cannot be null");
-        }
-
-        if(city.getLon() < -180 || city.getLon() > 180) {
-            throw new InvalidCityException("Invalid longitude value: " + city.getLon() + ", must be between -180 and 180");
-        }
-
-        if(city.getLat() < -90 || city.getLat() > 90) {
-            throw new InvalidCityException("Invalid latitude value: " + city.getLat() + ", must be between -90 and 90");
-        }
-        
         if(cityRepository.findByNameIgnoreCase(city.getName()).isPresent()) {
             throw new InvalidCityException("City already exists: " + city.getName());
         }
-        CityEntity cityEntity = CityEntity.builder()
+        CityEntity citySaved = cityRepository.save(CityEntity.builder()
                 .name(city.getName())
                 .lon(city.getLon())
                 .lat(city.getLat())
-                .build();
-
-        CityEntity citySaved = cityRepository.save(cityEntity);
+                .build());
         logger.info("A new city has been created: {}", citySaved);
         return citySaved;
+    }
+
+    @Override
+    public List<CityEntity> getAllCities() {
+        return cityRepository.findAll();
     }
 }

@@ -3,6 +3,7 @@ package com.example.weatherapi.controllers;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.services.CityService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,12 @@ public class CityController {
     }
 
     @PostMapping(path = "/city/addCity")
-    public ResponseEntity<CityEntity> addCity(@RequestBody City city) {
+    public ResponseEntity<CityEntity> addCity(@Valid @RequestBody City city) {
         return new ResponseEntity<>(cityService.addCity(city), HttpStatus.CREATED);
+    }
+
+    @GetMapping(path = "/city/all")
+    public List<CityEntity> retrieveAllCities() {
+        return cityService.getAllCities();
     }
 }

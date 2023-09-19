@@ -14,6 +14,7 @@ import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -117,7 +118,7 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
+        assertThat(response.getBody().getError()).isEqualTo("Name: City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
@@ -138,7 +139,7 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
+        assertThat(response.getBody().getError()).isEqualTo("Name: City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
@@ -159,7 +160,7 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Invalid latitude value: 91.0, must be between -90 and 90");
+        assertThat(response.getBody().getError()).isEqualTo("Lat: Invalid value: 91.0, Latitude must be between -90 and 90");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
@@ -180,7 +181,7 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Invalid longitude value: 181.0, must be between -180 and 180");
+        assertThat(response.getBody().getError()).isEqualTo("Lon: Invalid value: 181.0, Longitude must be between -180 and 180");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
@@ -200,7 +201,7 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Longitude cannot be null");
+        assertThat(response.getBody().getError()).isEqualTo("Lon: Longitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
@@ -220,7 +221,7 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Latitude cannot be null");
+        assertThat(response.getBody().getError()).isEqualTo("Lat: Latitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
@@ -240,7 +241,7 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
+        assertThat(response.getBody().getError()).isEqualTo("Name: City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
@@ -258,7 +259,8 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
+        assertThat(response.getBody().getError())
+                .isEqualTo("Lat: Latitude cannot be null, Lon: Longitude cannot be null, Name: City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
@@ -312,7 +314,10 @@ public class CityEntityControllerTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError())
-                .isEqualTo("City name cannot be null or empty");
+                .isEqualTo(
+                        "Lat: Latitude cannot be null, " +
+                        "Lon: Longitude cannot be null, " +
+                        "Name: City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());

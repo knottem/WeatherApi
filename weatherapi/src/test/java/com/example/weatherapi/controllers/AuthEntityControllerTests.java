@@ -1,8 +1,11 @@
 package com.example.weatherapi.controllers;
 
 import com.example.weatherapi.domain.ErrorResponse;
-import com.example.weatherapi.domain.entities.Auth;
-import org.junit.jupiter.api.Disabled;
+import com.example.weatherapi.domain.UserRole;
+import com.example.weatherapi.domain.entities.AuthEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,8 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@Disabled // Disabled because we are writing tests before implementing the functionality
-public class AuthControllerTests {
+public class AuthEntityControllerTests {
 
     @LocalServerPort
     private int port;
@@ -32,42 +34,45 @@ public class AuthControllerTests {
     public void getAuthListByUserTest_Forbidden() {
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("user", "pass123")
-                .getForEntity("http://localhost:" + port + "/auth/list", ErrorResponse.class);
+                .getForEntity("http://localhost:" + port + "/auth/all", ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("Forbidden");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/auth/list");
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/all");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
-    // Test Case 2: OK request to auth by a user that is admin
+    // Test Case 2: List of all users
     @Test
-    public void getAuthListByAdminTest_OK() {
+    public void getAuthListByAdminTest_OK() throws JsonProcessingException {
         ResponseEntity<String> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .getForEntity("http://localhost:" + port + "/auth/list", String.class);
+                .getForEntity("http://localhost:" + port + "/auth/all", String.class);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonResponse = mapper.readTree(response.getBody());
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()).isEqualTo("List of users");
+        assertThat(jsonResponse.size()).isNotNull();
     }
 
     // Test Case 3: Retrieve specific user with role ADMIN
     @Test
     public void getAuthAdminByAdminTest_OK() {
-        ResponseEntity<Auth> response = restTemplate
+        ResponseEntity<AuthEntity> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .getForEntity("http://localhost:" + port + "/auth?user=admin", Auth.class);
+                .getForEntity("http://localhost:" + port + "/auth?username=admin", AuthEntity.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getUsername()).isEqualTo("admin");
-        assertThat(response.getBody().getRole()).isEqualTo(Auth.Role.ADMIN);
+        assertThat(response.getBody().getRole()).isEqualTo(UserRole.ADMIN);
         assertThat(response.getBody().getPassword()).isNull();
 
     }
@@ -75,16 +80,32 @@ public class AuthControllerTests {
     // Test Case 4: Retrieve specific user with role USER
     @Test
     public void getAuthUserByAdminTest_OK() {
-        ResponseEntity<Auth> response = restTemplate
+        ResponseEntity<AuthEntity> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .getForEntity("http://localhost:" + port + "/auth?user=user", Auth.class);
+                .getForEntity("http://localhost:" + port + "/auth?username=user", AuthEntity.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getUsername()).isEqualTo("user");
-        assertThat(response.getBody().getRole()).isEqualTo(Auth.Role.USER);
+        assertThat(response.getBody().getRole()).isEqualTo(UserRole.USER);
         assertThat(response.getBody().getPassword()).isNull();
+    }
+
+    // Test Case 5: Try to retrieve a user that does not exist
+    @Test
+    public void getAuthByAdminTest_NotFound() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .getForEntity("http://localhost:" + port + "/auth?username=doesnotexist", ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("User not found with username: doesnotexist");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
 }

@@ -17,7 +17,11 @@ public class CityMapperTests {
     @Test
     public void toEntityTest_Valid() {
         // Arrange
-        City city = new City("Stockholm", 59.3294, 18.0686);
+        City city = City.builder()
+                .name("Stockholm")
+                .lat(59.3294)
+                .lon(18.0686)
+                .build();
         CityEntity cityEntity = toEntity(city);
         // Assert
         assertThat(city.getName()).isEqualTo(cityEntity.getName());
@@ -29,7 +33,11 @@ public class CityMapperTests {
     @Test
     public void toModelTest_Valid() {
         // Arrange
-        CityEntity cityEntity = new CityEntity(1L, "Stockholm", 59.3294, 18.0686);
+        CityEntity cityEntity = CityEntity.builder()
+                .name("Stockholm")
+                .lat(59.3294)
+                .lon(18.0686)
+                .build();
         City city = CityMapper.toModel(cityEntity);
         // Assert
         assertThat(city.getName()).isEqualTo(cityEntity.getName());

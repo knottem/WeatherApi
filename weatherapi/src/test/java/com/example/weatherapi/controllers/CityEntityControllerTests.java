@@ -1,10 +1,9 @@
 package com.example.weatherapi.controllers;
 
-import com.example.weatherapi.domain.entities.Auth;
+import com.example.weatherapi.domain.UserRole;
+import com.example.weatherapi.domain.entities.AuthEntity;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.ErrorResponse;
-import com.example.weatherapi.repositories.CityRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +13,6 @@ import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -309,10 +307,10 @@ public class CityEntityControllerTests {
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
                 .postForEntity("http://localhost:" + port + "/city/addCity",
-                        new Auth(10,
+                        new AuthEntity(10,
                                 "test",
                                 "test",
-                                Auth.Role.USER), ErrorResponse.class);
+                                UserRole.USER), ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);

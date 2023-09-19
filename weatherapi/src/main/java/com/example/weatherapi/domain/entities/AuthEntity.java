@@ -1,5 +1,6 @@
 package com.example.weatherapi.domain.entities;
 
+import com.example.weatherapi.domain.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +10,9 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Auth {
+@Builder
+@Table(name = "auth")
+public class AuthEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,13 +24,7 @@ public class Auth {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
-
-    public enum Role {
-        USER,
-        ADMIN,
-        SUPERUSER
-    }
+    private UserRole role;
 }
 
 

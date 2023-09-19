@@ -3,6 +3,7 @@ package com.example.weatherapi.exceptions.handlers;
 import com.example.weatherapi.domain.ErrorResponse;
 import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
 import com.example.weatherapi.exceptions.exceptions.InvalidCityException;
+import com.example.weatherapi.exceptions.exceptions.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -37,11 +38,11 @@ public class CustomExceptionHandler {
                 .build());
     }
 
-
+    // Exception handler for all exceptions that are not handled by other exception handlers, might not want to show the exception message to the user
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
-        logger.error(ex.getMessage());
-        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);
+        logger.error("Unexpected error occurred", ex);
+        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please try again later.", request);
     }
 
     //added decode to get UTF_8, so you can see the proper path in errors
@@ -67,6 +68,12 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex, WebRequest request) {
         logger.error(ex.getMessage());
         return createErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported Media Type: " + ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+        logger.error(ex.getMessage());
+        return createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

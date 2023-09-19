@@ -42,6 +42,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/weather/**").hasAnyRole("ADMIN", "USER")
                 .requestMatchers("/city/all").hasAnyRole("ADMIN")
                 .requestMatchers("/city/**").hasRole("ADMIN")
+                .requestMatchers("/auth/**").hasRole("ADMIN")
         );
 
         //Adding custom access denied handler to be able to log unauthorized access attempts.

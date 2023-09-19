@@ -1,4 +1,4 @@
--- Create cityEntity table
+-- Create city table
 CREATE TABLE `city` (
     `id` bigint NOT NULL AUTO_INCREMENT,
     `lat` double NOT NULL,

@@ -1,6 +1,6 @@
 package com.example.weatherapi.security;
 
-import com.example.weatherapi.domain.entities.Auth;
+import com.example.weatherapi.domain.entities.AuthEntity;
 import com.example.weatherapi.repositories.AuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,10 +20,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Auth auth = authRepository.findByUsername(username)
+        AuthEntity authEntity = authRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        return new User(auth.getUsername(), auth.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + auth.getRole())));
+        return new User(authEntity.getUsername(), authEntity.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + authEntity.getRole())));
     }
 }

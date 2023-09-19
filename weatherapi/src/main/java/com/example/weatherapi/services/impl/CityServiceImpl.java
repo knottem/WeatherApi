@@ -53,15 +53,15 @@ public class CityServiceImpl implements CityService {
         if(city.getLat() < -90 || city.getLat() > 90) {
             throw new InvalidCityException("Invalid latitude value: " + city.getLat() + ", must be between -90 and 90");
         }
-
-        Optional<CityEntity> existingCity = cityRepository.findByNameIgnoreCase(city.getName());
-        if(existingCity.isPresent()) {
+        
+        if(cityRepository.findByNameIgnoreCase(city.getName()).isPresent()) {
             throw new InvalidCityException("City already exists: " + city.getName());
         }
-        CityEntity cityEntity = new CityEntity();
-        cityEntity.setName(city.getName());
-        cityEntity.setLon(city.getLon());
-        cityEntity.setLat(city.getLat());
+        CityEntity cityEntity = CityEntity.builder()
+                .name(city.getName())
+                .lon(city.getLon())
+                .lat(city.getLat())
+                .build();
 
         CityEntity citySaved = cityRepository.save(cityEntity);
         logger.info("A new city has been created: {}", citySaved);

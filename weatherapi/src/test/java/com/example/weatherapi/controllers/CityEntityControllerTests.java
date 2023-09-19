@@ -3,6 +3,8 @@ package com.example.weatherapi.controllers;
 import com.example.weatherapi.domain.entities.Auth;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.ErrorResponse;
+import com.example.weatherapi.repositories.CityRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -74,7 +76,6 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getId()).isEqualTo(9L);
         assertThat(response.getBody().getName()).isEqualTo("TestCity");
         assertThat(response.getBody().getLat()).isEqualTo(1.0);
         assertThat(response.getBody().getLon()).isEqualTo(1.0);

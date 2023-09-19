@@ -31,4 +31,5 @@ public class Auth {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+
 }

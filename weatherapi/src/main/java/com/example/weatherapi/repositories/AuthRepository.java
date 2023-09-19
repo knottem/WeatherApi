@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface AuthRepository extends JpaRepository<AuthEntity, Integer> {
     Optional<AuthEntity> findByUsername(String username);
+    Optional<AuthEntity> findByUsernameIgnoreCase(String username);
 }

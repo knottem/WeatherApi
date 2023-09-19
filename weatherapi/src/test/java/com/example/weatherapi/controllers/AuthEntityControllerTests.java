@@ -1,5 +1,6 @@
 package com.example.weatherapi.controllers;
 
+import com.example.weatherapi.domain.Auth;
 import com.example.weatherapi.domain.ErrorResponse;
 import com.example.weatherapi.domain.UserRole;
 import com.example.weatherapi.domain.entities.AuthEntity;
@@ -107,5 +108,264 @@ public class AuthEntityControllerTests {
         assertThat(response.getBody().getPath()).isEqualTo("/auth");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
+
+    // Test Case 6: Add a new user with Valid credentials
+    @Test
+    public void addAuthByAdminTest_OK() {
+        Auth auth = Auth.builder()
+                .username("testing")
+                .password("Pass1234")
+                .role(UserRole.USER)
+                .build();
+
+        ResponseEntity<Auth> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", auth, Auth.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getUsername()).isEqualTo("testing");
+        assertThat(response.getBody().getRole()).isEqualTo(UserRole.USER);
+        assertThat(response.getBody().getPassword()).isNull();
+    }
+
+    // Test Case 7: Add a new user with too short username
+    @Test
+    public void addAuthByAdminTest_BadRequestShortUsername() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .username("te")
+                        .password("Pass1234")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Invalid value: te, Username must be between 4 and 20 characters long");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 8: Add a new user with too long username
+    @Test
+    public void addAuthByAdminTest_BadRequestLongUsername() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .username("testtesttesttesttesttesttesttest")
+                        .password("Pass1234")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Invalid value: testtesttesttesttesttesttesttest, Username must be between 4 and 20 characters long");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 9: Add a new user with too short password
+    @Test
+    public void addAuthByAdminTest_BadRequestShortPassword() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .username("test")
+                        .password("Pass123")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Password must be between 8 and 30 characters long");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 10: Add a new user with too long password
+    @Test
+    public void addAuthByAdminTest_BadRequestLongPassword() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .username("test")
+                        .password("Pass123456789012345678901234567890")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Password must be between 8 and 30 characters long");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 11: Add a new user with no uppercase letter in password
+    @Test
+    public void addAuthByAdminTest_BadRequestNoUppercasePassword() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .username("test")
+                        .password("pass1234")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 12: Add a new user with no lowercase letter in password
+    @Test
+    public void addAuthByAdminTest_BadRequestNoLowercasePassword() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .username("test")
+                        .password("PASS1234")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 13: Add a new user with no digit in password
+    @Test
+    public void addAuthByAdminTest_BadRequestNoDigitPassword() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .username("test")
+                        .password("PassWord")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 14: Add a new user with no role
+    @Test
+    public void addAuthByAdminTest_BadRequestNoRole() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .username("test")
+                        .password("Pass1234")
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Role cannot be null");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 15: Add a new user with no username
+    @Test
+    public void addAuthByAdminTest_BadRequestNoUsername() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .password("Pass1234")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Username cannot be null or empty");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 16: Add a new user with no password
+    @Test
+    public void addAuthByAdminTest_BadRequestNoPassword() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .username("test")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("Password cannot be null or empty");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 17: Add a new user with username that already exists
+    @Test
+    public void addAuthByAdminTest_Conflict() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .username("admin")
+                        .password("Pass1234")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("User already exists: admin");
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 18: Add a new user with error in both username and password
+    @Test
+    public void addAuthByAdminTest_BadRequestBothUsernameAndPassword() {
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .postForEntity("http://localhost:" + port + "/auth/adduser", Auth.builder()
+                        .password("Pass123")
+                        .username("te")
+                        .role(UserRole.USER)
+                        .build(), ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/auth/adduser");
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getError()).isEqualTo("Password must be between 8 and 30 characters long, Invalid value: te, Username must be between 4 and 20 characters long");
+    }
+
 
 }

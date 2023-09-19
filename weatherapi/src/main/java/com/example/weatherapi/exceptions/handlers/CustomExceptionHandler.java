@@ -3,6 +3,7 @@ package com.example.weatherapi.exceptions.handlers;
 import com.example.weatherapi.domain.ErrorResponse;
 import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
 import com.example.weatherapi.exceptions.exceptions.InvalidCityException;
+import com.example.weatherapi.exceptions.exceptions.UserAlreadyExistsException;
 import com.example.weatherapi.exceptions.exceptions.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,28 +77,38 @@ public class CustomExceptionHandler {
         return createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);
     }
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex, WebRequest request) {
+        logger.error(ex.getMessage());
+        return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, WebRequest request) {
         logger.error(ex.getMessage());
 
         // Get all validation errors and join them into a single string sorted by alphabetical order of the field name,
         // so that the error messages are always in the same order
+        // only show the first error message for each field, so that the error messages are not too long
         String errors = ex.getBindingResult().getFieldErrors().stream()
-                .sorted(Comparator.comparing(FieldError::getField)
-                        .thenComparing(FieldError::getDefaultMessage))
-                .collect(Collectors.toCollection(LinkedHashSet::new))
-                .stream()
-                .map(error -> String.format("%s: %s%s",
-                        error.getField().substring(0, 1).toUpperCase() + error.getField().substring(1),
-                        formatRejectedValue(error.getRejectedValue()),
-                        error.getDefaultMessage()))
+                .collect(Collectors.groupingBy(FieldError::getField))
+                .values().stream()
+                .map(fieldErrors -> fieldErrors.stream().min(Comparator.comparing(FieldError::getDefaultMessage))
+                        .map(error -> formatRejectedValue(error) + error.getDefaultMessage())
+                        .orElse(""))
                 .collect(Collectors.joining(", "));
 
         return createErrorResponse(HttpStatus.BAD_REQUEST, errors, request);
     }
 
     // Helper method to format rejected value, if the rejected value is null or empty string, it will be ignored
-    private String formatRejectedValue(Object rejectedValue) {
+    // If the rejected value is password, it will be ignored as well
+    private String formatRejectedValue(FieldError error) {
+        if ("password".equalsIgnoreCase(error.getField())) {
+            return "";
+        }
+
+        Object rejectedValue = error.getRejectedValue();
         return rejectedValue != null && !(rejectedValue instanceof String && ((String) rejectedValue).trim().isEmpty())
                 ? "Invalid value: " + rejectedValue + ", "
                 : "";

@@ -1,11 +1,14 @@
 package com.example.weatherapi.controllers;
 
+import com.example.weatherapi.domain.Auth;
 import com.example.weatherapi.domain.entities.AuthEntity;
 import com.example.weatherapi.repositories.AuthRepository;
 import com.example.weatherapi.services.AuthService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +29,10 @@ public class AuthController {
     @GetMapping(path = "/auth")
     public AuthEntity retrieveUser(@RequestParam final String username) {
         return authService.getUser(username);
+    }
+
+    @PostMapping(path = "/auth/adduser")
+    public ResponseEntity<AuthEntity> addUser(@Valid @RequestBody Auth auth) {
+        return new ResponseEntity<>(authService.addUser(auth), HttpStatus.CREATED);
     }
 }

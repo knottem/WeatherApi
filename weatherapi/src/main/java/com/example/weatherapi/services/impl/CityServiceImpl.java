@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.example.weatherapi.util.CityMapper.toEntity;
+
 @Service
 public class CityServiceImpl implements CityService {
 
@@ -36,11 +38,7 @@ public class CityServiceImpl implements CityService {
         if(cityRepository.findByNameIgnoreCase(city.getName()).isPresent()) {
             throw new InvalidCityException("City already exists: " + city.getName());
         }
-        CityEntity citySaved = cityRepository.save(CityEntity.builder()
-                .name(city.getName())
-                .lon(city.getLon())
-                .lat(city.getLat())
-                .build());
+        CityEntity citySaved = cityRepository.save(toEntity(city));
         logger.info("A new city has been created: {}", citySaved);
         return citySaved;
     }

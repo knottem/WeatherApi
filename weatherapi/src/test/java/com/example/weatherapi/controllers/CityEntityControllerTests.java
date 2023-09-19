@@ -28,6 +28,10 @@ public class CityEntityControllerTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    //Valid numbers
+    private static final double validLat = 59.3294;
+    private static final double validLon = 18.0686;
+
     // Test Case 1: retrieve city that exists
     @Test
     public void retrieveCityTestValid() {
@@ -70,16 +74,16 @@ public class CityEntityControllerTests {
                 .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("TestCity")
-                        .lat(1.0)
-                        .lon(1.0)
+                        .lat(validLat)
+                        .lon(validLon)
                         .build(), CityEntity.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getName()).isEqualTo("TestCity");
-        assertThat(response.getBody().getLat()).isEqualTo(1.0);
-        assertThat(response.getBody().getLon()).isEqualTo(1.0);
+        assertThat(response.getBody().getLat()).isEqualTo(59.3294);
+        assertThat(response.getBody().getLon()).isEqualTo(18.0686);
     }
 
     // Test Case 4: Add a new city with a name that already exists
@@ -90,8 +94,8 @@ public class CityEntityControllerTests {
                 .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("Stockholm")
-                        .lat(1.0)
-                        .lon(1.0)
+                        .lat(validLat)
+                        .lon(validLon)
                         .build(), ErrorResponse.class);
 
         // Assert
@@ -111,8 +115,8 @@ public class CityEntityControllerTests {
                 .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name(null)
-                        .lat(1.0)
-                        .lon(1.0)
+                        .lat(validLat)
+                        .lon(validLon)
                         .build(), ErrorResponse.class);
 
         // Assert
@@ -132,8 +136,8 @@ public class CityEntityControllerTests {
                 .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("")
-                        .lat(1.0)
-                        .lon(1.0)
+                        .lat(validLat)
+                        .lon(validLon)
                         .build(), ErrorResponse.class);
 
         // Assert
@@ -153,14 +157,14 @@ public class CityEntityControllerTests {
                 .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("TestCity")
-                        .lon(1.0)
                         .lat(91.0)
+                        .lon(validLon)
                         .build(), ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Lat: Invalid value: 91.0, Latitude must be between -90 and 90");
+        assertThat(response.getBody().getError()).isEqualTo("Lat: Invalid value: 91.0, Latitude must be between 55 and 71");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
@@ -175,13 +179,13 @@ public class CityEntityControllerTests {
                         .builder()
                         .name("TestCity")
                         .lon(181.0)
-                        .lat(1.0)
+                        .lat(validLat)
                         .build(), ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Lon: Invalid value: 181.0, Longitude must be between -180 and 180");
+        assertThat(response.getBody().getError()).isEqualTo("Lon: Invalid value: 181.0, Longitude must be between 4 and 32");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
@@ -195,7 +199,7 @@ public class CityEntityControllerTests {
                 .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("TestCity")
-                        .lat(1.0)
+                        .lat(validLat)
                         .build(), ErrorResponse.class);
 
         // Assert
@@ -215,7 +219,7 @@ public class CityEntityControllerTests {
                 .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
                         .name("TestCity")
-                        .lon(1.0)
+                        .lon(validLon)
                         .build(), ErrorResponse.class);
 
         // Assert
@@ -234,8 +238,8 @@ public class CityEntityControllerTests {
                 .withBasicAuth("admin", "pass123")
                 .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity
                         .builder()
-                        .lat(1.0)
-                        .lon(1.0)
+                        .lat(validLat)
+                        .lon(validLon)
                         .build(), ErrorResponse.class);
 
         // Assert

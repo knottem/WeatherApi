@@ -61,7 +61,7 @@ public class CityEntityControllerTests {
 
     // Test Case 3: Add a new city
     @Test
-    public void addCity(){
+    public void addCity_Valid(){
         ResponseEntity<CityEntity> response = restTemplate
                 .withBasicAuth("admin", "pass123")
                 .postForEntity("http://localhost:" + port + "/city/addCity", CityEntity

@@ -42,9 +42,9 @@ services:
       - DOMAIN=${DOMAIN}
       - GITHUB=${GITHUB}
     volumes:
+      - .:/app
       - gradle-cache:/root/.gradle
       - gradle-wrapper-cache:/app/gradle/wrapper
-      - ./weatherapi:/app
 
 volumes:
   gradle-cache:

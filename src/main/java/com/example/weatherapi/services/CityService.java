@@ -10,4 +10,6 @@ public interface CityService {
     CityEntity addCity(City city);
 
     List<CityEntity> getAllCities();
+
+    String deleteCity(String name);
 }

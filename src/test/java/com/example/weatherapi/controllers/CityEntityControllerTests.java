@@ -375,7 +375,6 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().length).isBetween(8,12);
         assertThat(response.getBody()[0].getId()).isEqualTo(1L);
         assertThat(response.getBody()[0].getName()).isEqualTo("Stockholm");
         assertThat(response.getBody()[0].getLat()).isEqualTo(59.3294);
@@ -385,4 +384,104 @@ public class CityEntityControllerTests {
         assertThat(response.getBody()[1].getLat()).isEqualTo(57.7075);
         assertThat(response.getBody()[1].getLon()).isEqualTo(11.9675);
     }
+
+    // Test Case 19: Delete a city that exists
+    @Test
+    public void deleteCityTestValid() {
+        String cityToTest = "Norrköping";
+
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .exchange("http://localhost:" + port + "/city/delete/" + cityToTest, HttpMethod.DELETE, null, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).isEqualTo("City '" + cityToTest + "' deleted successfully");
+
+        // Assert that the city is deleted by trying to retrieve it
+        ResponseEntity<ErrorResponse> response2 = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .getForEntity("http://localhost:" + port + "/city/" + cityToTest, ErrorResponse.class);
+
+        assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response2.getBody()).isNotNull();
+        assertThat(response2.getBody().getError()).isEqualTo("City not found: " + cityToTest);
+        assertThat(response2.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response2.getBody().getPath()).isEqualTo("/city/" + cityToTest);
+        assertThat(response2.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+
+    }
+
+    // Test Case 20: Delete a city that doesn't exist
+    @Test
+    public void deleteCityTestFaulty() {
+        String cityToTest = "CITYNOTFOUND";
+
+        ResponseEntity<ErrorResponse> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .exchange("http://localhost:" + port + "/city/delete/" + cityToTest, HttpMethod.DELETE, null, ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getError()).isEqualTo("City not found: " + cityToTest);
+        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.getBody().getPath()).isEqualTo("/city/delete/" + cityToTest);
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 21: Delete a city with case-insensitive name
+    @Test
+    public void deleteCityTestValidCaseInsensitive() {
+         ResponseEntity<String> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .exchange("http://localhost:" + port + "/city/delete/UppSAla", HttpMethod.DELETE, null, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).isEqualTo("City 'Uppsala' deleted successfully");
+
+        // Assert that the city is deleted by trying to retrieve it
+        ResponseEntity<ErrorResponse> response2 = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .getForEntity("http://localhost:" + port + "/city/UppSAla" , ErrorResponse.class);
+
+        assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response2.getBody()).isNotNull();
+        assertThat(response2.getBody().getError()).isEqualTo("City not found: UppSAla");
+        assertThat(response2.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response2.getBody().getPath()).isEqualTo("/city/UppSAla" );
+        assertThat(response2.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 22: Delete a city with UTF-8 characters
+    @Test
+    public void deleteCityTestValidUTF8() {
+        String cityToTest = "Linköping";
+
+        ResponseEntity<String> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .exchange("http://localhost:" + port + "/city/delete/" + cityToTest, HttpMethod.DELETE, null, String.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).isEqualTo("City '" + cityToTest + "' deleted successfully");
+
+        // Assert that the city is deleted by trying to retrieve it
+        ResponseEntity<ErrorResponse> response2 = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .getForEntity("http://localhost:" + port + "/city/" + cityToTest, ErrorResponse.class);
+
+        assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response2.getBody()).isNotNull();
+        assertThat(response2.getBody().getError()).isEqualTo("City not found: " + cityToTest);
+        assertThat(response2.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response2.getBody().getPath()).isEqualTo("/city/" + cityToTest);
+        assertThat(response2.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+
 }

@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface CityRepository extends JpaRepository<CityEntity, String> {
     Optional<CityEntity> findByNameIgnoreCase(String name);
+    void deleteByNameIgnoreCase(String name);
 }

@@ -84,10 +84,17 @@ public class CityServiceImplTests {
     }
 
     //Test Case 6: get all cities
-    //Offset is used to allow for the possibility of more cities being added to the database during testing
     @Test
     public void getAllCitiesTest_OK() {
-        assertThat(cityService.getAllCities().size()).isCloseTo(10, within(2));
+        assertThat(cityService.getAllCities().get(0).getName()).isEqualTo("Stockholm");
+        assertThat(cityService.getAllCities().get(0).getLon()).isEqualTo(18.0686);
+        assertThat(cityService.getAllCities().get(0).getLat()).isEqualTo(59.3294);
+        assertThat(cityService.getAllCities().get(1).getName()).isEqualTo("Göteborg");
+        assertThat(cityService.getAllCities().get(1).getLon()).isEqualTo(11.9675);
+        assertThat(cityService.getAllCities().get(1).getLat()).isEqualTo(57.7075);
+
+        // check that the number of cities is atleast 10
+        assertThat(cityService.getAllCities().size()).isGreaterThan(10);
     }
 
 }

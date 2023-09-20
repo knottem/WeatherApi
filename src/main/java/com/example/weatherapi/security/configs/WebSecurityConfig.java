@@ -41,6 +41,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/weather/**").hasAnyRole("ADMIN", "USER")
                 .requestMatchers("/city/all").hasAnyRole("ADMIN")
+                .requestMatchers("/city/delete/**").hasRole("ADMIN") // Delete city should be admin only, since it's a destructive action.
                 .requestMatchers("/city/**").hasRole("ADMIN")
                 .requestMatchers("/auth/**").hasRole("ADMIN")
         );

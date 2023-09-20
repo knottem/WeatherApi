@@ -6,12 +6,14 @@ import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
 import com.example.weatherapi.exceptions.exceptions.InvalidCityException;
 import com.example.weatherapi.repositories.CityRepository;
 import com.example.weatherapi.services.CityService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.weatherapi.util.CityMapper.toEntity;
 
@@ -43,8 +45,29 @@ public class CityServiceImpl implements CityService {
         return citySaved;
     }
 
+    // Return all cities
     @Override
     public List<CityEntity> getAllCities() {
         return cityRepository.findAll();
+    }
+
+    // Delete a city by name
+    @Override
+    @Transactional
+    public String deleteCity(String name) {
+        // Try to get the city by name
+        Optional<CityEntity> cityOptional = cityRepository.findByNameIgnoreCase(name);
+
+        // If the city is not found, throw an exception
+        if(cityOptional.isEmpty()) {
+            throw new CityNotFoundException("City not found: " + name);
+        }
+
+        // Otherwise, delete the city and return a message with the deleted city's name
+        CityEntity deletedCity = cityOptional.get();
+        cityRepository.deleteByNameIgnoreCase(name);
+        logger.info("City has been deleted: {}", deletedCity);
+
+        return "City '" + deletedCity.getName() + "' deleted successfully";
     }
 }

@@ -434,34 +434,32 @@ public class CityEntityControllerTests {
     // Test Case 21: Delete a city with case-insensitive name
     @Test
     public void deleteCityTestValidCaseInsensitive() {
-        String cityToTest = "Uppsala";
-
-        ResponseEntity<String> response = restTemplate
+         ResponseEntity<String> response = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .exchange("http://localhost:" + port + "/city/delete/" + cityToTest, HttpMethod.DELETE, null, String.class);
+                .exchange("http://localhost:" + port + "/city/delete/UppSAla", HttpMethod.DELETE, null, String.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()).isEqualTo("City '" + cityToTest + "' deleted successfully");
+        assertThat(response.getBody()).isEqualTo("City 'Uppsala' deleted successfully");
 
         // Assert that the city is deleted by trying to retrieve it
         ResponseEntity<ErrorResponse> response2 = restTemplate
                 .withBasicAuth("admin", "pass123")
-                .getForEntity("http://localhost:" + port + "/city/" + cityToTest, ErrorResponse.class);
+                .getForEntity("http://localhost:" + port + "/city/UppSAla" , ErrorResponse.class);
 
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response2.getBody()).isNotNull();
-        assertThat(response2.getBody().getError()).isEqualTo("City not found: " + cityToTest);
+        assertThat(response2.getBody().getError()).isEqualTo("City not found: UppSAla");
         assertThat(response2.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response2.getBody().getPath()).isEqualTo("/city/" + cityToTest);
+        assertThat(response2.getBody().getPath()).isEqualTo("/city/UppSAla" );
         assertThat(response2.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
     // Test Case 22: Delete a city with UTF-8 characters
     @Test
     public void deleteCityTestValidUTF8() {
-        String cityToTest = "Örebro";
+        String cityToTest = "Linköping";
 
         ResponseEntity<String> response = restTemplate
                 .withBasicAuth("admin", "pass123")

@@ -5,9 +5,7 @@ networks:
 
 services:
   citydb:
-    build:
-      context: dbcity
-      dockerfile: Dockerfile
+    image: ghcr.io/knottem/weatherapi-db:1.0
     container_name: citydatabase
     networks:
       - api-network
@@ -18,13 +16,13 @@ services:
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_SCHEMA}
     healthcheck:
-      test: [ "CMD-SHELL", "exit" ]
+      test: ["CMD-SHELL", "mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_SCHEMA} -e 'SELECT 1'"]
       interval: 20s
-      timeout: 30s
+      timeout: 10s
+      retries: 3
 
   weatherapi:
     build:
-      context: weatherapi
       dockerfile: Dockerfile
     container_name: apiweather
     networks:
@@ -38,13 +36,16 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_SCHEMA=${DB_SCHEMA}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_HOST=citydatabase
+      - DB_PORT=3306
       - CACHE_TIME_IN_HOURS=${CACHE_TIME_IN_HOURS}
       - DOMAIN=${DOMAIN}
       - GITHUB=${GITHUB}
     volumes:
-      - gradle-cache:/gradle/home
+      - gradle-cache:/root/.gradle
+      - gradle-wrapper-cache:/app/gradle/wrapper
+      - ./weatherapi:/app
 
 volumes:
-    gradle-cache:
+  gradle-cache:
+  gradle-wrapper-cache:

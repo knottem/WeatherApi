@@ -35,14 +35,18 @@ This step is only if you want to run the program without docker compose. If you 
 docker build -t weatherapi .
 ``` 
 
-Then you just run the docker-compose file, be sure to be in the same directory as the docker-compose file, then run the following command (the -d flag is optional, it just makes it run in the background and not lock your terminal):
+Then you just run the docker-compose file, be sure to be in the same directory as the docker-compose file
+- the -d flag is optional, it just makes it run in the background and not lock your terminal
+- The --build flag is optional, it just makes sure that the docker image is up-to-date
+
+then you run the following command:
 ```bash
-docker-compose up -d
+docker-compose up --build -d
 ```
 
 To stop the program and remove the containers and images, run the following command:
 ```bash
-docker-compose down --rmi local
+docker-compose down
 ```
 
 

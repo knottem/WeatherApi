@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -362,5 +363,26 @@ public class CityEntityControllerTests {
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo("/city/addCity");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+    }
+
+    // Test Case 18: Get all cities
+    @Test
+    public void retrieveAllCitiesTestValid() {
+        ResponseEntity<CityEntity[]> response = restTemplate
+                .withBasicAuth("admin", "pass123")
+                .getForEntity("http://localhost:" + port + "/city/all", CityEntity[].class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().length).isBetween(8,12);
+        assertThat(response.getBody()[0].getId()).isEqualTo(1L);
+        assertThat(response.getBody()[0].getName()).isEqualTo("Stockholm");
+        assertThat(response.getBody()[0].getLat()).isEqualTo(59.3294);
+        assertThat(response.getBody()[0].getLon()).isEqualTo(18.0686);
+        assertThat(response.getBody()[1].getId()).isEqualTo(2L);
+        assertThat(response.getBody()[1].getName()).isEqualTo("Göteborg");
+        assertThat(response.getBody()[1].getLat()).isEqualTo(57.7075);
+        assertThat(response.getBody()[1].getLon()).isEqualTo(11.9675);
     }
 }

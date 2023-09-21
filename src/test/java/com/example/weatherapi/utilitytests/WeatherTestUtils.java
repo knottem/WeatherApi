@@ -1,4 +1,4 @@
-package com.example.weatherapi.util;
+package com.example.weatherapi.utilitytests;
 
 import com.example.weatherapi.domain.weather.Weather;
 import java.time.LocalDateTime;

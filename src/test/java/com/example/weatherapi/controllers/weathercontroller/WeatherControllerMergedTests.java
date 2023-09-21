@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-import static com.example.weatherapi.util.WeatherTestUtils.*;
+import static com.example.weatherapi.utilitytests.WeatherTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

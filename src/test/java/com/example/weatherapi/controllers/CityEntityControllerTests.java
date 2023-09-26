@@ -47,13 +47,10 @@ public class CityEntityControllerTests {
 
     private static org.hamcrest.Matcher<String> isWithinTimestampWindow(int seconds) {
         OffsetDateTime now = OffsetDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-        String lowerBound = formatter.format(now.minusSeconds(seconds));
-        String upperBound = formatter.format(now.plusSeconds(seconds));
         return allOf(
-                greaterThanOrEqualTo(lowerBound),
-                lessThanOrEqualTo(upperBound)
-        );
+                greaterThanOrEqualTo(ISO_OFFSET_DATE_TIME.format(now.minusSeconds(seconds))),
+                lessThanOrEqualTo(ISO_OFFSET_DATE_TIME.format(now.plusSeconds(seconds))
+        ));
     }
 
     // Test Case 1: retrieve city that exists
@@ -73,7 +70,7 @@ public class CityEntityControllerTests {
 
     // Test Case 2: retrieve city that doesn't exist
     @Test
-    public void shouldRetrieveCityDoesNotFound() {
+    public void shouldRetrieveCityNotFound() {
         given()
                 .when()
                 .get("/city/CITYNOTFOUND")

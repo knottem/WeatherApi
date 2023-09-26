@@ -4,18 +4,14 @@ import com.example.weatherapi.domain.Auth;
 import com.example.weatherapi.domain.UserRole;
 import com.example.weatherapi.domain.entities.AuthEntity;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 public class AuthMapperTests {
 
     // Test Case 1: Check that the toEntity method returns the correct AuthEntity object
     @Test
-    public void toEntityTest_Valid() {
+    public void shouldConvertAuthToAuthEntity() {
         // Arrange
         Auth auth = Auth.builder()
                 .username("test")
@@ -34,7 +30,7 @@ public class AuthMapperTests {
 
     // Test Case 2: Check that the toModel method returns the correct Auth object
     @Test
-    public void toModelTest_Valid() {
+    public void shouldConvertAuthEntityToAuth() {
         // Arrange
         AuthEntity authEntity = AuthEntity.builder()
                 .username("test")

@@ -85,8 +85,6 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, WebRequest request) {
-        logger.error(ex.getMessage());
-
         // Get all validation errors and join them into a single string sorted by alphabetical order of the field name,
         // so that the error messages are always in the same order
         // only show the first error message for each field, so that the error messages are not too long
@@ -97,6 +95,9 @@ public class CustomExceptionHandler {
                         .map(error -> formatRejectedValue(error) + error.getDefaultMessage())
                         .orElse(""))
                 .collect(Collectors.joining(", "));
+
+        // Log the validation errors
+        logger.error("Validation failed: {}", errors);
 
         return createErrorResponse(HttpStatus.BAD_REQUEST, errors, request);
     }

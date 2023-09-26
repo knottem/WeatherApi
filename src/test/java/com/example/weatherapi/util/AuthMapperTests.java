@@ -9,7 +9,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class AuthMapperTests {
 
-    // Test Case 1: Check that the toEntity method returns the correct AuthEntity object
+    // Test Case 1: Check that the AuthMapper is created
+    @Test
+    public void shouldCreateAuthMapper() {
+        assertThat(new AuthMapper()).isNotNull();
+    }
+
+    // Test Case 2: Check that the toEntity method returns the correct AuthEntity object
     @Test
     public void shouldConvertAuthToAuthEntity() {
         // Arrange
@@ -28,7 +34,7 @@ public class AuthMapperTests {
         assertThat(auth.getRole()).isEqualTo(authEntity.getRole());
     }
 
-    // Test Case 2: Check that the toModel method returns the correct Auth object
+    // Test Case 3: Check that the toModel method returns the correct Auth object
     @Test
     public void shouldConvertAuthEntityToAuth() {
         // Arrange

@@ -8,7 +8,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CityMapperTests {
 
-    // Test Case 1: Check that the toEntity method returns the correct CityEntity object
+
+    // Test Case 1: Check that the CityMapper is created
+    @Test
+    public void shouldCreateCityMapper() {
+        assertThat(new CityMapper()).isNotNull();
+    }
+
+    // Test Case 2: Check that the toEntity method returns the correct CityEntity object
     // Old name: toEntityTest_Valid
     @Test
     public void shouldConvertCityToCityEntity() {
@@ -25,7 +32,7 @@ public class CityMapperTests {
         assertThat(city.getLon()).isEqualTo(cityEntity.getLon());
     }
 
-    // Test Case 1: Check that the toModel method returns the correct City object
+    // Test Case 2: Check that the toModel method returns the correct City object
     // Old name: toModelTest_Valid
     @Test
     public void shouldConvertCityEntityToCity() {

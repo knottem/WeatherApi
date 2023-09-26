@@ -1,18 +1,16 @@
-package com.example.weatherapi;
+package com.example.weatherapi.util;
 
 import com.example.weatherapi.domain.weather.Weather;
-import com.example.weatherapi.util.Cache;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class CacheTest {
 
-    @AfterEach
+    // Clear the cache before each test
+    @BeforeEach
     public void tearDown(){
         Cache.getInstance().clear();
     }

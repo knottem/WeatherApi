@@ -2,9 +2,9 @@ name: Java Gradle Testing on Dev Branch
 
 on:
   push:
-    branches: [ "devBranch" ]
+    branches: [ "dev" ]
   pull_request:
-    branches: [ "devBranch" ]
+    branches: [ "dev" ]
 
 permissions:
   contents: read

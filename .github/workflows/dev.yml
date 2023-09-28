@@ -1,4 +1,4 @@
-name: Java gradle testing on development branch
+name: Java Gradle Testing on Dev Branch
 
 on:
   push:

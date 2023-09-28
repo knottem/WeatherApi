@@ -1,19 +1,17 @@
-name: Java gradle testing on development branch
+name: Java Gradle Testing on Dev Branch
 
 on:
   push:
-    branches: [ "devBranch" ]
+    branches: [ "dev" ]
   pull_request:
-    branches: [ "devBranch" ]
+    branches: [ "dev" ]
 
 permissions:
   contents: read
 
 jobs:
-  build:
-
+  testing:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -21,9 +19,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-
     - name: Grant execute permissions for gradlew
       run: chmod +x gradlew
-
     - name: Test With Gradle
       run: ./gradlew test

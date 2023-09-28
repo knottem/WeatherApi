@@ -41,7 +41,7 @@ public class LoginWeatherTests {
     }
     // Test Case 1: OK request to weather by a user with no admin rights
     @Test
-    public void okRequestToWeatherUser(){
+    public void shouldReturnOkStatusForUser(){
         ResponseEntity<Weather> response = restTemplate
                 .withBasicAuth("user", "pass123")
                 .getForEntity("http://localhost:" + port + "/weather/smhi/Stockholm", Weather.class);
@@ -52,7 +52,7 @@ public class LoginWeatherTests {
 
     // Test Case 2: OK request to weather by a user that is admin
     @Test
-    public void okRequestToWeatherAdmin(){
+    public void shouldReturnOkStatusForAdmin(){
         ResponseEntity<Weather> response = restTemplate
                 .withBasicAuth("admin", "pass123")
                 .getForEntity("http://localhost:" + port + "/weather/smhi/Stockholm", Weather.class);
@@ -63,7 +63,7 @@ public class LoginWeatherTests {
 
     // Test Case 3: Unauthorized request to weather by a user that doesn't exist
     @Test
-    public void unauthorizedRequestNoUserExist(){
+    public void shouldReturnUnauthorizedForNonExistentUser(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("noExist", "pass")
                 .getForEntity("http://localhost:" + port + "/weather/smhi/Stockholm", ErrorResponse.class);
@@ -79,7 +79,7 @@ public class LoginWeatherTests {
 
     // Test Case 4: Unauthorized request to weather by a user with wrong password
     @Test
-    public void unauthorizedRequestWrongPasswordUser(){
+    public void shouldReturnUnauthorizedForUserWithWrongPassword(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("user", "wrongpassword")
                 .getForEntity("http://localhost:" + port + "/weather/smhi/Stockholm", ErrorResponse.class);
@@ -95,7 +95,7 @@ public class LoginWeatherTests {
 
     // Test Case 4: Unauthorized request to weather by an admin with wrong password
     @Test
-    public void unauthorizedRequestWrongPasswordAdmin(){
+    public void shouldReturnUnauthorizedForAdminWithWrongPassword(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "wrongpassword")
                 .getForEntity("http://localhost:" + port + "/weather/smhi/Stockholm", ErrorResponse.class);
@@ -111,7 +111,7 @@ public class LoginWeatherTests {
 
     // Test Case 5: No auth request to weather
     @Test
-    public void noAuthRequestToWeather(){
+    public void shouldReturnUnauthorizedForNoAuthRequest(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .getForEntity("http://localhost:" + port + "/weather/smhi/Stockholm", ErrorResponse.class);
 
@@ -126,7 +126,7 @@ public class LoginWeatherTests {
 
     // Test Case 6: Empty username
     @Test
-    public void emptyUsernameRequest(){
+    public void shouldReturnUnauthorizedForEmptyUsername(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("", "pass123")
                 .getForEntity("http://localhost:" + port + "/weather/smhi/Stockholm", ErrorResponse.class);
@@ -143,7 +143,7 @@ public class LoginWeatherTests {
 
     // Test Case 7: Empty password
     @Test
-    public void emptyPasswordRequest(){
+    public void shouldReturnUnauthorizedForEmptyPassword(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("user", "")
                 .getForEntity("http://localhost:" + port + "/weather/smhi/Stockholm", ErrorResponse.class);

@@ -29,7 +29,7 @@ public class AuthMapperTests {
         AuthEntity authEntity = AuthMapper.toEntity(auth);
 
         // Assert
-        assertThat(auth.getUsername()).isEqualTo(authEntity.getUsername());
+        assertThat(auth.getUsername()).isEqualTo(authEntity.getUsername() + "test");
         assertThat(auth.getPassword()).isEqualTo(authEntity.getPassword());
         assertThat(auth.getRole()).isEqualTo(authEntity.getRole());
     }

@@ -63,6 +63,16 @@ tasks.named('test') {
 	finalizedBy jacocoTestReport // report is generated after tests run
 }
 
+tasks.register('testFast', Test) {
+	useJUnitPlatform {
+		failFast = true
+	}
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+
 jacocoTestReport {
 	dependsOn test // tests are run before generating the report
 	reports {

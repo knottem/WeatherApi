@@ -4,6 +4,10 @@ import com.example.weatherapi.domain.UserRole;
 import com.example.weatherapi.domain.entities.AuthEntity;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.ErrorResponse;
+import io.restassured.RestAssured;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,8 +17,12 @@ import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
+import static io.restassured.RestAssured.given;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -30,38 +38,50 @@ public class CityEntityControllerTests {
     private static final double validLat = 59.3294;
     private static final double validLon = 18.0686;
 
+    @BeforeEach
+    public void setUp() {
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = port;
+        RestAssured.authentication = RestAssured.basic("admin", "pass123");
+    }
+
+    private static org.hamcrest.Matcher<String> isWithinTimestampWindow(int seconds) {
+        OffsetDateTime now = OffsetDateTime.now();
+        return allOf(
+                greaterThanOrEqualTo(ISO_OFFSET_DATE_TIME.format(now.minusSeconds(seconds))),
+                lessThanOrEqualTo(ISO_OFFSET_DATE_TIME.format(now.plusSeconds(seconds))
+        ));
+    }
+
     // Test Case 1: retrieve city that exists
     @Test
-    public void retrieveCityTestValid() {
-        ResponseEntity<CityEntity> response = restTemplate
-                .withBasicAuth("admin", "pass123")
-                .getForEntity("http://localhost:" + port + "/city/Stockholm", CityEntity.class);
-
-        // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getId()).isEqualTo(1L);
-        assertThat(response.getBody().getName()).isEqualTo("Stockholm");
-        assertThat(response.getBody().getLat()).isEqualTo(59.3294);
-        assertThat(response.getBody().getLon()).isEqualTo(18.0686);
+    public void shouldRetrieveValidCityInformation() {
+        given()
+                .when()
+                .get("/city/Stockholm")
+                .then()
+                .statusCode(200)
+                .assertThat()
+                .body("id", equalTo(1))
+                .body("name", equalTo("Stockholm"))
+                .body("lat", equalTo(59.3294f))
+                .body("lon", equalTo(18.0686f));
     }
 
     // Test Case 2: retrieve city that doesn't exist
     @Test
-    public void retrieveCityTestFaulty() {
-        String cityToTest = "CITYNOTFOUND";
+    public void shouldRetrieveCityNotFound() {
+        given()
+                .when()
+                .get("/city/CITYNOTFOUND")
+                .then()
+                .statusCode(404)
+                .assertThat()
+                .body("error", equalTo("City not found: CITYNOTFOUND"))
+                .body("status", equalTo(404))
+                .body("path", equalTo("/city/CITYNOTFOUND"))
+                .body("timestamp", isWithinTimestampWindow(5));
 
-        ResponseEntity<ErrorResponse> response = restTemplate
-                .withBasicAuth("admin", "pass123")
-                .getForEntity("http://localhost:" + port + "/city/" + cityToTest, ErrorResponse.class);
-
-        // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("City not found: " + cityToTest);
-        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/city/" + cityToTest);
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
     // Test Case 3: Add a new city

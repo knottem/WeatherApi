@@ -24,7 +24,7 @@ public class CityServiceImplTests {
 
     // Test Case 1: Get city by name
     @Test
-    public void getCityByNameTest_OK() {
+    public void shouldReturnCityByName() {
         CityEntity city = cityService.getCityByName("stockholm");
         assertThat(city.getId()).isEqualTo(1L);
         assertThat(city.getName()).isEqualTo("Stockholm");
@@ -34,7 +34,7 @@ public class CityServiceImplTests {
 
     // Test Case 2: Try to get city by name that does not exist
     @Test
-    public void getCityByNameTest_NotFound() {
+    public void shouldThrowExceptionWhenCityNameNotFound() {
         // Assert that the exception is thrown
         CityNotFoundException exception = assertThrows(CityNotFoundException.class, () -> {
             cityService.getCityByName("notfound");
@@ -45,7 +45,7 @@ public class CityServiceImplTests {
 
     //Test Case 3: Try to get city by name that is null
     @Test
-    public void getCityByNameTest_Null() {
+    public void shouldThrowExceptionWhenCityNameIsNull() {
         // Assert that the exception is thrown
         CityNotFoundException exception = assertThrows(CityNotFoundException.class, () -> {
             cityService.getCityByName(null);
@@ -56,7 +56,7 @@ public class CityServiceImplTests {
 
     //Test Case 4: add city with valid values
     @Test
-    public void addCityTest_OK() {
+    public void shouldAddCityWithValidValues() {
         CityEntity addedCity = cityService.addCity(City.builder()
                 .name("TestCity2")
                 .lon(18.0686)
@@ -70,7 +70,7 @@ public class CityServiceImplTests {
 
     //Test Case 5: add city with existing name
     @Test
-    public void addCityTest_ExistingName() {
+    public void shouldThrowExceptionWhenAddingCityWithExistingName() {
         // Assert that the exception is thrown
         InvalidCityException exception = assertThrows(InvalidCityException.class, () -> {
             cityService.addCity(City.builder()
@@ -85,7 +85,7 @@ public class CityServiceImplTests {
 
     //Test Case 6: get all cities
     @Test
-    public void getAllCitiesTest_OK() {
+    public void shouldReturnAllCities() {
         assertThat(cityService.getAllCities().get(0).getName()).isEqualTo("Stockholm");
         assertThat(cityService.getAllCities().get(0).getLon()).isEqualTo(18.0686);
         assertThat(cityService.getAllCities().get(0).getLat()).isEqualTo(59.3294);

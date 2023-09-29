@@ -26,6 +26,7 @@ jobs:
 
   build-and-publish:
     needs: test
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

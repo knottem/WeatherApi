@@ -1,4 +1,4 @@
-name: Java Gradle Testing on Main Branch
+name: Java Gradle Testing and publishing package
 
 on:
   push:

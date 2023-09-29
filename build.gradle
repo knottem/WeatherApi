@@ -36,8 +36,11 @@ dependencies {
 	testImplementation 'io.rest-assured:rest-assured:5.3.2' // added for integration testing instead of using TestRestTemplate
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+test {
+	useJUnitPlatform{
+		failFast = true
+	}
+
 	testLogging {
 		// Test logging - standardOut, started, passed, skipped, failed
 		events "passed", "skipped", "failed"
@@ -63,6 +66,7 @@ tasks.named('test') {
 	finalizedBy jacocoTestReport // report is generated after tests run
 }
 
+
 jacocoTestReport {
 	dependsOn test // tests are run before generating the report
 	reports {
@@ -72,4 +76,8 @@ jacocoTestReport {
 
 bootJar {
 	archiveFileName = "${archiveBaseName.get()}.${archiveExtension.get()}"
+}
+
+jar {
+	enabled = false
 }

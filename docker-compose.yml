@@ -22,8 +22,7 @@ services:
       retries: 3
 
   weatherapi:
-    build:
-      dockerfile: Dockerfile
+    image: ghcr.io/knottem/weatherapi:dev-latest
     container_name: apiweather
     networks:
       - api-network
@@ -41,11 +40,3 @@ services:
       - CACHE_TIME_IN_HOURS=${CACHE_TIME_IN_HOURS}
       - DOMAIN=${DOMAIN}
       - GITHUB=${GITHUB}
-    volumes:
-      - .:/app
-      - gradle-cache:/root/.gradle
-      - gradle-wrapper-cache:/app/gradle/wrapper
-
-volumes:
-  gradle-cache:
-  gradle-wrapper-cache:

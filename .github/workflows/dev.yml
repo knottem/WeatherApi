@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  testing:
+  testing-and-building:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -31,8 +31,9 @@ jobs:
           name: app-jar
           path: build/libs/*.jar
 
-  build-and-publish:
-    needs: testing
+  publish:
+    needs: testing-and-building
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -52,7 +53,7 @@ jobs:
           docker build -t ghcr.io/${{ env.REPO_NAME }}:dev-latest .
 
       - name: Log in to GHCR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}

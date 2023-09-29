@@ -30,23 +30,19 @@ CACHE_TIME_IN_HOURS=3
 DOMAIN=https://example.com
 GITHUB=https://github.com/yourusername
 ```
-This step is only if you want to run the program without docker compose. If you want to run it with docker compose, skip this step and go to the next one.
-```bash
-docker build -t weatherapi .
-``` 
 
 Then you just run the docker-compose file, be sure to be in the same directory as the docker-compose file
 - the -d flag is optional, it just makes it run in the background and not lock your terminal
-- The --build flag is optional, it just makes sure that the docker image is up-to-date
 
 then you run the following command:
 ```bash
-docker-compose up --build -d
+docker-compose up -d
 ```
 
-To stop the program and remove the containers and images, run the following command:
+To stop the program and remove the containers, run the following command:
+- the "--rmi all" flag is optional, it just removes the images as well, not just the containers
 ```bash
-docker-compose down
+docker-compose down --rmi all
 ```
 
 

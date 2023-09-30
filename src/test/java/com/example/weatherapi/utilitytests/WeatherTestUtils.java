@@ -4,9 +4,20 @@ import com.example.weatherapi.domain.weather.Weather;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * This class contains helper methods for the Weather tests.
+ * It includes methods for building weather data, and asserting that the weather data is correct.
+ * <p>
+ * @author Erik Wallenius
+ * @see <a href="https://github.com/knottem/WeatherApi">Repository Link</a>
+ */
 public class WeatherTestUtils {
 
-    // Helper method to build weather data
+    /**
+     * Builds a WeatherData object with the given parameters.
+     * @return a WeatherData object constructed with the given weather attributes
+     */
     public static Weather.WeatherData buildWeatherData(float temperature, int weatherCode, float windSpeed, float windDirection, float precipitation) {
         return Weather.WeatherData.builder()
                 .temperature(temperature)
@@ -17,7 +28,10 @@ public class WeatherTestUtils {
                 .build();
     }
 
-    // Helper method to assert that the information part is always the same
+    /**
+     * Asserts that the information part of the Weather object is always the same.
+     * @param weather the Weather object to be tested
+     */
     public static void assertWeatherInformation(Weather weather) {
         assertThat(weather.getInformation().getTemperature()).isEqualTo("Celsius");
         assertThat(weather.getInformation().getWindSpeed()).isEqualTo("m/s");
@@ -25,36 +39,56 @@ public class WeatherTestUtils {
         assertThat(weather.getInformation().getTime()).isEqualTo("UTC");
     }
 
-    // Helper method to assert that the merged weather data is always the same for stockholm
+    /**
+     * Asserts that the merged weather data for Stockholm is always the same.
+     * @param weather the Weather object to be tested
+     */
     public static void assertWeatherDataMergedStockholm(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T10:00")))
                 .isEqualTo(buildWeatherData(14.8f, 2, 3.5f, 348.55f, 0.0f));
     }
-    // Helper method to assert that the weather data is always the same for stockholm from smhi
+
+    /**
+     * Asserts that the weather data for Stockholm from SMHI is always the same.
+     * @param weather the Weather object to be tested
+     */
     public static void assertWeatherDataSmhiStockholm(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T10:00")))
                 .isEqualTo(buildWeatherData(14.6f, 2, 3.4f, 347.0f, 0.0f));
     }
 
-    // Helper method to assert that the weather data is always the same for stockholm from yr
+
+    /**
+     * Asserts that the weather data for Stockholm from YR is always the same.
+     * @param weather the Weather object to be tested
+     */
     public static void assertWeatherDataYrStockholm(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T10:00")))
                 .isEqualTo(buildWeatherData(15.0f, 0, 3.6f, 350.1f, 0.0f));
     }
 
-    // Helper method to assert that the merged weather data is always the same for gothenburg
+    /**
+     * Asserts that the merged weather data for Gothenburg is always the same.
+     * @param weather the Weather object to be tested
+     */
     public static void assertWeatherDataMergedGothenburg(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T15:00")))
                 .isEqualTo(buildWeatherData(19.75f, 4, 3.8f, 80.95f, 0.0f));
     }
 
-    // Helper method to assert that the weather data is always the same for gothenburg from smhi
+    /**
+     * Asserts that the weather data for Gothenburg from SMHI is always the same.
+     * @param weather the Weather object to be tested
+     */
     public static void assertWeatherDataSmhiGothenburg(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T15:00")))
                 .isEqualTo(buildWeatherData(19.8f, 4, 4.1f, 77.0f, 0.0f));
     }
 
-    // Helper method to assert that the weather data is always the same for gothenburg from yr
+    /**
+     * Asserts that the weather data for Gothenburg from YR is always the same.
+     * @param weather the Weather object to be tested
+     */
     public static void assertWeatherDataYrGothenburg(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T15:00")))
                 .isEqualTo(buildWeatherData(19.7f, 0, 3.5f, 84.9f, 0.0f));

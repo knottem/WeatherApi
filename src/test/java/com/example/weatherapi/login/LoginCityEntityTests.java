@@ -14,6 +14,14 @@ import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * This class contains tests for the login functionality of the CityController.
+ * <p>
+ * Each test is annotated with {@code @Test}, which lets JUnit know to run the method as a test case.
+ *
+ *  @author Erik Wallenius
+ *  @see <a href="https://github.com/knottem/WeatherApi">Repository Link</a>
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class LoginCityEntityTests {
@@ -23,10 +31,12 @@ public class LoginCityEntityTests {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
-    // Test Case 1: forbidden request to city by a user that is not admin
+    /**
+     * Test Case 1: forbidden request to city by a user that is not admin<br>
+     * Asserts that the response is correct and that the user is not admin
+     */
     @Test
-    public void forbiddenRequestToCity(){
+    public void shouldReturnForbiddenStatusForUser(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("user", "pass123")
                 .getForEntity("http://localhost:" + port + "/city/Stockholm", ErrorResponse.class);
@@ -40,9 +50,12 @@ public class LoginCityEntityTests {
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
-    // Test Case 2: no auth request to city
+    /**
+     * Test Case 2: unauthorized request to city by a user that is not logged in<br>
+     * Asserts that the response is correct and that the user is not logged in
+     */
     @Test
-    public void noAuthRequestToCity(){
+    public void shouldReturnUnauthorizedStatusForNoAuth(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .getForEntity("http://localhost:" + port + "/city/Stockholm", ErrorResponse.class);
 
@@ -55,9 +68,13 @@ public class LoginCityEntityTests {
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
-    // Test Case 3: Wrong password
+    /**
+     * Test Case 3: unauthorized request to city by a user with wrong password<br>
+     * Asserts that the response is correct and that the user is not logged in
+     * shouldReturnUnauthorizedStatusForWrongPassword
+     */
     @Test
-    public void wrongPassword(){
+    public void shouldReturnUnauthorizedStatusForWrongPassword(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "wrongpassword")
                 .getForEntity("http://localhost:" + port + "/city/Stockholm", ErrorResponse.class);

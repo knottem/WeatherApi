@@ -1,17 +1,14 @@
 name: Java Gradle Testing and Publishing on Dev Branch
 
-#on:
-#  push:
-#    branches: [ "dev" ]
-#  pull_request:
-#    branches: [ "dev" ]
+on:
+  pull_request:
+    branches: [ "dev" ]
 
 permissions:
   contents: read
 
 jobs:
   testing-and-building:
-    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,7 +18,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v2.8.1
       - name: Execute Gradle build
         run: ./gradlew build
       - name: Upload JAR as artifact
@@ -31,7 +28,6 @@ jobs:
           path: build/libs/*.jar
 
   publish:
-    if: github.ref == 'refs/heads/dev'
     needs: testing-and-building
     permissions: write-all
     runs-on: ubuntu-latest

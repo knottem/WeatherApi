@@ -1,5 +1,6 @@
 package com.example.weatherapi.api;
 
+import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
@@ -50,7 +51,7 @@ public class YrApi {
 
     // The YR API requires a custom User-Agent header, otherwise it will return 403 Forbidden. So we need both our domain and contact info which is provided by the application.properties file.
     //TODO: Add support for weathercodes
-    public Weather getWeatherYr(double lon, double lat, CityEntity cityEntityObject) {
+    public Weather getWeatherYr(double lon, double lat, City city) {
         String key = lon + "," + lat + ",yr";
         // Checks if the weather is in the cache, if it is it returns it
         Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
@@ -61,7 +62,7 @@ public class YrApi {
             WeatherYr weatherYr;
             if(isTestMode){
                 Map<String, String> cityMap = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class);
-                String cityName = cityEntityObject.getName().toLowerCase();
+                String cityName = city.getName().toLowerCase();
                 logger.info("Using test data for YR: " + cityName);
                 weatherYr = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/yr/" + cityMap.get(cityName)), WeatherYr.class);
             } else {
@@ -89,12 +90,12 @@ public class YrApi {
             }
             // Creates a new weather object and adds the location and message to it
             Weather weather;
-            if(cityEntityObject == null){
+            if(city == null){
                 weather = Weather.builder()
                         .message("Weather for location Lon: " + lon + " and Lat: " + lat).build();
             } else {
                 weather = Weather.builder()
-                        .message("Weather for " + cityEntityObject.getName() + " with location Lon: " + cityEntityObject.getLon() + " and Lat: " + cityEntityObject.getLat()).build();
+                        .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat()).build();
             }
             //just setting the weatherCode to 0 for now since I haven't added support for it yet, since it returns a String not an Integer
             //Adds the weather to the weather object

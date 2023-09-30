@@ -1,5 +1,6 @@
 package com.example.weatherapi.api;
 
+import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.CityEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ public class YrApiTests {
     @Test
     public void getWeatherYrTestStockholm_Valid() {
         // Arrange
-        CityEntity city = new CityEntity(1L, "Stockholm", 59.3294, 18.0686);
+        City city = new City("Stockholm", 59.3294, 18.0686);
         // Assert
         assertWeatherDataYrStockholm(yrApi.getWeatherYr(city.getLon(), city.getLat(), city));
     }
@@ -34,7 +35,7 @@ public class YrApiTests {
     @Test
     public void getWeatherYrTestGothenburg_Valid() {
         // Arrange
-        CityEntity city = new CityEntity(1L, "Göteborg", 57.7089, 11.9746);
+        City city = new City("Göteborg", 57.7089, 11.9746);
         // Assert
         assertWeatherDataYrGothenburg(yrApi.getWeatherYr(city.getLon(), city.getLat(), city));
     }

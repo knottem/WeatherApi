@@ -28,6 +28,10 @@ public class Cache {
     }
 
     public Weather getWeatherFromCache(String key, int cacheTimeInHours) {
+        if(cacheTimeInHours < 0) {
+            logger.warn("Cache time in hours is negative, setting it to default value of 3 hour");
+            cacheTimeInHours = 3;
+        }
         WeatherCache entry = cache.get(key);
         if(entry != null && entry.isValid(cacheTimeInHours)) {
             logger.info("Cache hit for key: " + key + ", returning cached data");

@@ -43,28 +43,31 @@ public class CacheTest {
     }
 
     /**
-     * Test Case 2: Check that the cache is expired after the cacheTimeInHours has passed.
+     * Test Case 2: Check that the cache doesn't accept negative cacheTimeInHours and sets it to default value.
      * <p>
      * Arrange: A Weather object is created and put in the cache.<br>
-     * Act: The Weather object is retrieved from the cache with a negative cacheTimeInHours.<br>
-     * Assert: The Weather object retrieved from the cache is null.
+     * Act: A Weather object is retrieved from the cache.<br>
+     * Assert: The Weather object retrieved from the cache is the same as the one we put in.
      */
+
     @Test
-    public void shouldDetectExpiredWeatherInCache(){
+    public void shouldHandleNegativeCacheTimeInHours() {
         Weather weather = Weather.builder().build();
         Cache.getInstance().put("key", weather);
-        assertNull(Cache.getInstance().getWeatherFromCache("key", -1));
+        assertEquals(weather, Cache.getInstance().getWeatherFromCache("key", -1));
     }
 
     /**
      * Test Case 3: Check that the cache does not contain any Weather objects and returns null.
      * <p>
-     * Arrange: The cache is cleared.<br>
-     * Act: A Weather object is retrieved from the cache.<br>
+     * Arrange: No Weather objects are put in the cache.<br>
+     * Act: A Weather object is attempted to be retrieved from the cache.<br>
      * Assert: The Weather object retrieved from the cache is null.
      */
     @Test
     public void shouldHandleNonExistentWeatherInCache() {
         assertNull(Cache.getInstance().getWeatherFromCache("key", 1));
     }
+
+
 }

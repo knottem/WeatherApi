@@ -17,7 +17,8 @@ DB_PASSWORD= # The password of your database
 CACHE_TIME_IN_HOURS= # The time in hours that the cache should be valid
 DOMAIN= # The domain of the api, used for yr api, can be ip address as well, 
         # just needs to be a valid url that the program will be running on
-GITHUB= # The github link to this project, used for yr api
+GITHUB= # Your github username, email or whatever you want to use to identify yourself, 
+        # needed for the yr api
 ```
 Here's an example of a .env file:
 ```bash
@@ -53,15 +54,15 @@ docker-compose down --rmi all
 - [X] Add basic error handling
 - [X] Compare the results from the different APIs and return a merged result
 - [X] Use custom properties with h2 for tests
+- [X] Add GitHub actions for testing.
 
 ## TODO
 
-- [ ] Add GitHub actions for testing.
+
 - [ ] Add documentation to every class and method
 - [ ] Add more tests.
 - [ ] Change my basic caching to use spring boot caching (https://spring.io/guides/gs/caching/)
 - [ ] Add more weather APIs(Danish - DMI, Finnish - FMI)
-- [ ] Make use of more from each API instead of just the temperature
 - [ ] Add more endpoints
 - [ ] Clean up the code, make it more readable and remove unused code.
 

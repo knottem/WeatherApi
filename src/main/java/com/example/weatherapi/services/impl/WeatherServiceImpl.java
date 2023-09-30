@@ -2,6 +2,7 @@ package com.example.weatherapi.services.impl;
 
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
+import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.services.CityService;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static com.example.weatherapi.util.CityMapper.toModel;
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
@@ -32,26 +35,26 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public Weather getWeatherBySmhiCity(String city) {
-        CityEntity cityEntityObject = cityService.getCityByName(city);
-        return smhiApi.getWeatherSmhi(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
+    public Weather getWeatherBySmhiCity(String cityName) {
+        City city = toModel(cityService.getCityByName(cityName));
+        return smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city);
     }
 
     @Override
-    public Weather getWeatherByYrCity(String city) {
-        CityEntity cityEntityObject = cityService.getCityByName(city);
-        return yrApi.getWeatherYr(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
+    public Weather getWeatherByYrCity(String cityName) {
+        City city = toModel(cityService.getCityByName(cityName));
+        return yrApi.getWeatherYr(city.getLon(), city.getLat(), city);
     }
 
     @Override
-    public Weather getWeatherMerged(String city) {
-        CityEntity cityEntityObject = cityService.getCityByName(city);
-        Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(cityEntityObject.getName() + "_merged", CACHE_TIME_IN_HOURS);
+    public Weather getWeatherMerged(String cityName) {
+        City city = toModel(cityService.getCityByName(cityName));
+        Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(city.getName() + "_merged", CACHE_TIME_IN_HOURS);
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
-        Weather weatherYr = yrApi.getWeatherYr(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
-        Weather weatherSmhi = smhiApi.getWeatherSmhi(cityEntityObject.getLon(), cityEntityObject.getLat(), cityEntityObject);
+        Weather weatherYr = yrApi.getWeatherYr(city.getLon(), city.getLat(), city);
+        Weather weatherSmhi = smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city);
 
         Map<LocalDateTime, Weather.WeatherData> smhiWeatherData = weatherSmhi.getWeatherData();
         Map<LocalDateTime, Weather.WeatherData> yrWeatherData = weatherYr.getWeatherData();
@@ -85,11 +88,11 @@ public class WeatherServiceImpl implements WeatherService {
             }
         }
         Weather mergedWeather = Weather.builder()
-                .message("Merged weather for " + cityEntityObject.getName() + " with location Lon: " + cityEntityObject.getLon() + " and Lat: " + cityEntityObject.getLat())
+                .message("Merged weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
                 .weatherData(mergedWeatherData)
                 .build();
 
-        Cache.getInstance().put(cityEntityObject.getName() + "_merged", mergedWeather);
+        Cache.getInstance().put(city.getName() + "_merged", mergedWeather);
         return mergedWeather;
     }
 

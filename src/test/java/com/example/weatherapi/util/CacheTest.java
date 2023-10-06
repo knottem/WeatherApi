@@ -2,6 +2,7 @@ package com.example.weatherapi.util;
 
 import com.example.weatherapi.domain.weather.Weather;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 *  @author Erik Wallenius
 *  @see <a href="https://github.com/knottem/WeatherApi">Repository Link</a>
 */
+@Tag("unit")
 public class CacheTest {
 
 

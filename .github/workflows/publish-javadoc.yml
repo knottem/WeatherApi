@@ -1,20 +1,24 @@
 name: Deploy Javadoc
 
 on:
-  push:
-    branches: [ "dev" ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "main" ]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Check if PR is from 'dev' branch
+        run: |
+          if [[ "${{ github.event.pull_request.head.ref }}" != "dev" ]]; then
+            echo "Error: You can only merge from the 'dev' branch into 'main'."
+            exit 1
+          fi
       - name: Deploy JavaDoc 🚀
         uses: MathieuSoysal/Javadoc-publisher.yml@v2.4.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           javadoc-branch: javadoc
           java-version: 17
-          target-folder: build/docs/javadoc
+          target-folder: build/docs
           project: gradle

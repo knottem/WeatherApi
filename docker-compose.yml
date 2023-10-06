@@ -22,7 +22,7 @@ services:
       retries: 3
 
   weatherapi:
-    image: ghcr.io/knottem/weatherapi:dev
+    image: ghcr.io/knottem/weatherapi:latest
     container_name: apiweather
     networks:
       - api-network

@@ -20,7 +20,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2.8.1
       - name: Execute Unit Tests
-        run: ./gradlew test
+        run: ./gradlew testUnit
 
   test-integration-dev:
     runs-on: ubuntu-latest

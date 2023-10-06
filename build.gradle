@@ -67,6 +67,37 @@ test {
 	finalizedBy jacocoTestReport // report is generated after tests run
 }
 
+tasks.register("testIntegration", Test) {
+	useJUnitPlatform {
+		failFast = true
+		includeTags("integration")
+	}
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+tasks.register("testSystem", Test) {
+	useJUnitPlatform {
+		failFast = true
+		includeTags("system")
+	}
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+tasks.register("testUnit", Test) {
+	useJUnitPlatform {
+		failFast = true
+		includeTags("unit")
+	}
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+
+}
+
 
 jacocoTestReport {
 	dependsOn test // tests are run before generating the report
@@ -84,7 +115,6 @@ jar {
 }
 
 publishing {
-
 	repositories {
 		maven {
 			name = "GitHubPackages"

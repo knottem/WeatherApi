@@ -2,10 +2,12 @@ package com.example.weatherapi.util;
 
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.CityEntity;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Tag("unit")
 public class CityMapperTests {
 
 

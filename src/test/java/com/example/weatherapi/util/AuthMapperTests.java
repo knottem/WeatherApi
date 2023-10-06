@@ -3,6 +3,7 @@ package com.example.weatherapi.util;
 import com.example.weatherapi.domain.Auth;
 import com.example.weatherapi.domain.UserRole;
 import com.example.weatherapi.domain.entities.AuthEntity;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -18,6 +19,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
  *  @author Erik Wallenius
  *  @see <a href="https://github.com/knottem/WeatherApi">Repository Link</a>
  */
+
+@Tag("unit")
 public class AuthMapperTests {
 
     /**

@@ -1,7 +1,4 @@
 version: "3.9"
-networks:
-  api-network:
-    driver: bridge
 
 services:
   citydb:
@@ -32,11 +29,15 @@ services:
       citydb:
         condition: service_healthy
     environment:
+      - DB_HOST=citydb
+      - DB_PORT=3306
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_SCHEMA=${DB_SCHEMA}
-      - DB_HOST=citydatabase
-      - DB_PORT=3306
       - CACHE_TIME_IN_HOURS=${CACHE_TIME_IN_HOURS}
       - DOMAIN=${DOMAIN}
       - GITHUB=${GITHUB}
+
+networks:
+  api-network:
+    driver: bridge

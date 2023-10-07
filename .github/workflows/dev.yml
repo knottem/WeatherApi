@@ -75,9 +75,7 @@ jobs:
         uses: docker/metadata-action@v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            dev
+          tags: dev
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -86,3 +84,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+# Todo add systemTests as a last job.

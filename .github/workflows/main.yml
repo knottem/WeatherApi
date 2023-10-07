@@ -65,6 +65,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  deploy-main:
+    needs: build-and-publish-main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Deploy JavaDoc 🚀
         uses: MathieuSoysal/Javadoc-publisher.yml@v2.4.0
         with:
@@ -74,12 +81,7 @@ jobs:
           target-folder:
           project: gradle
 
-  deploy-main:
-    needs: build-and-publish-main
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+        # Todo add deploy with ssh to server and do docker-compose down, pull, up
       - name: Deploy to Main
         run: |
           echo "Deploying to Dev with image ${{ needs.build-and-publish-dev.outputs.tags }}"

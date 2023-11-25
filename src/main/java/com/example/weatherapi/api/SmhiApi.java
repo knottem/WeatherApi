@@ -1,7 +1,6 @@
 package com.example.weatherapi.api;
 
 import com.example.weatherapi.domain.City;
-import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.exceptions.exceptions.ApiConnectionException;
@@ -10,11 +9,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
@@ -26,6 +27,9 @@ import java.util.Map;
  */
 @Component
 public class SmhiApi {
+
+    @Autowired
+    private Cache cache;
 
     ObjectMapper mapper;
     private static final Logger logger = LoggerFactory.getLogger(SmhiApi.class);
@@ -55,14 +59,14 @@ public class SmhiApi {
      * @throws ApiConnectionException if the connection to the smhi api fails
      */
     public Weather getWeatherSmhi(double lon, double lat, City city) {
-        String key = lon + "," + lat;
-        Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
+        String key = lon + ":" + lat;
+        Weather weatherFromCache = cache.getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
         if (weatherFromCache != null) {
             return weatherFromCache;
         }
         WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
         Weather weather = createWeather(lon, lat, city, weatherSmhi);
-        Cache.getInstance().put(key, weather);
+        cache.save(key, weather);
         return weather;
     }
 
@@ -99,10 +103,14 @@ public class SmhiApi {
         Weather weather;
         if (city == null) {
             weather = Weather.builder()
-                    .message("Weather for location Lon: " + lon + " and Lat: " + lat).build();
+                    .message("Weather for location Lon: " + lon + " and Lat: " + lat)
+                    .timeStamp(LocalDateTime.now())
+                    .build();
         } else {
             weather = Weather.builder()
-                    .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat()).build();
+                    .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
+                    .timeStamp(LocalDateTime.now())
+                    .build();
         }
         addWeatherData(weather, weatherSmhi);
         return weather;

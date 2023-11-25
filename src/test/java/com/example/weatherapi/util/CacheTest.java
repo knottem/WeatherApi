@@ -40,7 +40,7 @@ public class CacheTest {
     @Test
     public void shouldRetrieveValidWeatherFromCache(){
         Weather weather = Weather.builder().build();
-        Cache.getInstance().put("key", weather);
+        Cache.getInstance().save("key", weather);
         assertEquals(weather, Cache.getInstance().getWeatherFromCache("key", 1));
     }
 
@@ -55,7 +55,7 @@ public class CacheTest {
     @Test
     public void shouldHandleNegativeCacheTimeInHours() {
         Weather weather = Weather.builder().build();
-        Cache.getInstance().put("key", weather);
+        Cache.getInstance().save("key", weather);
         assertEquals(weather, Cache.getInstance().getWeatherFromCache("key", -1));
     }
 

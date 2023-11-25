@@ -3,7 +3,6 @@ package com.example.weatherapi.services.impl;
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.domain.City;
-import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
@@ -25,13 +24,16 @@ public class WeatherServiceImpl implements WeatherService {
     private final SmhiApi smhiApi;
     private final YrApi yrApi;
 
+    private final Cache cache;
+
     @Value("${cache.time.in.hours}")
     private int CACHE_TIME_IN_HOURS;
     @Autowired
-    public WeatherServiceImpl(CityService cityService, SmhiApi smhiApi, YrApi yrApi) {
+    public WeatherServiceImpl(CityService cityService, SmhiApi smhiApi, YrApi yrApi, Cache cache) {
         this.cityService = cityService;
         this.smhiApi = smhiApi;
         this.yrApi = yrApi;
+        this.cache = cache;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class WeatherServiceImpl implements WeatherService {
     @Override
     public Weather getWeatherMerged(String cityName) {
         City city = toModel(cityService.getCityByName(cityName));
-        Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(city.getName() + "_merged", CACHE_TIME_IN_HOURS);
+        Weather weatherFromCache = cache.getWeatherFromCache(city.getName() + "_merged", CACHE_TIME_IN_HOURS);
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
@@ -90,9 +92,10 @@ public class WeatherServiceImpl implements WeatherService {
         Weather mergedWeather = Weather.builder()
                 .message("Merged weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
                 .weatherData(mergedWeatherData)
+                .timeStamp(LocalDateTime.now())
                 .build();
 
-        Cache.getInstance().put(city.getName() + "_merged", mergedWeather);
+        cache.save(city.getName() + "_merged", mergedWeather);
         return mergedWeather;
     }
 

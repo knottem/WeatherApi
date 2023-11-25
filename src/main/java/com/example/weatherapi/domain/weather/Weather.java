@@ -3,6 +3,7 @@ package com.example.weatherapi.domain.weather;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -13,6 +14,8 @@ import java.util.*;
 public class Weather {
 
     private String message;
+
+    private LocalDateTime timeStamp;
 
     @Builder.Default
     private Information information = new Information();

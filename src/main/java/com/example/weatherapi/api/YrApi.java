@@ -1,7 +1,6 @@
 package com.example.weatherapi.api;
 
 import com.example.weatherapi.domain.City;
-import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
 import com.example.weatherapi.exceptions.exceptions.ApiConnectionException;
@@ -10,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +18,7 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 //YrAPI class that handles all the communication with the yr api
@@ -25,6 +26,9 @@ import java.util.Map;
 public class YrApi {
 
     ObjectMapper mapper;
+    @Autowired
+    private Cache cache;
+
 
     private static final Logger logger = LoggerFactory.getLogger(YrApi.class);
 
@@ -54,7 +58,7 @@ public class YrApi {
     public Weather getWeatherYr(double lon, double lat, City city) {
         String key = lon + "," + lat + ",yr";
         // Checks if the weather is in the cache, if it is it returns it
-        Weather weatherFromCache = Cache.getInstance().getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
+        Weather weatherFromCache = cache.getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
@@ -92,10 +96,14 @@ public class YrApi {
             Weather weather;
             if(city == null){
                 weather = Weather.builder()
-                        .message("Weather for location Lon: " + lon + " and Lat: " + lat).build();
+                        .message("Weather for location Lon: " + lon + " and Lat: " + lat)
+                        .timeStamp(LocalDateTime.now())
+                        .build();
             } else {
                 weather = Weather.builder()
-                        .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat()).build();
+                        .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
+                        .timeStamp(LocalDateTime.now())
+                        .build();
             }
             //just setting the weatherCode to 0 for now since I haven't added support for it yet, since it returns a String not an Integer
             //Adds the weather to the weather object
@@ -108,7 +116,7 @@ public class YrApi {
                             t.data().instant().details().wind_from_direction(),
                             t.data().instant().details().precipitation_amount()));
             // Adds the weather to the cache
-            Cache.getInstance().put(key, weather);
+            cache.save(key, weather);
             return weather;
         } catch (Exception e){
             // If the API is down or something else goes wrong, it will throw an ApiConnectionException

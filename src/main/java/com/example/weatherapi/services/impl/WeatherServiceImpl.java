@@ -31,7 +31,7 @@ public class WeatherServiceImpl implements WeatherService {
 
     private Map<LocalDateTime, Weather.WeatherData> mergedWeatherData;
 
-    private int mergeCount = 0;
+    private int mergeCount;
     @Autowired
     public WeatherServiceImpl(CityService cityService, SmhiApi smhiApi, YrApi yrApi, Cache cache) {
         this.cityService = cityService;
@@ -61,7 +61,7 @@ public class WeatherServiceImpl implements WeatherService {
             return weatherFromCache;
         }
         // Reset the merge count and the merged weather data
-        mergeCount = 0;
+        mergeCount = 1;
         mergedWeatherData = new TreeMap<>();
 
         // Merge the weather data from the two APIs

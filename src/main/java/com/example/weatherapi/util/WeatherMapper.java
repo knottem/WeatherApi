@@ -40,8 +40,8 @@ public class WeatherMapper {
                                 .windDirection(entity.getWindDirection())
                                 .precipitation(entity.getPrecipitation())
                                 .build(),
-                        (existing, replacement) -> existing, // Merge function (if duplicate keys)
-                        LinkedHashMap::new // Use LinkedHashMap to preserve order
+                        (existing, replacement) -> existing,
+                        LinkedHashMap::new
                 ));
     }
 
@@ -55,7 +55,7 @@ public class WeatherMapper {
                         .windSpeed(entry.getValue().getWindSpeed())
                         .windDirection(entry.getValue().getWindDirection())
                         .precipitation(entry.getValue().getPrecipitation())
-                        .weatherEntity(weatherEntity) // Set the WeatherEntity reference
+                        .weatherEntity(weatherEntity)
                         .build())
                 .toList();
     }

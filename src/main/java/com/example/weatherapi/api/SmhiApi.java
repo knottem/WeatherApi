@@ -59,7 +59,7 @@ public class SmhiApi {
      * @throws ApiConnectionException if the connection to the smhi api fails
      */
     public Weather getWeatherSmhi(double lon, double lat, City city) {
-        String key = lon + ":" + lat;
+        String key = lon + ":" + lat + ":smhi";
         Weather weatherFromCache = cache.getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
         if (weatherFromCache != null) {
             return weatherFromCache;
@@ -109,6 +109,7 @@ public class SmhiApi {
         } else {
             weather = Weather.builder()
                     .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
+                    .city(city)
                     .timeStamp(LocalDateTime.now())
                     .build();
         }

@@ -28,6 +28,10 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Value("${cache.time.in.hours}")
     private int CACHE_TIME_IN_HOURS;
+
+    private Map<LocalDateTime, Weather.WeatherData> mergedWeatherData;
+
+    private int mergeCount = 0;
     @Autowired
     public WeatherServiceImpl(CityService cityService, SmhiApi smhiApi, YrApi yrApi, Cache cache) {
         this.cityService = cityService;
@@ -51,52 +55,57 @@ public class WeatherServiceImpl implements WeatherService {
     @Override
     public Weather getWeatherMerged(String cityName) {
         City city = toModel(cityService.getCityByName(cityName));
-        Weather weatherFromCache = cache.getWeatherFromCache(city.getName() + "_merged", CACHE_TIME_IN_HOURS);
+        String key = city.getLon() + ":" + city.getLat() + ":merged";
+        Weather weatherFromCache = cache.getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
-        Weather weatherYr = yrApi.getWeatherYr(city.getLon(), city.getLat(), city);
-        Weather weatherSmhi = smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city);
+        // Reset the merge count and the merged weather data
+        mergeCount = 0;
+        mergedWeatherData = new TreeMap<>();
 
-        Map<LocalDateTime, Weather.WeatherData> smhiWeatherData = weatherSmhi.getWeatherData();
-        Map<LocalDateTime, Weather.WeatherData> yrWeatherData = weatherYr.getWeatherData();
+        // Merge the weather data from the two APIs
+        mergeWeatherDataIntoMergedData(smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city).getWeatherData());
+        mergeWeatherDataIntoMergedData(yrApi.getWeatherYr(city.getLon(), city.getLat(), city).getWeatherData());
 
-        // Add all smhi data to the merged map from the start, then we can just add yr data to the merged map
-        Map<LocalDateTime, Weather.WeatherData> mergedWeatherData = new TreeMap<>(smhiWeatherData);
 
-        for (Map.Entry<LocalDateTime, Weather.WeatherData> entry : yrWeatherData.entrySet()) {
-            LocalDateTime key = entry.getKey();
-            Weather.WeatherData yrData = entry.getValue();
-
-            if (mergedWeatherData.containsKey(key)) {
-                Weather.WeatherData smhiData = mergedWeatherData.get(key);
-
-                float avgTemperature = (smhiData.getTemperature() + yrData.getTemperature()) / 2;
-                float avgWindDirection = (smhiData.getWindDirection() + yrData.getWindDirection()) / 2;
-                float avgWindSpeed = (smhiData.getWindSpeed() + yrData.getWindSpeed()) / 2;
-                float avgPrecipitation = (smhiData.getPrecipitation() + yrData.getPrecipitation()) / 2;
-
-                Weather.WeatherData newData = Weather.WeatherData.builder()
-                        .temperature(avgTemperature)
-                        .windDirection(avgWindDirection)
-                        .windSpeed(avgWindSpeed)
-                        .precipitation(avgPrecipitation)
-                        .weatherCode(smhiData.getWeatherCode())
-                        .build();
-
-                mergedWeatherData.put(key, newData);
-            } else {
-                mergedWeatherData.put(key, yrData);
-            }
-        }
         Weather mergedWeather = Weather.builder()
                 .message("Merged weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
                 .weatherData(mergedWeatherData)
                 .timeStamp(LocalDateTime.now())
                 .build();
 
-        cache.save(city.getName() + "_merged", mergedWeather);
+        cache.save(key, mergedWeather);
         return mergedWeather;
+    }
+
+    private void mergeWeatherDataIntoMergedData(Map<LocalDateTime, Weather.WeatherData> newData) {
+        for (Map.Entry<LocalDateTime, Weather.WeatherData> entry : newData.entrySet()) {
+            LocalDateTime key = entry.getKey();
+            Weather.WeatherData newDataItem = entry.getValue();
+
+            if (mergedWeatherData.containsKey(key)) {
+                Weather.WeatherData existingData = mergedWeatherData.get(key);
+
+                int totalCount = mergeCount + 1;
+                float avgTemperature = ((existingData.getTemperature() * mergeCount) + newDataItem.getTemperature()) / totalCount;
+                float avgWindDirection = ((existingData.getWindDirection() * mergeCount) + newDataItem.getWindDirection()) / totalCount;
+                float avgWindSpeed = ((existingData.getWindSpeed() * mergeCount) + newDataItem.getWindSpeed()) / totalCount;
+                float avgPrecipitation = ((existingData.getPrecipitation() * mergeCount) + newDataItem.getPrecipitation()) / totalCount;
+
+                Weather.WeatherData mergedData = Weather.WeatherData.builder()
+                        .temperature(avgTemperature)
+                        .windDirection(avgWindDirection)
+                        .windSpeed(avgWindSpeed)
+                        .precipitation(avgPrecipitation)
+                        .weatherCode(existingData.getWeatherCode())
+                        .build();
+
+                mergedWeatherData.put(key, mergedData);
+            } else {
+                mergedWeatherData.put(key, newDataItem);
+            }
+        }
     }
 
 }

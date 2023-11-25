@@ -1,6 +1,8 @@
 package com.example.weatherapi.domain.weather;
 
 
+import com.example.weatherapi.domain.City;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,8 @@ public class Weather {
     private String message;
 
     private LocalDateTime timeStamp;
+
+    private City city;
 
     @Builder.Default
     private Information information = new Information();

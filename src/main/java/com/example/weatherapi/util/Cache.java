@@ -51,7 +51,7 @@ public class Cache {
                 return convertToWeather(cachedWeather.getWeather());
             } else {
                 logger.info("Cache expired for key: " + key + ", fetching new data");
-                weatherCacheRepository.deleteByCacheKey(key);
+                //weatherCacheRepository.deleteByCacheKey(key);
             }
         } else {
             logger.info("Cache doesn't exist for key: " + key + ", fetching new data");
@@ -62,11 +62,14 @@ public class Cache {
     public void save(String key, Weather weather) {
         WeatherEntity weatherEntity = weatherEntityRepository.save(convertToWeatherEntity(weather));
         weatherDataRepository.saveAll(convertToWeatherDataEntity(weather.getWeatherData(), weatherEntity));
+        WeatherCacheEntity weatherCacheEntity =
         weatherCacheRepository.save(WeatherCacheEntity.builder()
                 .cacheKey(key)
                 .timestamp(LocalDateTime.now())
                 .weather(weatherEntity)
                 .build());
+
+        logger.info("Saved weather data to cache with key: " + key + ", id: " + weatherCacheEntity.getId());
     }
 
     public void clear() {

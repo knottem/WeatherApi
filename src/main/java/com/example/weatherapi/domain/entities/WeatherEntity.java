@@ -1,12 +1,13 @@
 package com.example.weatherapi.domain.entities;
 
-import com.example.weatherapi.domain.weather.Weather;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -18,8 +19,9 @@ import java.util.List;
 public class WeatherEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    private UUID id;
 
     private String message;
 

@@ -40,9 +40,6 @@ public class YrApi {
     private String domain = "localhost";
     @Value("${contact.github}")
     private String contact;
-    @Value("${cache.time.in.hours}")
-    private int CACHE_TIME_IN_HOURS;
-
     private boolean isTestMode = false;
     public void setTestMode(boolean isTestMode) {
         this.isTestMode = isTestMode;
@@ -58,7 +55,7 @@ public class YrApi {
     public Weather getWeatherYr(double lon, double lat, City city) {
         String key = lon + ":" + lat + ":yr";
         // Checks if the weather is in the cache, if it is it returns it
-        Weather weatherFromCache = cache.getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
+        Weather weatherFromCache = cache.getWeatherFromCache(key);
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
@@ -105,17 +102,7 @@ public class YrApi {
                         .timeStamp(LocalDateTime.now())
                         .build();
             }
-            //just setting the weatherCode to 0 for now since I haven't added support for it yet, since it returns a String not an Integer
-            //Adds the weather to the weather object
-            weatherYr.properties().timeseries().forEach(t ->
-                    weather.addWeatherData(
-                            t.time(),
-                            t.data().instant().details().air_temperature(),
-                            0,
-                            t.data().instant().details().wind_speed(),
-                            t.data().instant().details().wind_from_direction(),
-                            t.data().instant().details().precipitation_amount()));
-            // Adds the weather to the cache
+            addWeatherDataYr(weather, weatherYr);
             cache.save(key, weather);
             return weather;
         } catch (Exception e){
@@ -124,5 +111,16 @@ public class YrApi {
             e.printStackTrace();
             throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
         }
+    }
+
+    private void addWeatherDataYr(Weather weather, WeatherYr weatherYr) {
+        weatherYr.properties().timeseries().forEach(t ->
+                weather.addWeatherData(
+                        t.time(),
+                        t.data().instant().details().air_temperature(),
+                        0,
+                        t.data().instant().details().wind_speed(),
+                        t.data().instant().details().wind_from_direction(),
+                        t.data().instant().details().precipitation_amount()));
     }
 }

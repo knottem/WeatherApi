@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
@@ -62,7 +63,7 @@ public class CityEntityControllerTests {
                 .then()
                 .statusCode(200)
                 .assertThat()
-                .body("id", equalTo(1))
+                .body("id", equalTo("2785714e-0872-4a61-bfb5-76b5baf8911b"))
                 .body("name", equalTo("Stockholm"))
                 .body("lat", equalTo(59.3294f))
                 .body("lon", equalTo(18.0686f));
@@ -298,7 +299,7 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getId()).isEqualTo(1L);
+        assertThat(response.getBody().getId()).isEqualTo(UUID.fromString("2785714e-0872-4a61-bfb5-76b5baf8911b"));
         assertThat(response.getBody().getName()).isEqualTo("Stockholm");
         assertThat(response.getBody().getLat()).isEqualTo(59.3294);
         assertThat(response.getBody().getLon()).isEqualTo(18.0686);
@@ -327,7 +328,7 @@ public class CityEntityControllerTests {
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "pass123")
                 .postForEntity("http://localhost:" + port + "/city/addCity",
-                        new AuthEntity(10,
+                        new AuthEntity(UUID.randomUUID(),
                                 "test",
                                 "test",
                                 UserRole.USER), ErrorResponse.class);
@@ -394,11 +395,11 @@ public class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()[0].getId()).isEqualTo(1L);
+        assertThat(response.getBody()[0].getId()).isEqualTo(UUID.fromString("2785714e-0872-4a61-bfb5-76b5baf8911b"));
         assertThat(response.getBody()[0].getName()).isEqualTo("Stockholm");
         assertThat(response.getBody()[0].getLat()).isEqualTo(59.3294);
         assertThat(response.getBody()[0].getLon()).isEqualTo(18.0686);
-        assertThat(response.getBody()[1].getId()).isEqualTo(2L);
+        assertThat(response.getBody()[1].getId()).isEqualTo(UUID.fromString("82f45775-ed0a-44e4-afe6-a07d97e9663c"));
         assertThat(response.getBody()[1].getName()).isEqualTo("Göteborg");
         assertThat(response.getBody()[1].getLat()).isEqualTo(57.7075);
         assertThat(response.getBody()[1].getLon()).isEqualTo(11.9675);

@@ -8,7 +8,6 @@ import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
 import com.example.weatherapi.util.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,8 +25,6 @@ public class WeatherServiceImpl implements WeatherService {
 
     private final Cache cache;
 
-    @Value("${cache.time.in.hours}")
-    private int CACHE_TIME_IN_HOURS;
 
     private Map<LocalDateTime, Weather.WeatherData> mergedWeatherData;
 
@@ -56,13 +53,11 @@ public class WeatherServiceImpl implements WeatherService {
     public Weather getWeatherMerged(String cityName) {
         City city = toModel(cityService.getCityByName(cityName));
         String key = city.getLon() + ":" + city.getLat() + ":merged";
-        Weather weatherFromCache = cache.getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
+        Weather weatherFromCache = cache.getWeatherFromCache(key);
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
-        // Reset the merge count and the merged weather data
-        mergeCount = 1;
-        mergedWeatherData = new TreeMap<>();
+        resetMergedWeatherData();
 
         // Merge the weather data from the two APIs
         mergeWeatherDataIntoMergedData(smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city).getWeatherData());
@@ -106,6 +101,11 @@ public class WeatherServiceImpl implements WeatherService {
                 mergedWeatherData.put(key, newDataItem);
             }
         }
+    }
+
+    private void resetMergedWeatherData() {
+        mergeCount = 1;
+        mergedWeatherData = new TreeMap<>();
     }
 
 }

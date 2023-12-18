@@ -1,7 +1,6 @@
 package com.example.weatherapi.util;
 
 import com.example.weatherapi.domain.entities.WeatherCacheEntity;
-import com.example.weatherapi.domain.entities.WeatherDataEntity;
 import com.example.weatherapi.domain.entities.WeatherEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.repositories.WeatherCacheRepository;
@@ -9,11 +8,10 @@ import com.example.weatherapi.repositories.WeatherDataRepository;
 import com.example.weatherapi.repositories.WeatherEntityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static com.example.weatherapi.util.WeatherMapper.*;
@@ -27,6 +25,9 @@ public class Cache {
     private final WeatherEntityRepository weatherEntityRepository;
     private final WeatherDataRepository weatherDataRepository;
 
+    @Value("${cache.time.in.hours}")
+    private int CACHE_TIME_IN_HOURS;
+
     private Cache(WeatherCacheRepository weatherCacheRepository,
                   WeatherEntityRepository weatherEntityRepository,
                   WeatherDataRepository weatherDataRepository) {
@@ -36,17 +37,17 @@ public class Cache {
         this.weatherDataRepository = weatherDataRepository;
     }
 
-    public Weather getWeatherFromCache(String key, int cacheTimeInHours) {
-        if (cacheTimeInHours < 0) {
+    public Weather getWeatherFromCache(String key) {
+        if (CACHE_TIME_IN_HOURS < 0) {
             logger.warn("Cache time in hours is negative, setting it to default value of 3 hours");
-            cacheTimeInHours = 3;
+            CACHE_TIME_IN_HOURS = 3;
         }
 
-        Optional<WeatherCacheEntity> cachedWeatherOptional = weatherCacheRepository.findByCacheKey(key);
+        Optional<WeatherCacheEntity> cachedWeatherOptional = weatherCacheRepository.findLatestByCacheKey(key);
 
         if (cachedWeatherOptional.isPresent()) {
             WeatherCacheEntity cachedWeather = cachedWeatherOptional.get();
-            if (cachedWeather.isValid(cacheTimeInHours)) {
+            if (cachedWeather.isValid(CACHE_TIME_IN_HOURS)) {
                 logger.info("Cache hit for key: " + key + ", returning cached data");
                 return convertToWeather(cachedWeather.getWeather());
             } else {

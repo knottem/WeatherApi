@@ -41,8 +41,8 @@ public class CacheTest {
     @Test
     public void shouldRetrieveValidWeatherFromCache(){
         Weather weather = Weather.builder().build();
-        when(cache.getWeatherFromCache("key", -1)).thenReturn(weather);
-        assertEquals(weather, cache.getWeatherFromCache("key", -1));
+        when(cache.getWeatherFromCache("key")).thenReturn(weather);
+        assertEquals(weather, cache.getWeatherFromCache("key"));
     }
 
     /**
@@ -56,8 +56,8 @@ public class CacheTest {
     @Test
     public void shouldHandleNegativeCacheTimeInHours() {
         Weather weather = Weather.builder().build();
-        when(cache.getWeatherFromCache("key", -1)).thenReturn(weather);
-        assertEquals(weather, cache.getWeatherFromCache("key", -1));
+        when(cache.getWeatherFromCache("key")).thenReturn(weather);
+        assertEquals(weather, cache.getWeatherFromCache("key"));
     }
 
     /**
@@ -69,7 +69,7 @@ public class CacheTest {
      */
     @Test
     public void shouldHandleNonExistentWeatherInCache() {
-        assertNull(cache.getWeatherFromCache("key", 1));
+        assertNull(cache.getWeatherFromCache("key"));
     }
 
 

@@ -33,8 +33,7 @@ public class SmhiApi {
 
     ObjectMapper mapper;
     private static final Logger logger = LoggerFactory.getLogger(SmhiApi.class);
-    @Value("${cache.time.in.hours}")
-    private int CACHE_TIME_IN_HOURS;
+
     private boolean isTestMode = false;
 
     public SmhiApi() {
@@ -60,7 +59,7 @@ public class SmhiApi {
      */
     public Weather getWeatherSmhi(double lon, double lat, City city) {
         String key = lon + ":" + lat + ":smhi";
-        Weather weatherFromCache = cache.getWeatherFromCache(key, CACHE_TIME_IN_HOURS);
+        Weather weatherFromCache = cache.getWeatherFromCache(key);
         if (weatherFromCache != null) {
             return weatherFromCache;
         }
@@ -113,7 +112,7 @@ public class SmhiApi {
                     .timeStamp(LocalDateTime.now())
                     .build();
         }
-        addWeatherData(weather, weatherSmhi);
+        addWeatherDataSmhi(weather, weatherSmhi);
         return weather;
     }
 
@@ -122,7 +121,7 @@ public class SmhiApi {
      * @param weather the Weather object for the location
      * @param weatherSmhi the WeatherSmhi object for the location
      */
-    private void addWeatherData(Weather weather, WeatherSmhi weatherSmhi) {
+    private void addWeatherDataSmhi(Weather weather, WeatherSmhi weatherSmhi) {
         weatherSmhi.timeSeries().forEach(t -> {
             weather.addWeatherData(t.validTime(),
                     t.parameters().stream().filter(p -> p.name().equals("t")).map(p -> p.values().get(0)).findFirst().orElse(0f),

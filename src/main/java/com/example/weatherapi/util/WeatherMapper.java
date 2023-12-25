@@ -13,6 +13,10 @@ import java.util.LinkedHashMap;
 
 public class WeatherMapper {
 
+    private WeatherMapper(){
+        throw new IllegalStateException("Utility class");
+    }
+
     public static WeatherEntity convertToWeatherEntity(Weather weather) {
         return WeatherEntity.builder()
                 .message(weather.getMessage())

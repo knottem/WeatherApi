@@ -10,6 +10,10 @@ import com.example.weatherapi.domain.entities.AuthEntity;
  */
 public class AuthMapper {
 
+    private AuthMapper(){
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Convert an AuthEntity object to an Auth object.
      * @param entity the AuthEntity object to convert

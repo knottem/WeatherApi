@@ -2,10 +2,9 @@ package com.example.weatherapi.services;
 
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.CityEntity;
-import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
-import com.example.weatherapi.exceptions.exceptions.InvalidCityException;
+import com.example.weatherapi.exceptions.CityNotFoundException;
+import com.example.weatherapi.exceptions.InvalidCityException;
 import com.example.weatherapi.services.impl.CityServiceImpl;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

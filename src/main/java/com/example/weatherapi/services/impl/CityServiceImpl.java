@@ -2,8 +2,8 @@ package com.example.weatherapi.services.impl;
 
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.City;
-import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
-import com.example.weatherapi.exceptions.exceptions.InvalidCityException;
+import com.example.weatherapi.exceptions.CityNotFoundException;
+import com.example.weatherapi.exceptions.InvalidCityException;
 import com.example.weatherapi.repositories.CityRepository;
 import com.example.weatherapi.services.CityService;
 import jakarta.transaction.Transactional;
@@ -69,5 +69,10 @@ public class CityServiceImpl implements CityService {
         logger.info("City has been deleted: {}", deletedCity);
 
         return "City '" + deletedCity.getName() + "' deleted successfully";
+    }
+
+    @Override
+    public List<String> getAllCityNames() {
+        return cityRepository.findAllCityNames();
     }
 }

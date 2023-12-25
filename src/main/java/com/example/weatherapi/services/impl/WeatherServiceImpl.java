@@ -8,6 +8,7 @@ import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
 import com.example.weatherapi.util.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,10 +23,7 @@ public class WeatherServiceImpl implements WeatherService {
     private final CityService cityService;
     private final SmhiApi smhiApi;
     private final YrApi yrApi;
-
     private final Cache cache;
-
-
     private Map<LocalDateTime, Weather.WeatherData> mergedWeatherData;
 
     private int mergeCount;
@@ -50,6 +48,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
+    @Cacheable("weatherCache")
     public Weather getWeatherMerged(String cityName) {
         City city = toModel(cityService.getCityByName(cityName));
         String key = city.getLon() + ":" + city.getLat() + ":merged";

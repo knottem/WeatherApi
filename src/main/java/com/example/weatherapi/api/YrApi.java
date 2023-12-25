@@ -3,7 +3,7 @@ package com.example.weatherapi.api;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
-import com.example.weatherapi.exceptions.exceptions.ApiConnectionException;
+import com.example.weatherapi.exceptions.ApiConnectionException;
 import com.example.weatherapi.util.Cache;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -26,13 +26,12 @@ import java.util.Map;
 public class YrApi {
 
     ObjectMapper mapper;
-    @Autowired
     private Cache cache;
-
-
     private static final Logger logger = LoggerFactory.getLogger(YrApi.class);
 
-    public YrApi() {
+    @Autowired
+    public YrApi(Cache cache) {
+        this.cache = cache;
         this.mapper = JsonMapper.builder().findAndAddModules().build();
     }
     // Gets the domain and contact info from the application.properties file, contact info is required by the YR API
@@ -64,7 +63,7 @@ public class YrApi {
             if(isTestMode){
                 Map<String, String> cityMap = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class);
                 String cityName = city.getName().toLowerCase();
-                logger.info("Using test data for YR: " + cityName);
+                logger.info("Using test data for YR: {}", cityName);
                 weatherYr = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/yr/" + cityMap.get(cityName)), WeatherYr.class);
             } else {
 
@@ -106,9 +105,6 @@ public class YrApi {
             cache.save(key, weather);
             return weather;
         } catch (Exception e){
-            // If the API is down or something else goes wrong, it will throw an ApiConnectionException
-            //TODO add logging instead of printing stacktrace
-            e.printStackTrace();
             throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
         }
     }

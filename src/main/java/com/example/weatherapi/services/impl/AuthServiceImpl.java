@@ -2,8 +2,8 @@ package com.example.weatherapi.services.impl;
 
 import com.example.weatherapi.domain.Auth;
 import com.example.weatherapi.domain.entities.AuthEntity;
-import com.example.weatherapi.exceptions.exceptions.UserAlreadyExistsException;
-import com.example.weatherapi.exceptions.exceptions.UserNotFoundException;
+import com.example.weatherapi.exceptions.UserAlreadyExistsException;
+import com.example.weatherapi.exceptions.UserNotFoundException;
 import com.example.weatherapi.repositories.AuthRepository;
 import com.example.weatherapi.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.example.weatherapi.util.AuthMapper.toEntity;
-import static com.example.weatherapi.util.AuthMapper.toModel;
 
 @Service
 public class AuthServiceImpl implements AuthService {

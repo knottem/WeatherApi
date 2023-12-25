@@ -3,14 +3,13 @@ package com.example.weatherapi.api;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
-import com.example.weatherapi.exceptions.exceptions.ApiConnectionException;
+import com.example.weatherapi.exceptions.ApiConnectionException;
 import com.example.weatherapi.util.Cache;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -28,15 +27,14 @@ import java.util.Map;
 @Component
 public class SmhiApi {
 
-    @Autowired
-    private Cache cache;
-
+    private final Cache cache;
     ObjectMapper mapper;
     private static final Logger logger = LoggerFactory.getLogger(SmhiApi.class);
-
     private boolean isTestMode = false;
 
-    public SmhiApi() {
+    @Autowired
+    public SmhiApi(Cache cache) {
+        this.cache = cache;
         this.mapper = JsonMapper.builder().findAndAddModules().build();
     }
 
@@ -79,7 +77,7 @@ public class SmhiApi {
                 // cityMap is used to map the city name to the correct test file from the resources folder, so we can use the same method for all cities we have test data for
                 Map<String, String> cityMap = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class);
                 String cityName = city.getName().toLowerCase();
-                logger.info("Using test data for SMHI: " + cityName);
+                logger.info("Using test data for SMHI: {}", cityName);
                 // return the WeatherSmhi object from the test file with the correct city name
                 return mapper.readValue(getClass().getResourceAsStream("/weatherexamples/smhi/" + cityMap.get(cityName)), WeatherSmhi.class);
             } else {
@@ -122,14 +120,19 @@ public class SmhiApi {
      * @param weatherSmhi the WeatherSmhi object for the location
      */
     private void addWeatherDataSmhi(Weather weather, WeatherSmhi weatherSmhi) {
-        weatherSmhi.timeSeries().forEach(t -> {
+        weatherSmhi.timeSeries().forEach(t ->
             weather.addWeatherData(t.validTime(),
-                    t.parameters().stream().filter(p -> p.name().equals("t")).map(p -> p.values().get(0)).findFirst().orElse(0f),
-                    t.parameters().stream().filter(p -> p.name().equals("Wsymb2")).map(p -> p.values().get(0).intValue()).findFirst().orElse(0),
-                    t.parameters().stream().filter(p -> p.name().equals("ws")).map(p -> p.values().get(0)).findFirst().orElse(0f),
-                    t.parameters().stream().filter(p -> p.name().equals("wd")).map(p -> p.values().get(0)).findFirst().orElse(0f),
-                    (t.parameters().stream().filter(p -> p.name().equals("pmin")).map(p -> p.values().get(0)).findFirst().orElse(0f)
-                            + t.parameters().stream().filter(p -> p.name().equals("pmax")).map(p -> p.values().get(0)).findFirst().orElse(0f)) / 2);
-        });
+                    t.parameters().stream().filter(p -> p.name().equals("t"))
+                            .map(p -> p.values().get(0)).findFirst().orElse(0f),
+                    t.parameters().stream().filter(p -> p.name().equals("Wsymb2"))
+                            .map(p -> p.values().get(0).intValue()).findFirst().orElse(0),
+                    t.parameters().stream().filter(p -> p.name().equals("ws"))
+                            .map(p -> p.values().get(0)).findFirst().orElse(0f),
+                    t.parameters().stream().filter(p -> p.name().equals("wd"))
+                            .map(p -> p.values().get(0)).findFirst().orElse(0f),
+                    (t.parameters().stream().filter(p -> p.name().equals("pmin"))
+                            .map(p -> p.values().get(0)).findFirst().orElse(0f)
+                            + t.parameters().stream().filter(p -> p.name().equals("pmax"))
+                            .map(p -> p.values().get(0)).findFirst().orElse(0f)) / 2));
     }
 }

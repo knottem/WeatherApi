@@ -5,6 +5,10 @@ import com.example.weatherapi.domain.entities.CityEntity;
 
 public class CityMapper {
 
+    private CityMapper(){
+        throw new IllegalStateException("Utility class");
+    }
+
     public static City toModel(CityEntity entity) {
         return City.builder()
                 .name(entity.getName())

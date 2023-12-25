@@ -38,4 +38,9 @@ public class CityController {
     public ResponseEntity<String> deleteCity(@PathVariable final String name) {
         return new ResponseEntity<>(cityService.deleteCity(name), HttpStatus.OK);
     }
+
+    @GetMapping(path = "/city/names")
+    public List<String> retrieveAllCityNames() {
+        return cityService.getAllCityNames();
+    }
 }

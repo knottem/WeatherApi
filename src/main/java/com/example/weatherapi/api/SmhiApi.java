@@ -10,12 +10,14 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This class handles all the communication with the smhi api.<br>
@@ -55,6 +57,7 @@ public class SmhiApi {
      * @return the Weather object for the location
      * @throws ApiConnectionException if the connection to the smhi api fails
      */
+
     public Weather getWeatherSmhi(double lon, double lat, City city) {
         String key = lon + ":" + lat + ":smhi";
         Weather weatherFromCache = cache.getWeatherFromCache(key);
@@ -65,6 +68,11 @@ public class SmhiApi {
         Weather weather = createWeather(lon, lat, city, weatherSmhi);
         cache.save(key, weather);
         return weather;
+    }
+
+    @Async
+    public CompletableFuture<Weather> fetchWeatherSmhiAsync(double lon, double lat, City city) {
+        return CompletableFuture.completedFuture(getWeatherSmhi(lon, lat, city));
     }
 
     /**

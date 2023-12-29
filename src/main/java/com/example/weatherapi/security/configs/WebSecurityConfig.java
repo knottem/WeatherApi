@@ -1,13 +1,12 @@
 package com.example.weatherapi.security.configs;
 
+import com.example.weatherapi.domain.UserRole;
 import com.example.weatherapi.exceptions.handlers.CustomAccessDeniedHandler;
 import com.example.weatherapi.security.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,8 +25,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
+    private final CustomUserDetailsService customUserDetailsService;
+
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    public WebSecurityConfig(CustomUserDetailsService customUserDetailsService){
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
     @Bean
     public CustomAccessDeniedHandler customAccessDeniedHandler() {
@@ -46,12 +49,13 @@ public class WebSecurityConfig {
         //Order matters, so if we put /** for example first, it will override the other endpoints.
         http.authorizeHttpRequests(r -> r
                 .requestMatchers("/error").permitAll()
-                .requestMatchers("/weather/**").hasAnyRole("ADMIN", "USER")
-                .requestMatchers("/city/all").hasAnyRole("ADMIN", "USER")
-                .requestMatchers("/city/names").hasAnyRole("ADMIN", "USER")
-                .requestMatchers("/city/delete/**").hasRole("ADMIN") // Delete city should be admin only, since it's a destructive action.
-                .requestMatchers("/city/**").hasRole("ADMIN")
-                .requestMatchers("/auth/**").hasRole("ADMIN")
+                .requestMatchers("/weather/**").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
+                .requestMatchers("/city/all").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
+                .requestMatchers("/city/names").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
+                .requestMatchers("/city/delete/**").hasRole(UserRole.ADMIN.toString())
+                .requestMatchers("/city/create").hasRole(UserRole.ADMIN.toString())
+                .requestMatchers("/city/**").hasRole(UserRole.ADMIN.toString())
+                .requestMatchers("/auth/**").hasRole(UserRole.ADMIN.toString())
         );
 
         //Adding custom access denied handler to be able to log unauthorized access attempts.
@@ -62,10 +66,10 @@ public class WebSecurityConfig {
         //Using Basic Auth just for simplicity for now.
         http.httpBasic(withDefaults());
 
-        //If test mode is on, disable csrf.
-        if(testMode){
-            http.csrf(AbstractHttpConfigurer::disable);
-        }
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
+        //Disabling csrf due to being a rest API, and we're already using authentication and cors
+        http.csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
     }
@@ -77,20 +81,16 @@ public class WebSecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*")); // Allow requests from any origin
-        configuration.setAllowedMethods(List.of(
-                HttpMethod.GET.name(),
-                HttpMethod.POST.name(),
-                HttpMethod.PUT.name(),
-                HttpMethod.DELETE.name()
-        ));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Origin", "Accept", "X-Requested-With"));
-        configuration.setAllowCredentials(true); // Allow sending credentials (e.g., cookies, authorization headers)
+        CorsConfiguration cors = new CorsConfiguration();
 
+        //cors.setAllowedOrigins(List.of("http://localhost:4200"));
+        cors.setAllowedOriginPatterns(List.of("*"));
+        cors.setAllowedMethods(List.of("GET", "POST"));
+        cors.setAllowCredentials(true);
+        cors.setAllowedHeaders(List.of("*"));
+        cors.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
+        source.registerCorsConfiguration("/**", cors);
         return source;
     }
 

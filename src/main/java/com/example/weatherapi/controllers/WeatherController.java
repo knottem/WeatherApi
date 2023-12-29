@@ -5,6 +5,7 @@ import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.exceptions.ApiConnectionException;
 import com.example.weatherapi.exceptions.CityNotFoundException;
 import com.example.weatherapi.services.WeatherService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +35,7 @@ public class WeatherController {
      */
     @GetMapping(path = "/weather/smhi/{city}")
     public Weather getWeatherBySmhiCity(@PathVariable final String city){
-        return weatherService.getWeatherBySmhiCity(city);
+        return weatherService.getWeatherBySmhiCity(city.toLowerCase());
     }
 
     /**
@@ -48,7 +49,7 @@ public class WeatherController {
      */
     @GetMapping(path = "/weather/yr/{city}")
     public Weather getWeatherByYrCity(@PathVariable final String city){
-        return weatherService.getWeatherByYrCity(city);
+        return weatherService.getWeatherByYrCity(city.toLowerCase());
     }
 
     /**
@@ -62,7 +63,7 @@ public class WeatherController {
      */
     @GetMapping(path = "/weather/merged/{city}")
     public Weather getWeatherMerged(@PathVariable final String city){
-        return weatherService.getWeatherMerged(city);
+        return weatherService.getWeatherMerged(city.toLowerCase());
     }
 
 }

@@ -24,7 +24,7 @@ public class CityController {
         return cityService.getCityByName(name);
     }
 
-    @PostMapping(path = "/city/addCity")
+    @PostMapping(path = "/city/create")
     public ResponseEntity<CityEntity> addCity(@Valid @RequestBody City city) {
         return new ResponseEntity<>(cityService.addCity(city), HttpStatus.CREATED);
     }

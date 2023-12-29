@@ -32,7 +32,7 @@ public class WeatherCacheEntity {
     @JoinColumn(name = "weather_id")
     private WeatherEntity weather;
 
-    public boolean isValid(int hours) {
-        return LocalDateTime.now().minusHours(hours).isBefore(timestamp);
+    public boolean isValid(int minutes) {
+        return LocalDateTime.now().minusMinutes(minutes).isBefore(timestamp);
     }
 }

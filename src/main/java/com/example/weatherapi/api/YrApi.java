@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 //YrAPI class that handles all the communication with the yr api
 @Component
@@ -47,6 +49,11 @@ public class YrApi {
     // Method that creates the url for the yr api
     private URL getUrlYr(double lon, double lat) throws IOException {
         return new URL("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=" + lat + "&lon=" + lon);
+    }
+
+    @Async
+    public CompletableFuture<Weather> fetchWeatherYrAsync(double lon, double lat, City city) {
+        return CompletableFuture.completedFuture(getWeatherYr(lon, lat, city));
     }
 
     // The YR API requires a custom User-Agent header, otherwise it will return 403 Forbidden. So we need both our domain and contact info which is provided by the application.properties file.

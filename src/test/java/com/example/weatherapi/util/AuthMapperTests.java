@@ -23,14 +23,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @Tag("unit")
 public class AuthMapperTests {
 
-    /**
-     * Test Case 1: Check that the AuthMapper is created.<p>
-     * Asserts that a new AuthMapper object is not null.
-     */
-    @Test
-    public void shouldCreateAuthMapper() {
-        assertThat(new AuthMapper()).isNotNull();
-    }
 
     /**
      * Test Case 2: Check that the toEntity method returns the correct AuthEntity object.

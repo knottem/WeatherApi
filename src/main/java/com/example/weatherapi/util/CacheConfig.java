@@ -18,7 +18,7 @@ public class CacheConfig {
     private int cacheTimeInMinutes;
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("weatherCache");
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("cache");
         cacheManager.setCaffeine(caffeineCacheBuilder());
         return cacheManager;
     }

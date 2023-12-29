@@ -4,7 +4,6 @@ import com.example.weatherapi.domain.UserRole;
 import com.example.weatherapi.exceptions.handlers.CustomAccessDeniedHandler;
 import com.example.weatherapi.security.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -37,9 +36,6 @@ public class WebSecurityConfig {
         return new CustomAccessDeniedHandler();
     }
 
-    @Value("${app.test-mode:false}")
-    private boolean testMode;
-
     //Setting up security for the endpoints.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -49,9 +45,10 @@ public class WebSecurityConfig {
         //Order matters, so if we put /** for example first, it will override the other endpoints.
         http.authorizeHttpRequests(r -> r
                 .requestMatchers("/error").permitAll()
+                .requestMatchers("/weather/merged/**").permitAll()
+                .requestMatchers("/city/names").permitAll()
                 .requestMatchers("/weather/**").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
                 .requestMatchers("/city/all").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
-                .requestMatchers("/city/names").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
                 .requestMatchers("/city/delete/**").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/create").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/**").hasRole(UserRole.ADMIN.toString())

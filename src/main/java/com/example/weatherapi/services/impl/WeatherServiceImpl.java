@@ -54,7 +54,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    @Cacheable("weatherCache")
+    @Cacheable("cache")
     @Transactional
     public Weather getWeatherMerged(String cityName) {
         City city = toModel(cityService.getCityByName(cityName));

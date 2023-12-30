@@ -19,8 +19,9 @@ public class LoggingInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous";
         String endpoint = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
+        String ip = request.getHeader("X-Forwarded-For");
         if (!endpoint.contains("error")) {
-            logger.info("User '{}' accessed endpoint: {}", username, endpoint);
+            logger.info("User '{}' accessed endpoint: {} with ip: {}", username, endpoint, ip);
         }
         return true;
     }

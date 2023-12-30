@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,25 +57,21 @@ public class CityServiceImpl implements CityService {
     @Override
     @Transactional
     public String deleteCity(String name) {
-        // Try to get the city by name
         Optional<CityEntity> cityOptional = cityRepository.findByNameIgnoreCase(name);
-
-        // If the city is not found, throw an exception
         if(cityOptional.isEmpty()) {
             throw new CityNotFoundException("City not found: " + name);
         }
-
-        // Otherwise, delete the city and return a message with the deleted city's name
         CityEntity deletedCity = cityOptional.get();
         cityRepository.deleteByNameIgnoreCase(name);
         logger.info("City has been deleted: {}", deletedCity);
-
         return "City '" + deletedCity.getName() + "' deleted successfully";
     }
 
     @Override
     @Cacheable("cache")
     public List<String> getAllCityNames() {
-        return cityRepository.findAllCityNames();
+        List<String> allCityNames = cityRepository.findAllCityNames();
+        Collections.sort(allCityNames);
+        return allCityNames;
     }
 }

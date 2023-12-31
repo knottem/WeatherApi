@@ -1,8 +1,12 @@
     package com.example.weatherapi.util;
 
+    import com.example.weatherapi.domain.entities.CityEntity;
     import com.example.weatherapi.domain.entities.WeatherCacheEntity;
+    import com.example.weatherapi.domain.entities.WeatherDataEntity;
     import com.example.weatherapi.domain.entities.WeatherEntity;
     import com.example.weatherapi.domain.weather.Weather;
+    import com.example.weatherapi.exceptions.CityNotFoundException;
+    import com.example.weatherapi.repositories.CityRepository;
     import com.example.weatherapi.repositories.WeatherCacheRepository;
     import com.example.weatherapi.repositories.WeatherDataRepository;
     import com.example.weatherapi.repositories.WeatherEntityRepository;
@@ -14,8 +18,10 @@
     import org.springframework.transaction.annotation.Transactional;
 
     import java.time.LocalDateTime;
+    import java.util.List;
     import java.util.Optional;
 
+    import static com.example.weatherapi.util.CityMapper.toEntity;
     import static com.example.weatherapi.util.WeatherMapper.*;
 
     @Service
@@ -28,15 +34,18 @@
 
         @Value("${cache.time.in.minutes}")
         private int cacheTimeInMinutes;
+        private final CityRepository cityRepository;
 
         @Autowired
         private Cache(WeatherCacheRepository weatherCacheRepository,
                       WeatherEntityRepository weatherEntityRepository,
-                      WeatherDataRepository weatherDataRepository) {
+                      WeatherDataRepository weatherDataRepository,
+                      CityRepository cityRepository) {
             logger = LoggerFactory.getLogger(Cache.class);
             this.weatherCacheRepository = weatherCacheRepository;
             this.weatherEntityRepository = weatherEntityRepository;
             this.weatherDataRepository = weatherDataRepository;
+            this.cityRepository = cityRepository;
         }
 
         public Cache() {
@@ -45,6 +54,7 @@
             this.weatherCacheRepository = null;
             this.weatherEntityRepository = null;
             this.weatherDataRepository = null;
+            this.cityRepository = null;
         }
 
         public Weather getWeatherFromCache(String key) {
@@ -73,7 +83,9 @@
 
         @Transactional
         public void save(String key, Weather weather) {
-            WeatherEntity weatherEntity = weatherEntityRepository.save(convertToWeatherEntity(weather));
+            CityEntity cityEntity = cityRepository.findByNameIgnoreCase(weather.getCity().getName())
+                    .orElseThrow(() -> new CityNotFoundException("City not found with ID: " + weather.getCity().getName()));
+            WeatherEntity weatherEntity = weatherEntityRepository.save(convertToWeatherEntity(weather, cityEntity));
             weatherDataRepository.saveAll(convertToWeatherDataEntity(weather.getWeatherData(), weatherEntity));
             WeatherCacheEntity weatherCacheEntity =
             weatherCacheRepository.save(WeatherCacheEntity.builder()

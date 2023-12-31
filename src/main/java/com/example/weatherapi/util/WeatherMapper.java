@@ -1,5 +1,6 @@
 package com.example.weatherapi.util;
 
+import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.entities.WeatherDataEntity;
 import com.example.weatherapi.domain.entities.WeatherEntity;
 import com.example.weatherapi.domain.weather.Weather;
@@ -11,16 +12,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.LinkedHashMap;
 
+import static com.example.weatherapi.util.CityMapper.toModel;
+
 public class WeatherMapper {
 
     private WeatherMapper(){
         throw new IllegalStateException("Utility class");
     }
 
-    public static WeatherEntity convertToWeatherEntity(Weather weather) {
+    public static WeatherEntity convertToWeatherEntity(Weather weather, CityEntity cityEntity) {
         return WeatherEntity.builder()
                 .message(weather.getMessage())
                 .timeStamp(weather.getTimeStamp())
+                .city(cityEntity)
                 .build();
     }
 
@@ -28,6 +32,7 @@ public class WeatherMapper {
         return Weather.builder()
                 .message(weatherEntity.getMessage())
                 .timeStamp(weatherEntity.getTimeStamp())
+                .city(toModel(weatherEntity.getCity()))
                 .weatherData(convertToWeatherDataMap(weatherEntity.getWeatherDataList()))
                 .build();
     }
@@ -48,7 +53,6 @@ public class WeatherMapper {
                         LinkedHashMap::new
                 ));
     }
-
 
     public static List<WeatherDataEntity> convertToWeatherDataEntity(Map<LocalDateTime, Weather.WeatherData> weatherData, WeatherEntity weatherEntity) {
         return weatherData.entrySet().stream()

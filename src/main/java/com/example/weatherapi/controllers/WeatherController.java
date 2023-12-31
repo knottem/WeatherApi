@@ -25,34 +25,6 @@ public class WeatherController {
     }
 
     /**
-     * Returns the weather for a city from the SMHI api
-     *<p>
-     * Example request: GET /weather/smhi/stockholm
-     * @param city the city to get the weather for from the SMHI api
-     * @return the weather for the city from the SMHI api
-     * @throws ApiConnectionException if the connection to the SMHI api fails
-     * @throws CityNotFoundException if the city is not found in the database
-     */
-    @GetMapping(path = "/weather/smhi/{city}")
-    public Weather getWeatherBySmhiCity(@PathVariable final String city){
-        return weatherService.getWeatherBySmhiCity(city.toLowerCase());
-    }
-
-    /**
-     * Returns the weather for a city from the YR api
-     * <p>
-     * Example request: GET /weather/yr/stockholm
-     * @param city the city to get the weather for from the YR api
-     * @return the weather for the city from the YR api
-     * @throws ApiConnectionException if the connection to the YR api fails
-     * @throws CityNotFoundException if the city is not found in the database
-     */
-    @GetMapping(path = "/weather/yr/{city}")
-    public Weather getWeatherByYrCity(@PathVariable final String city){
-        return weatherService.getWeatherByYrCity(city.toLowerCase());
-    }
-
-    /**
      * Returns the weather for a city from both the SMHI and YR api merged together
      * <p>
      * Example request: GET /weather/merged/stockholm

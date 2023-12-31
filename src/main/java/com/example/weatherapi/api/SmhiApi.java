@@ -59,15 +59,9 @@ public class SmhiApi {
      */
 
     public Weather getWeatherSmhi(double lon, double lat, City city) {
-        String key = lon + ":" + lat + ":smhi";
-        Weather weatherFromCache = cache.getWeatherFromCache(key);
-        if (weatherFromCache != null) {
-            return weatherFromCache;
-        }
+        logger.info("Fetching weather data from the SMHI API...");
         WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
-        Weather weather = createWeather(lon, lat, city, weatherSmhi);
-        cache.save(key, weather);
-        return weather;
+        return createWeather(lon, lat, city, weatherSmhi);
     }
 
     @Async

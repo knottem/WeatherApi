@@ -45,7 +45,6 @@ public class CustomExceptionHandler {
         return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please try again later.", request);
     }
 
-    //added decode to get UTF_8, so you can see the proper path in errors
     @ExceptionHandler(CityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCityNotFoundException(CityNotFoundException ex, WebRequest request) {
         logger.error(ex.getMessage());

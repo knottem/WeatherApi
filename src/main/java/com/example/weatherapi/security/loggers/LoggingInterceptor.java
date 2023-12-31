@@ -12,16 +12,21 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class LoggingInterceptor implements HandlerInterceptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggingInterceptor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LoggingInterceptor.class);
 
     //Don't log the error endpoint, since it's where the user is redirected to when they try to access a page they don't have access to
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous";
         String endpoint = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
-        String ip = request.getHeader("X-Forwarded-For");
-        if (!endpoint.contains("error")) {
-            logger.info("User '{}' accessed endpoint: {} with ip: {}", username, endpoint, ip);
+        if(!endpoint.contains("/error")){
+            StringBuilder logMessage = new StringBuilder();
+            logMessage.append("Endpoint: ").append(endpoint);
+            logMessage.append(" from IP: ").append(request.getHeader("X-Forwarded-For"));
+            String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
+            if(username != null){
+                logMessage.append(" by user: ").append(username);
+            }
+            LOG.info("Accessed: {}", logMessage);
         }
         return true;
     }

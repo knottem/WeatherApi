@@ -24,11 +24,13 @@ public class WeatherEntity {
     private UUID id;
 
     private String message;
-
     private LocalDateTime timeStamp;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "city_id")
+    private CityEntity city;
 
     @OneToMany(mappedBy = "weatherEntity", cascade = CascadeType.ALL)
     private List<WeatherDataEntity> weatherDataList;
-
 
 }

@@ -47,7 +47,6 @@ public class WebSecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/weather/merged/**").permitAll()
                 .requestMatchers("/city/names").permitAll()
-                .requestMatchers("/weather/**").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
                 .requestMatchers("/city/all").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
                 .requestMatchers("/city/delete/**").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/create").hasRole(UserRole.ADMIN.toString())

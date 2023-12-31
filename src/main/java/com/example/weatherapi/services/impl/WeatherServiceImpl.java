@@ -3,7 +3,6 @@ package com.example.weatherapi.services.impl;
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.domain.City;
-import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
@@ -61,8 +60,8 @@ public class WeatherServiceImpl implements WeatherService {
         CompletableFuture<Void> combinedFuture = smhiFuture.thenCombineAsync(
                 yrFuture,
                 (smhiWeather, yrWeather) -> {
-                    mergeWeatherDataIntoMergedData(smhiWeather.getWeatherData(), "smhi");
-                    mergeWeatherDataIntoMergedData(yrWeather.getWeatherData(), "yr");
+                    mergeWeatherDataIntoMergedData(smhiWeather.getWeatherData(), "SMHI");
+                    mergeWeatherDataIntoMergedData(yrWeather.getWeatherData(), "YR");
                     return null;
                 }
         );
@@ -72,7 +71,7 @@ public class WeatherServiceImpl implements WeatherService {
         Weather mergedWeather = Weather.builder()
                 .message("Merged weather for " + city.getName())
                 .weatherData(mergedWeatherData)
-                .timeStamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now())
                 .city(toModel(cityService.getCityByName(cityName)))
                 .build();
 

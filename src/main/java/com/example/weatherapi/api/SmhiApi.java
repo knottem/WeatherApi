@@ -4,12 +4,10 @@ import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.exceptions.ApiConnectionException;
-import com.example.weatherapi.util.Cache;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -29,16 +27,9 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class SmhiApi {
 
-    private final Cache cache;
-    ObjectMapper mapper;
-    private static final Logger logger = LoggerFactory.getLogger(SmhiApi.class);
+    ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
+    private static final Logger LOG = LoggerFactory.getLogger(SmhiApi.class);
     private boolean isTestMode = false;
-
-    @Autowired
-    public SmhiApi(Cache cache) {
-        this.cache = cache;
-        this.mapper = JsonMapper.builder().findAndAddModules().build();
-    }
 
     /**
      * Sets the test mode to true or false.
@@ -59,7 +50,7 @@ public class SmhiApi {
      */
 
     public Weather getWeatherSmhi(double lon, double lat, City city) {
-        logger.info("Fetching weather data from the SMHI API...");
+        LOG.info("Fetching weather data from the SMHI API...");
         WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
         return createWeather(lon, lat, city, weatherSmhi);
     }
@@ -79,7 +70,7 @@ public class SmhiApi {
                 // cityMap is used to map the city name to the correct test file from the resources folder, so we can use the same method for all cities we have test data for
                 Map<String, String> cityMap = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class);
                 String cityName = city.getName().toLowerCase();
-                logger.info("Using test data for SMHI: {}", cityName);
+                LOG.info("Using test data for SMHI: {}", cityName);
                 // return the WeatherSmhi object from the test file with the correct city name
                 return mapper.readValue(getClass().getResourceAsStream("/weatherexamples/smhi/" + cityMap.get(cityName)), WeatherSmhi.class);
             } else {
@@ -88,7 +79,7 @@ public class SmhiApi {
                         + lon + "/lat/" + lat + "/data.json"), WeatherSmhi.class);
             }
         } catch (IOException e) {
-            logger.error("Could not connect to SMHI API", e);
+            LOG.error("Could not connect to SMHI API", e);
             throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
         }
     }
@@ -103,13 +94,13 @@ public class SmhiApi {
         if (city == null) {
             weather = Weather.builder()
                     .message("Weather for location Lon: " + lon + " and Lat: " + lat)
-                    .timeStamp(LocalDateTime.now())
+                    .timestamp(LocalDateTime.now())
                     .build();
         } else {
             weather = Weather.builder()
                     .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
                     .city(city)
-                    .timeStamp(LocalDateTime.now())
+                    .timestamp(LocalDateTime.now())
                     .build();
         }
         addWeatherDataSmhi(weather, weatherSmhi);

@@ -23,7 +23,7 @@ public class WeatherMapper {
     public static WeatherEntity convertToWeatherEntity(Weather weather, CityEntity cityEntity) {
         return WeatherEntity.builder()
                 .message(weather.getMessage())
-                .timeStamp(weather.getTimeStamp())
+                .timeStamp(weather.getTimestamp())
                 .city(cityEntity)
                 .build();
     }
@@ -31,7 +31,7 @@ public class WeatherMapper {
     public static Weather convertToWeather(WeatherEntity weatherEntity) {
         return Weather.builder()
                 .message(weatherEntity.getMessage())
-                .timeStamp(weatherEntity.getTimeStamp())
+                .timestamp(weatherEntity.getTimeStamp())
                 .city(toModel(weatherEntity.getCity()))
                 .weatherData(convertToWeatherDataMap(weatherEntity.getWeatherDataList()))
                 .build();

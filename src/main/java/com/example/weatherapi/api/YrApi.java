@@ -4,12 +4,10 @@ import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
 import com.example.weatherapi.exceptions.ApiConnectionException;
-import com.example.weatherapi.util.Cache;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -27,21 +25,16 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class YrApi {
 
-    ObjectMapper mapper;
-    private Cache cache;
-    private static final Logger logger = LoggerFactory.getLogger(YrApi.class);
+    ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
+    private static final Logger LOG = LoggerFactory.getLogger(YrApi.class);
 
-    @Autowired
-    public YrApi(Cache cache) {
-        this.cache = cache;
-        this.mapper = JsonMapper.builder().findAndAddModules().build();
-    }
     // Gets the domain and contact info from the application.properties file, contact info is required by the YR API
     @Value("${your.domain}")
     private String domain = "localhost";
     @Value("${contact.github}")
     private String contact;
     private boolean isTestMode = false;
+
     public void setTestMode(boolean isTestMode) {
         this.isTestMode = isTestMode;
     }
@@ -57,15 +50,14 @@ public class YrApi {
     }
 
     // The YR API requires a custom User-Agent header, otherwise it will return 403 Forbidden. So we need both our domain and contact info which is provided by the application.properties file.
-    //TODO: Add support for weathercodes
     public Weather getWeatherYr(double lon, double lat, City city) {
-        logger.info("Fetching weather data from the YR API...");
+        LOG.info("Fetching weather data from the YR API...");
         try {
             WeatherYr weatherYr;
             if(isTestMode){
                 Map<String, String> cityMap = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class);
                 String cityName = city.getName().toLowerCase();
-                logger.info("Using test data for YR: {}", cityName);
+                LOG.info("Using test data for YR: {}", cityName);
                 weatherYr = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/yr/" + cityMap.get(cityName)), WeatherYr.class);
             } else {
 
@@ -95,12 +87,12 @@ public class YrApi {
             if(city == null){
                 weather = Weather.builder()
                         .message("Weather for location Lon: " + lon + " and Lat: " + lat)
-                        .timeStamp(LocalDateTime.now())
+                        .timestamp(LocalDateTime.now())
                         .build();
             } else {
                 weather = Weather.builder()
                         .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
-                        .timeStamp(LocalDateTime.now())
+                        .timestamp(LocalDateTime.now())
                         .city(city)
                         .build();
             }
@@ -108,6 +100,8 @@ public class YrApi {
 
             return weather;
         } catch (Exception e){
+            LOG.warn("Could not connect to YR API", e);
+            Thread.currentThread().interrupt();
             throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
         }
     }

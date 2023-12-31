@@ -2,7 +2,6 @@
 
     import com.example.weatherapi.domain.entities.CityEntity;
     import com.example.weatherapi.domain.entities.WeatherCacheEntity;
-    import com.example.weatherapi.domain.entities.WeatherDataEntity;
     import com.example.weatherapi.domain.entities.WeatherEntity;
     import com.example.weatherapi.domain.weather.Weather;
     import com.example.weatherapi.exceptions.CityNotFoundException;
@@ -18,10 +17,8 @@
     import org.springframework.transaction.annotation.Transactional;
 
     import java.time.LocalDateTime;
-    import java.util.List;
     import java.util.Optional;
 
-    import static com.example.weatherapi.util.CityMapper.toEntity;
     import static com.example.weatherapi.util.WeatherMapper.*;
 
     @Service
@@ -72,7 +69,7 @@
                     return convertToWeather(cachedWeather.getWeather());
                 } else {
                     logger.info("Cache expired for key: {} in the database, fetching new data", key);
-                    //Maybe remove cache, but for now we keep every cache in the database.
+                    //Maybe remove cache, but for now we keep every cache in the database. If so just delete the cachedWeather object
                     return null;
                 }
             } else {
@@ -94,13 +91,12 @@
                     .weather(weatherEntity)
                     .build());
 
-            logger.info("Saved weather data to cache with key: {}, id: {}", key, weatherCacheEntity.getId());
+            logger.info("Saved weather data to cache with id: {} and key: {}", weatherCacheEntity.getId(), key);
         }
 
         public void clear() {
             weatherCacheRepository.deleteAll();
         }
-
 
 
     }

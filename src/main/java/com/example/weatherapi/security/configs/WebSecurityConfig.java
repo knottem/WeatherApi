@@ -45,7 +45,7 @@ public class WebSecurityConfig {
         //Order matters, so if we put /** for example first, it will override the other endpoints.
         http.authorizeHttpRequests(r -> r
                 .requestMatchers("/error").permitAll()
-                .requestMatchers("/weather/merged/**").permitAll()
+                .requestMatchers("/weather/**").permitAll()
                 .requestMatchers("/city/names").permitAll()
                 .requestMatchers("/city/all").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
                 .requestMatchers("/city/delete/**").hasRole(UserRole.ADMIN.toString())

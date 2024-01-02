@@ -2,7 +2,6 @@ package com.example.weatherapi.security;
 
 import com.example.weatherapi.domain.UserRole;
 import com.example.weatherapi.domain.entities.AuthEntity;
-import com.example.weatherapi.exceptions.exceptions.UserNotFoundException;
 import com.example.weatherapi.repositories.AuthRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

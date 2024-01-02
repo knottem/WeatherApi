@@ -1,4 +1,4 @@
-package com.example.weatherapi.exceptions.exceptions;
+package com.example.weatherapi.exceptions;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {

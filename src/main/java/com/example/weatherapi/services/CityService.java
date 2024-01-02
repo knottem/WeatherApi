@@ -8,8 +8,8 @@ import java.util.List;
 public interface CityService {
     CityEntity getCityByName(String name);
     CityEntity addCity(City city);
-
     List<CityEntity> getAllCities();
-
     String deleteCity(String name);
+
+    List<String> getAllCityNames();
 }

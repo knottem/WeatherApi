@@ -2,12 +2,10 @@ package com.example.weatherapi.controllers;
 
 import com.example.weatherapi.domain.Auth;
 import com.example.weatherapi.domain.entities.AuthEntity;
-import com.example.weatherapi.repositories.AuthRepository;
 import com.example.weatherapi.services.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

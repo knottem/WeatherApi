@@ -24,7 +24,7 @@ public class CityController {
         return cityService.getCityByName(name);
     }
 
-    @PostMapping(path = "/city/addCity")
+    @PostMapping(path = "/city/create")
     public ResponseEntity<CityEntity> addCity(@Valid @RequestBody City city) {
         return new ResponseEntity<>(cityService.addCity(city), HttpStatus.CREATED);
     }
@@ -37,5 +37,10 @@ public class CityController {
     @DeleteMapping(path = "/city/delete/{name}")
     public ResponseEntity<String> deleteCity(@PathVariable final String name) {
         return new ResponseEntity<>(cityService.deleteCity(name), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/city/names")
+    public List<String> retrieveAllCityNames() {
+        return cityService.getAllCityNames();
     }
 }

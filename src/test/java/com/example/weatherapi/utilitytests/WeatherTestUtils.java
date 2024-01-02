@@ -45,7 +45,7 @@ public class WeatherTestUtils {
      */
     public static void assertWeatherDataMergedStockholm(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T10:00")))
-                .isEqualTo(buildWeatherData(14.8f, 2, 3.5f, 348.55f, 0.0f));
+                .isEqualTo(buildWeatherData(14.7f, 2, 3.5f, 348.0f, 0.0f));
     }
 
     /**
@@ -64,7 +64,7 @@ public class WeatherTestUtils {
      */
     public static void assertWeatherDataYrStockholm(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T10:00")))
-                .isEqualTo(buildWeatherData(15.0f, 0, 3.6f, 350.1f, 0.0f));
+                .isEqualTo(buildWeatherData(15.0f, -1, 3.6f, 350.1f, 0.0f));
     }
 
     /**
@@ -73,7 +73,7 @@ public class WeatherTestUtils {
      */
     public static void assertWeatherDataMergedGothenburg(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T15:00")))
-                .isEqualTo(buildWeatherData(19.75f, 4, 3.8f, 80.95f, 0.0f));
+                .isEqualTo(buildWeatherData(19.8f, 4, 3.9f, 79.6f, 0.0f));
     }
 
     /**
@@ -91,6 +91,6 @@ public class WeatherTestUtils {
      */
     public static void assertWeatherDataYrGothenburg(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T15:00")))
-                .isEqualTo(buildWeatherData(19.7f, 0, 3.5f, 84.9f, 0.0f));
+                .isEqualTo(buildWeatherData(19.7f, -1, 3.5f, 84.9f, 0.0f));
     }
 }

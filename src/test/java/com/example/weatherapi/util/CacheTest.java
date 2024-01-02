@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 */
 @Tag("unit")
 @ExtendWith(MockitoExtension.class)
-public class CacheTest {
+class CacheTest {
 
 
     @Mock
@@ -39,7 +39,7 @@ public class CacheTest {
      * Assert: The Weather object retrieved from the cache is the same as the one we put in.
      */
     @Test
-    public void shouldRetrieveValidWeatherFromCache(){
+    void shouldRetrieveValidWeatherFromCache(){
         Weather weather = Weather.builder().build();
         when(cache.getWeatherFromCache("key")).thenReturn(weather);
         assertEquals(weather, cache.getWeatherFromCache("key"));
@@ -54,7 +54,7 @@ public class CacheTest {
      */
 
     @Test
-    public void shouldHandleNegativeCacheTimeInHours() {
+    void shouldHandleNegativeCacheTimeInHours() {
         Weather weather = Weather.builder().build();
         when(cache.getWeatherFromCache("key")).thenReturn(weather);
         assertEquals(weather, cache.getWeatherFromCache("key"));
@@ -68,7 +68,7 @@ public class CacheTest {
      * Assert: The Weather object retrieved from the cache is null.
      */
     @Test
-    public void shouldHandleNonExistentWeatherInCache() {
+    void shouldHandleNonExistentWeatherInCache() {
         assertNull(cache.getWeatherFromCache("key"));
     }
 

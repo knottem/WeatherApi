@@ -12,7 +12,7 @@ import static com.example.weatherapi.utilitytests.WeatherTestUtils.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class YrApiTests {
+class YrApiTests {
 
     @Autowired
     private YrApi yrApi;
@@ -24,7 +24,7 @@ public class YrApiTests {
 
     // Test Case 1: Check that the getWeatherSmhi method returns the correct Weather object for Stockholm
     @Test
-    public void getWeatherYrTestStockholm_Valid() {
+    void getWeatherYrTestStockholm_Valid() {
         // Arrange
         City city = new City("Stockholm", 59.3294, 18.0686);
         // Assert
@@ -33,7 +33,7 @@ public class YrApiTests {
 
     // Test Case 2: Check that the getWeatherYr method returns the correct Weather object for Gothenburg
     @Test
-    public void getWeatherYrTestGothenburg_Valid() {
+    void getWeatherYrTestGothenburg_Valid() {
         // Arrange
         City city = new City("Göteborg", 57.7089, 11.9746);
         // Assert

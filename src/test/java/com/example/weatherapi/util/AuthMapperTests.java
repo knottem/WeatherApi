@@ -21,7 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
  */
 
 @Tag("unit")
-public class AuthMapperTests {
+class AuthMapperTests {
 
 
     /**
@@ -32,7 +32,7 @@ public class AuthMapperTests {
      * Assert: The username, password, and role are verified to be equal between the Auth and AuthEntity objects.
      */
     @Test
-    public void shouldConvertAuthToAuthEntity() {
+    void shouldConvertAuthToAuthEntity() {
         // Arrange
         Auth auth = Auth.builder()
                 .username("test")
@@ -57,7 +57,7 @@ public class AuthMapperTests {
      * Assert: The username, password, and role are verified to be equal between the Auth and AuthEntity objects.
      */
     @Test
-    public void shouldConvertAuthEntityToAuth() {
+    void shouldConvertAuthEntityToAuth() {
         // Arrange
         AuthEntity authEntity = AuthEntity.builder()
                 .username("test")

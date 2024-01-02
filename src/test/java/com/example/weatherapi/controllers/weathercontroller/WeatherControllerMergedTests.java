@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class WeatherControllerMergedTests {
+class WeatherControllerMergedTests {
 
     @LocalServerPort
     private int port;
@@ -44,77 +44,72 @@ public class WeatherControllerMergedTests {
 
     // Test Case 1: Check that the response is correct
     @Test
-    public void getWeatherByCityMergedTest_Valid() {
+    void getWeatherByCityMergedTest_Valid() {
         ResponseEntity<Weather> response = restTemplate
-                .withBasicAuth("user", "pass123")
-                .getForEntity("http://localhost:" + port + "/weather/merged/Stockholm", Weather.class);
+                .getForEntity("http://localhost:" + port + "/api/v1/weather/Stockholm", Weather.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage())
-                .isEqualTo("Merged weather for Stockholm with location Lon: 18.0686 and Lat: 59.3294");
+                .isEqualTo("Merged weather for Stockholm from SMHI and YR");
         assertWeatherInformation(response.getBody());
         assertWeatherDataMergedStockholm(response.getBody());
     }
 
     // Test Case 2: Check case sensitivity
     @Test
-    public void getWeatherByCityMergedTest_CaseSensitivity() {
+    void getWeatherByCityMergedTest_CaseSensitivity() {
         ResponseEntity<Weather> response = restTemplate
-                .withBasicAuth("user", "pass123")
-                .getForEntity("http://localhost:" + port + "/weather/merged/StoCKHOLM", Weather.class);
+                .getForEntity("http://localhost:" + port + "/api/v1/weather/StoCKHOLM", Weather.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage())
-                .isEqualTo("Merged weather for Stockholm with location Lon: 18.0686 and Lat: 59.3294");
+                .isEqualTo("Merged weather for Stockholm from SMHI and YR");
         assertWeatherInformation(response.getBody());
         assertWeatherDataMergedStockholm(response.getBody());
     }
     // Test Case 3: Check that the response is correct with a city with unicode characters
     @Test
-    public void getWeatherByCityMergedTest_WithUnicode() {
+    void getWeatherByCityMergedTest_WithUnicode() {
         ResponseEntity<Weather> response = restTemplate
-                .withBasicAuth("user", "pass123")
-                .getForEntity("http://localhost:" + port + "/weather/merged/göteborg", Weather.class);
+                .getForEntity("http://localhost:" + port + "/api/v1/weather/göteborg", Weather.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage())
-                .isEqualTo("Merged weather for Göteborg with location Lon: 11.9675 and Lat: 57.7075");
+                .isEqualTo("Merged weather for Göteborg from SMHI and YR");
         assertWeatherInformation(response.getBody());
         assertWeatherDataMergedGothenburg(response.getBody());
     }
 
     // Test Case 4: Check that the response is correct if the city is not found
     @Test
-    public void getWeatherByCityMergedTest_NotFound() {
+    void getWeatherByCityMergedTest_NotFound() {
         String cityToTest = "Stockholm123";
         ResponseEntity<ErrorResponse> response = restTemplate
-                .withBasicAuth("user", "pass123")
-                .getForEntity("http://localhost:" + port + "/weather/merged/" + cityToTest, ErrorResponse.class);
+                .getForEntity("http://localhost:" + port + "/api/v1/weather/" + cityToTest, ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("City not found: " + cityToTest);
+        assertThat(response.getBody().getError()).isEqualTo("City not found: " + cityToTest.toLowerCase());
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/weather/merged/" + cityToTest);
+        assertThat(response.getBody().getPath()).isEqualTo("/api/v1/weather/" + cityToTest);
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
     // Test Case 5: Hit the endpoint several times to make sure the cache works
     @Test
-    public void getWeatherByCityMergedTest_SeveralAttempts(){
+    void getWeatherByCityMergedTest_SeveralAttempts(){
         for (int i = 0; i < 10; i++) {
             ResponseEntity<Weather> response = restTemplate
-                    .withBasicAuth("user", "pass123")
-                    .getForEntity("http://localhost:" + port + "/weather/merged/Stockholm", Weather.class);
+                    .getForEntity("http://localhost:" + port + "/api/v1/weather/Stockholm", Weather.class);
 
             // Assert
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(Objects.requireNonNull(response.getBody()).getMessage())
-                    .isEqualTo("Merged weather for Stockholm with location Lon: 18.0686 and Lat: 59.3294");
+                    .isEqualTo("Merged weather for Stockholm from SMHI and YR");
             assertWeatherInformation(response.getBody());
             assertWeatherDataMergedStockholm(response.getBody());
         }

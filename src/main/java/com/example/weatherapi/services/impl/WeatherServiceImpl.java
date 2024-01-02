@@ -30,7 +30,7 @@ public class WeatherServiceImpl implements WeatherService {
     private final SmhiApi smhiApi;
     private final YrApi yrApi;
     private final Cache cache;
-    private final Logger LOG;
+    private final Logger log;
     private final Object lock = new Object();
     private Map<LocalDateTime, Weather.WeatherData> mergedWeatherData;
     private volatile int mergeCount;
@@ -40,7 +40,7 @@ public class WeatherServiceImpl implements WeatherService {
         this.smhiApi = smhiApi;
         this.yrApi = yrApi;
         this.cache = cache;
-        this.LOG = LoggerFactory.getLogger(WeatherServiceImpl.class);
+        this.log = LoggerFactory.getLogger(WeatherServiceImpl.class);
     }
 
     @Override
@@ -68,8 +68,10 @@ public class WeatherServiceImpl implements WeatherService {
 
         combinedFuture.join();
 
+        setScaleWeatherData(1);
+
         Weather mergedWeather = Weather.builder()
-                .message("Merged weather for " + city.getName())
+                .message("Merged weather for " + city.getName() + " from SMHI and YR")
                 .weatherData(mergedWeatherData)
                 .timestamp(LocalDateTime.now())
                 .city(toModel(cityService.getCityByName(cityName)))
@@ -92,13 +94,14 @@ public class WeatherServiceImpl implements WeatherService {
                     float avgWindDirection = ((existingData.getWindDirection() * mergeCount) + newDataItem.getWindDirection()) / (mergeCount + 1);
                     float avgWindSpeed = ((existingData.getWindSpeed() * mergeCount) + newDataItem.getWindSpeed()) / (mergeCount + 1);
                     float avgPrecipitation = ((existingData.getPrecipitation() * mergeCount) + newDataItem.getPrecipitation()) / (mergeCount + 1);
+                    int weatherCode = existingData.getWeatherCode() > -1 ? existingData.getWeatherCode() : newDataItem.getWeatherCode();
 
                     Weather.WeatherData mergedData = Weather.WeatherData.builder()
-                            .temperature(BigDecimal.valueOf(avgTemperature).setScale(2, RoundingMode.HALF_UP).floatValue())
-                            .windDirection(BigDecimal.valueOf(avgWindDirection).setScale(2, RoundingMode.HALF_UP).floatValue())
-                            .windSpeed(BigDecimal.valueOf(avgWindSpeed).setScale(2, RoundingMode.HALF_UP).floatValue())
-                            .precipitation(BigDecimal.valueOf(avgPrecipitation).setScale(2, RoundingMode.HALF_UP).floatValue())
-                            .weatherCode(existingData.getWeatherCode())
+                            .temperature(avgTemperature)
+                            .windDirection(avgWindDirection)
+                            .windSpeed(avgWindSpeed)
+                            .precipitation(avgPrecipitation)
+                            .weatherCode(weatherCode)
                             .build();
 
                     mergedWeatherData.put(key, mergedData);
@@ -107,7 +110,17 @@ public class WeatherServiceImpl implements WeatherService {
                 }
             }
             mergeCount++;
-            LOG.info("Merged weather data from {}", api);
+            log.info("Merged weather data from {}", api);
+        }
+    }
+
+    private void setScaleWeatherData(int scale){
+        for (Map.Entry<LocalDateTime, Weather.WeatherData> entry : mergedWeatherData.entrySet()) {
+            Weather.WeatherData weatherData = entry.getValue();
+            weatherData.setTemperature(BigDecimal.valueOf(weatherData.getTemperature()).setScale(scale, RoundingMode.HALF_UP).floatValue());
+            weatherData.setWindDirection(BigDecimal.valueOf(weatherData.getWindDirection()).setScale(scale, RoundingMode.HALF_UP).floatValue());
+            weatherData.setWindSpeed(BigDecimal.valueOf(weatherData.getWindSpeed()).setScale(scale, RoundingMode.HALF_UP).floatValue());
+            weatherData.setPrecipitation(BigDecimal.valueOf(weatherData.getPrecipitation()).setScale(scale, RoundingMode.HALF_UP).floatValue());
         }
     }
 

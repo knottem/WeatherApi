@@ -108,12 +108,12 @@ public class YrApi {
 
     private void addWeatherDataYr(Weather weather, WeatherYr weatherYr) {
         weatherYr.properties().timeseries().forEach(t ->
-                weather.addWeatherData(
-                        t.time(),
+                weather.addWeatherData(t.time(),
                         t.data().instant().details().air_temperature(),
-                        0,
+                        -1,
                         t.data().instant().details().wind_speed(),
                         t.data().instant().details().wind_from_direction(),
                         t.data().instant().details().precipitation_amount()));
     }
+
 }

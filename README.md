@@ -152,14 +152,13 @@ This will make the program run on port 8081 instead of 8080, change it to whatev
 - [X] Compare the results from the different APIs and return a merged result
 - [X] Use custom properties with h2 for tests
 - [X] Add GitHub actions for testing.
-
+- [X] Change my basic caching to use spring boot caching (https://spring.io/guides/gs/caching/)
 
 ## TODO
 
 - [ ] Add Api-key authentication
 - [ ] Add documentation to every class and method
 - [ ] Add more tests.
-- [ ] Change my basic caching to use spring boot caching (https://spring.io/guides/gs/caching/)
 - [ ] Add more weather APIs(Danish - DMI, Finnish - FMI)
 - [ ] Add more endpoints
 - [ ] Clean up the code, make it more readable and remove unused code.

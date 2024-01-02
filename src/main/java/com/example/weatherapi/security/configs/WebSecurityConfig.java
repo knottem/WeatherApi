@@ -36,16 +36,13 @@ public class WebSecurityConfig {
         return new CustomAccessDeniedHandler();
     }
 
-    //Setting up security for the endpoints.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        //Setting roles for endpoints, nothing should be accessible without a role,
-        //except for the error endpoint which is where the user is redirected to when they try to access a page they don't have access to.
-        //Order matters, so if we put /** for example first, it will override the other endpoints.
         http.authorizeHttpRequests(r -> r
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/weather/**").permitAll()
+                .requestMatchers("/actuator/health").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/names").permitAll()
                 .requestMatchers("/city/all").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
                 .requestMatchers("/city/delete/**").hasRole(UserRole.ADMIN.toString())

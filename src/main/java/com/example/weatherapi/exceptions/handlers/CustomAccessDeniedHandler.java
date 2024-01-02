@@ -24,7 +24,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             return;
         }
         StringBuilder logMessage = new StringBuilder();
-        logMessage.append(" endpoint: ").append(requestURI);
+        logMessage.append("endpoint: ").append(requestURI);
         logMessage.append(" from IP: ").append(request.getHeader("X-Forwarded-For"));
         String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
         if(username != null){

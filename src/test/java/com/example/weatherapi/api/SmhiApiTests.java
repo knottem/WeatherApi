@@ -46,7 +46,7 @@ class SmhiApiTests {
     @Test
     void getWeatherSmhiTestStockholm_Valid() {
         // Arrange
-        City city = new City("Stockholm", 59.3294, 18.0686);
+        City city = new City("Stockholm", 59.3294, 18.0686, null, null);
         // Assert
         assertWeatherDataSmhiStockholm(smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city));
     }
@@ -63,7 +63,7 @@ class SmhiApiTests {
     @Test
     void getWeatherSmhiTestGothenburg_Valid() {
         // Arrange
-        City city = new City("Göteborg", 57.7089, 11.9746);
+        City city = new City("Göteborg", 57.7089, 11.9746, null, null);
         // Assert
         assertWeatherDataSmhiGothenburg(smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city));
     }

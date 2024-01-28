@@ -113,7 +113,7 @@ public class SmhiApi {
      */
     private void addWeatherDataSmhi(Weather weather, WeatherSmhi weatherSmhi) {
         weatherSmhi.timeSeries().forEach(t ->
-            weather.addWeatherData(ZonedDateTime.of(t.validTime(), ZoneId.of("UTC")),
+            weather.addWeatherData(t.validTime(),
                     t.parameters().stream().filter(p -> p.name().equals("t"))
                             .map(p -> p.values().get(0)).findFirst().orElse(0f),
                     t.parameters().stream().filter(p -> p.name().equals("Wsymb2"))

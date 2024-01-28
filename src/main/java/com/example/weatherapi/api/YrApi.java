@@ -110,7 +110,7 @@ public class YrApi {
 
     private void addWeatherDataYr(Weather weather, WeatherYr weatherYr) {
         weatherYr.properties().timeseries().forEach(t ->
-                weather.addWeatherData(ZonedDateTime.of(t.time(), ZoneId.of("UTC")),
+                weather.addWeatherData(t.time(),
                         t.data().instant().details().air_temperature(),
                         mapToWeatherCodeYR(t),
                         t.data().instant().details().wind_speed(),

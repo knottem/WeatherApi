@@ -26,7 +26,7 @@ class YrApiTests {
     @Test
     void getWeatherYrTestStockholm_Valid() {
         // Arrange
-        City city = new City("Stockholm", 59.3294, 18.0686);
+        City city = new City("Stockholm", 59.3294, 18.0686, null, null);
         // Assert
         assertWeatherDataYrStockholm(yrApi.getWeatherYr(city.getLon(), city.getLat(), city));
     }
@@ -35,7 +35,7 @@ class YrApiTests {
     @Test
     void getWeatherYrTestGothenburg_Valid() {
         // Arrange
-        City city = new City("Göteborg", 57.7089, 11.9746);
+        City city = new City("Göteborg", 57.7089, 11.9746, null, null);
         // Assert
         assertWeatherDataYrGothenburg(yrApi.getWeatherYr(city.getLon(), city.getLat(), city));
     }

@@ -63,6 +63,10 @@ jobs:
       - name: Build the jar
         run: ./gradlew bootJar
 
+      - name: Extract project version
+        id: gradle_version
+        run: echo "VERSION=$(./gradlew -q printVersion)" >> $GITHUB_ENV
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -75,9 +79,7 @@ jobs:
         uses: docker/metadata-action@v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            dev
+          tags: dev, ${{ env.VERSION }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

@@ -4,9 +4,13 @@ import com.example.weatherapi.domain.weather.Weather;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
 
 /**
 * This class contains tests for the Cache class.
@@ -19,16 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 *  @see <a href="https://github.com/knottem/WeatherApi">Repository Link</a>
 */
 @Tag("unit")
-public class CacheTest {
+@ExtendWith(MockitoExtension.class)
+class CacheTest {
 
 
-    /**
-     * This method is run before each test case to clear the cache.
-     */
-    @BeforeEach
-    public void tearDown(){
-        Cache.getInstance().clear();
-    }
+    @Mock
+    private Cache cache;
+
 
     /**
      * Test Case 1: Check that the cache we get is the same as the one we put in with a valid cacheTimeInHours.
@@ -38,10 +39,10 @@ public class CacheTest {
      * Assert: The Weather object retrieved from the cache is the same as the one we put in.
      */
     @Test
-    public void shouldRetrieveValidWeatherFromCache(){
+    void shouldRetrieveValidWeatherFromCache(){
         Weather weather = Weather.builder().build();
-        Cache.getInstance().put("key", weather);
-        assertEquals(weather, Cache.getInstance().getWeatherFromCache("key", 1));
+        when(cache.getWeatherFromCache("key")).thenReturn(weather);
+        assertEquals(weather, cache.getWeatherFromCache("key"));
     }
 
     /**
@@ -53,10 +54,10 @@ public class CacheTest {
      */
 
     @Test
-    public void shouldHandleNegativeCacheTimeInHours() {
+    void shouldHandleNegativeCacheTimeInHours() {
         Weather weather = Weather.builder().build();
-        Cache.getInstance().put("key", weather);
-        assertEquals(weather, Cache.getInstance().getWeatherFromCache("key", -1));
+        when(cache.getWeatherFromCache("key")).thenReturn(weather);
+        assertEquals(weather, cache.getWeatherFromCache("key"));
     }
 
     /**
@@ -67,8 +68,8 @@ public class CacheTest {
      * Assert: The Weather object retrieved from the cache is null.
      */
     @Test
-    public void shouldHandleNonExistentWeatherInCache() {
-        assertNull(Cache.getInstance().getWeatherFromCache("key", 1));
+    void shouldHandleNonExistentWeatherInCache() {
+        assertNull(cache.getWeatherFromCache("key"));
     }
 
 

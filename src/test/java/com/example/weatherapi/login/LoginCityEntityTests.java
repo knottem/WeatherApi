@@ -24,29 +24,32 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class LoginCityEntityTests {
+class LoginCityEntityTests {
 
     @LocalServerPort
     private int port;
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    private final String baseUrl = "http://localhost:";
+    private final String endpoint = "/api/v1/city";
     /**
      * Test Case 1: forbidden request to city by a user that is not admin<br>
      * Asserts that the response is correct and that the user is not admin
      */
     @Test
-    public void shouldReturnForbiddenStatusForUser(){
+    void shouldReturnForbiddenStatusForUser(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("user", "pass123")
-                .getForEntity("http://localhost:" + port + "/city/Stockholm", ErrorResponse.class);
+                .getForEntity(baseUrl + port + endpoint + "/stockholm", ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("Forbidden");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/city/Stockholm");
+        assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/stockholm");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -55,16 +58,16 @@ public class LoginCityEntityTests {
      * Asserts that the response is correct and that the user is not logged in
      */
     @Test
-    public void shouldReturnUnauthorizedStatusForNoAuth(){
+    void shouldReturnUnauthorizedStatusForNoAuth(){
         ResponseEntity<ErrorResponse> response = restTemplate
-                .getForEntity("http://localhost:" + port + "/city/Stockholm", ErrorResponse.class);
+                .getForEntity(baseUrl + port + endpoint + "/Stockholm", ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("Unauthorized");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/city/Stockholm");
+        assertThat(response.getBody().getPath()).isEqualTo(endpoint +"/Stockholm");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 
@@ -74,17 +77,17 @@ public class LoginCityEntityTests {
      * shouldReturnUnauthorizedStatusForWrongPassword
      */
     @Test
-    public void shouldReturnUnauthorizedStatusForWrongPassword(){
+    void shouldReturnUnauthorizedStatusForWrongPassword(){
         ResponseEntity<ErrorResponse> response = restTemplate
                 .withBasicAuth("admin", "wrongpassword")
-                .getForEntity("http://localhost:" + port + "/city/Stockholm", ErrorResponse.class);
+                .getForEntity(baseUrl + port + endpoint + "/Stockholm", ErrorResponse.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getError()).isEqualTo("Unauthorized");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/city/Stockholm");
+        assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/Stockholm");
         assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
     }
 }

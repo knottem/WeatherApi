@@ -1,4 +1,4 @@
-package com.example.weatherapi.exceptions.exceptions;
+package com.example.weatherapi.exceptions;
 
 // A custom exception class for handling API connection errors
 public class ApiConnectionException extends RuntimeException {

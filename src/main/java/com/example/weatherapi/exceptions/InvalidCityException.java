@@ -1,4 +1,4 @@
-package com.example.weatherapi.exceptions.exceptions;
+package com.example.weatherapi.exceptions;
 
 public class InvalidCityException extends RuntimeException {
     public InvalidCityException(String message) {

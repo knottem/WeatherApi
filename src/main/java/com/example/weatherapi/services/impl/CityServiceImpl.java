@@ -2,16 +2,18 @@ package com.example.weatherapi.services.impl;
 
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.City;
-import com.example.weatherapi.exceptions.exceptions.CityNotFoundException;
-import com.example.weatherapi.exceptions.exceptions.InvalidCityException;
+import com.example.weatherapi.exceptions.CityNotFoundException;
+import com.example.weatherapi.exceptions.InvalidCityException;
 import com.example.weatherapi.repositories.CityRepository;
 import com.example.weatherapi.services.CityService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,19 +57,22 @@ public class CityServiceImpl implements CityService {
     @Override
     @Transactional
     public String deleteCity(String name) {
-        // Try to get the city by name
         Optional<CityEntity> cityOptional = cityRepository.findByNameIgnoreCase(name);
-
-        // If the city is not found, throw an exception
         if(cityOptional.isEmpty()) {
             throw new CityNotFoundException("City not found: " + name);
         }
-
-        // Otherwise, delete the city and return a message with the deleted city's name
         CityEntity deletedCity = cityOptional.get();
         cityRepository.deleteByNameIgnoreCase(name);
         logger.info("City has been deleted: {}", deletedCity);
-
         return "City '" + deletedCity.getName() + "' deleted successfully";
     }
+
+    @Override
+    @Cacheable("cache")
+    public List<String> getAllCityNames() {
+        List<String> allCityNames = cityRepository.findAllCityNames();
+        Collections.sort(allCityNames);
+        return allCityNames;
+    }
+
 }

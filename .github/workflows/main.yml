@@ -71,6 +71,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+        # Todo add deploy with ssh to server and do docker-compose down, pull, up
       - name: Deploy to Main
         run: |
           echo "Deploying to Dev with image ${{ needs.build-and-publish-dev.outputs.tags }}"

@@ -20,7 +20,7 @@ import static com.example.weatherapi.utilitytests.WeatherTestUtils.*;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class SmhiApiTests {
+class SmhiApiTests {
 
     @Autowired
     private SmhiApi smhiApi;
@@ -44,9 +44,9 @@ public class SmhiApiTests {
      * {@link com.example.weatherapi.utilitytests.WeatherTestUtils#assertWeatherDataSmhiStockholm(Weather)} is used for the assertion.
      */
     @Test
-    public void getWeatherSmhiTestStockholm_Valid() {
+    void getWeatherSmhiTestStockholm_Valid() {
         // Arrange
-        City city = new City("Stockholm", 59.3294, 18.0686);
+        City city = new City("Stockholm", 59.3294, 18.0686, null, null);
         // Assert
         assertWeatherDataSmhiStockholm(smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city));
     }
@@ -61,9 +61,9 @@ public class SmhiApiTests {
      * {@link com.example.weatherapi.utilitytests.WeatherTestUtils#assertWeatherDataSmhiGothenburg(Weather)} is used for the assertion.
      */
     @Test
-    public void getWeatherSmhiTestGothenburg_Valid() {
+    void getWeatherSmhiTestGothenburg_Valid() {
         // Arrange
-        City city = new City("Göteborg", 57.7089, 11.9746);
+        City city = new City("Göteborg", 57.7089, 11.9746, null, null);
         // Assert
         assertWeatherDataSmhiGothenburg(smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city));
     }

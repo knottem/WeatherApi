@@ -1,4 +1,4 @@
-package com.example.weatherapi.exceptions.exceptions;
+package com.example.weatherapi.exceptions;
 
 import org.springframework.web.context.request.WebRequest;
 

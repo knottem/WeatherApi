@@ -2,6 +2,10 @@ package com.example.weatherapi.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.UUID;
 
 
 @NoArgsConstructor
@@ -11,14 +15,12 @@ import lombok.*;
 @Entity
 @Builder
 @Table(name = "city")
-//Simple entity class that represents a city
-//Every city has a name, longitude and latitude coordinates
 public class CityEntity {
 
-    //The id is generated automatically by the database
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    private UUID id;
 
     private String name;
     private Double lon;

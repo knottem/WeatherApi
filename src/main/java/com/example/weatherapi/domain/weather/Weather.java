@@ -1,10 +1,12 @@
 package com.example.weatherapi.domain.weather;
 
 
+import com.example.weatherapi.domain.City;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Data
@@ -14,13 +16,17 @@ public class Weather {
 
     private String message;
 
+    private ZonedDateTime timestamp;
+
+    private City city;
+
     @Builder.Default
     private Information information = new Information();
 
     @Builder.Default
-    private Map<LocalDateTime, WeatherData> weatherData = new LinkedHashMap<>();
+    private Map<ZonedDateTime, WeatherData> weatherData = new LinkedHashMap<>();
 
-    public void addWeatherData(LocalDateTime validTime,
+    public void addWeatherData(ZonedDateTime validTime,
                                float temperature,
                                int weatherCode,
                                float windSpeed,

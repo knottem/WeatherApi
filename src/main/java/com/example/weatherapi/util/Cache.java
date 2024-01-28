@@ -1,73 +1,77 @@
-package com.example.weatherapi.util;
+    package com.example.weatherapi.util;
 
-import com.example.weatherapi.domain.weather.Weather;
-import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+    import com.example.weatherapi.domain.entities.CityEntity;
+    import com.example.weatherapi.domain.entities.WeatherEntity;
+    import com.example.weatherapi.domain.weather.Weather;
+    import com.example.weatherapi.exceptions.CityNotFoundException;
+    import com.example.weatherapi.repositories.CityRepository;
+    import com.example.weatherapi.repositories.WeatherDataRepository;
+    import com.example.weatherapi.repositories.WeatherEntityRepository;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.beans.factory.annotation.Value;
+    import org.springframework.stereotype.Service;
+    import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+    import java.util.Optional;
 
-public class Cache {
+    import static com.example.weatherapi.util.WeatherMapper.*;
 
-    private final Logger logger;
-    private static Cache instance;
-    private final Map<String, WeatherCache> cache;
+    @Service
+    public class Cache {
+        private final Logger logger;
+        private final WeatherEntityRepository weatherEntityRepository;
 
-    private Cache() {
-        cache = new HashMap<>();
-        logger = LoggerFactory.getLogger(Cache.class);
-    }
+        @Value("${cache.time.in.minutes}")
+        private int cacheTimeInMinutes;
+        private final CityRepository cityRepository;
 
-    public static Cache getInstance() {
-        if (instance == null) {
-            instance = new Cache();
-        }
-        return instance;
-    }
-
-    public Weather getWeatherFromCache(String key, int cacheTimeInHours) {
-        if(cacheTimeInHours < 0) {
-            logger.warn("Cache time in hours is negative, setting it to default value of 3 hour");
-            cacheTimeInHours = 3;
-        }
-        WeatherCache entry = cache.get(key);
-        if(entry != null && entry.isValid(cacheTimeInHours)) {
-            logger.info("Cache hit for key: " + key + ", returning cached data");
-            return entry.getWeather();
-        }  else if(entry != null) {
-            logger.info("Cache expired for key: " + key + ", fetching new data");
-            cache.remove(key);
-        } else {
-            logger.info("Cache doesn't exist for key: " + key + ", fetching new data");
-        }
-        return null;
-    }
-
-    public void put(String key, Weather weather) {
-        cache.put(key, new WeatherCache(weather));
-    }
-
-    public void clear() {
-        cache.clear();
-    }
-
-    static class WeatherCache {
-
-        private final LocalDateTime timestamp;
-        @Getter
-        private final Weather weather;
-
-        public WeatherCache(Weather weather) {
-            this.weather = weather;
-            this.timestamp = LocalDateTime.now();
+        @Autowired
+        private Cache(WeatherEntityRepository weatherEntityRepository,
+                      WeatherDataRepository weatherDataRepository,
+                      CityRepository cityRepository) {
+            logger = LoggerFactory.getLogger(Cache.class);
+            this.weatherEntityRepository = weatherEntityRepository;
+            this.cityRepository = cityRepository;
         }
 
-        public boolean isValid(int hours) {
-            return LocalDateTime.now().minusHours(hours).isBefore(timestamp);
+        public Cache() {
+            // Default, no-argument constructor
+            logger = LoggerFactory.getLogger(Cache.class);
+            this.weatherEntityRepository = null;
+            this.cityRepository = null;
         }
 
-    }
+        public Weather getWeatherFromCache(String cityName) {
+            if (cacheTimeInMinutes < 0) {
+                logger.warn("Cache time in minutes is negative, setting it to default value of 60 minutes");
+                cacheTimeInMinutes = 60;
+            }
 
-}
+            Optional<WeatherEntity> cachedWeatherOptional = weatherEntityRepository.findLatestByCityName(cityName);
+
+            if (cachedWeatherOptional.isPresent()) {
+                WeatherEntity cachedWeather = cachedWeatherOptional.get();
+                if (cachedWeather.isValid(cacheTimeInMinutes)) {
+                    logger.info("Cache hit for City: {} in the database, returning cached data", cityName);
+                    return convertToWeather(cachedWeather);
+                } else {
+                    logger.info("Cache expired for City: {} in the database, fetching new data", cityName);
+                    //Maybe remove cache, but for now we keep every cache in the database. If so just delete the cachedWeather object
+                    return null;
+                }
+            } else {
+                logger.info("Cache doesn't exist for City: {} in the database, fetching new data", cityName);
+            }
+            return null;
+        }
+
+        @Transactional
+        public void save(Weather weather) {
+            CityEntity cityEntity = cityRepository.findByNameIgnoreCase(weather.getCity().getName())
+                    .orElseThrow(() -> new CityNotFoundException("City not found with ID: " + weather.getCity().getName()));
+            WeatherEntity weatherEntity = weatherEntityRepository.save(convertToWeatherEntity(weather, cityEntity));
+            logger.info("Saved weather data to cache with id: {} and key: {}", weatherEntity.getId(), weather.getCity().getName());
+        }
+    }

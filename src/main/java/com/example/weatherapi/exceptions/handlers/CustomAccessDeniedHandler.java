@@ -18,8 +18,19 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "Anonymous";
-        logger.warn("Unauthorized access attempt to endpoint: {} by user: {} (IP: {})", URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8), username, request.getRemoteAddr());
+        String requestURI = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
+        if ("/favicon.ico".equals(requestURI)) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        StringBuilder logMessage = new StringBuilder();
+        logMessage.append("endpoint: ").append(requestURI);
+        logMessage.append(" from IP: ").append(request.getHeader("X-Forwarded-For"));
+        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
+        if(username != null){
+            logMessage.append(" by user: ").append(username);
+        }
+        logger.warn("Unauthorized access attempt to {}", logMessage);
         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
     }
 }

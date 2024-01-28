@@ -74,4 +74,5 @@ public class CityServiceImpl implements CityService {
         Collections.sort(allCityNames);
         return allCityNames;
     }
+
 }

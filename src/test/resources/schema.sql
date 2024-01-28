@@ -26,18 +26,6 @@ CREATE TABLE weather (
     FOREIGN KEY (city_id) REFERENCES city (id)
 );
 
--- Create weather_cache table
-CREATE TABLE weather_cache (
-    id varchar(36) NOT NULL,
-    timestamp timestamp DEFAULT NULL,
-    weather_id varchar(36) DEFAULT NULL,
-    cache_key varchar(255) DEFAULT NULL,
-    PRIMARY KEY (id),
-    UNIQUE (weather_id),
-    UNIQUE (cache_key, weather_id),
-    FOREIGN KEY (weather_id) REFERENCES weather (id) ON DELETE CASCADE
-);
-
 -- Create weather_data table
 CREATE TABLE weather_data (
     id varchar(36) NOT NULL,

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Data
@@ -15,7 +16,7 @@ public class Weather {
 
     private String message;
 
-    private LocalDateTime timestamp;
+    private ZonedDateTime timestamp;
 
     private City city;
 

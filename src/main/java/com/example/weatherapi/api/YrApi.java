@@ -17,9 +17,12 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+
+import static com.example.weatherapi.util.WeatherCodeMapper.mapToWeatherCodeYR;
 
 //YrAPI class that handles all the communication with the yr api
 @Component
@@ -55,10 +58,9 @@ public class YrApi {
         try {
             WeatherYr weatherYr;
             if(isTestMode){
-                Map<String, String> cityMap = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class);
-                String cityName = city.getName().toLowerCase();
-                LOG.info("Using test data for YR: {}", cityName);
-                weatherYr = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/yr/" + cityMap.get(cityName)), WeatherYr.class);
+                weatherYr = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/yr/" +
+                        mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class).get(city.getName().toLowerCase())),
+                        WeatherYr.class);
             } else {
 
                 HttpClient httpClient = HttpClient.newBuilder()
@@ -87,12 +89,12 @@ public class YrApi {
             if(city == null){
                 weather = Weather.builder()
                         .message("Weather for location Lon: " + lon + " and Lat: " + lat)
-                        .timestamp(LocalDateTime.now())
+                        .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                         .build();
             } else {
                 weather = Weather.builder()
                         .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
-                        .timestamp(LocalDateTime.now())
+                        .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                         .city(city)
                         .build();
             }
@@ -110,7 +112,7 @@ public class YrApi {
         weatherYr.properties().timeseries().forEach(t ->
                 weather.addWeatherData(t.time(),
                         t.data().instant().details().air_temperature(),
-                        -1,
+                        mapToWeatherCodeYR(t),
                         t.data().instant().details().wind_speed(),
                         t.data().instant().details().wind_from_direction(),
                         t.data().instant().details().precipitation_amount()));

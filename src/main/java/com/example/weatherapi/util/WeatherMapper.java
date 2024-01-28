@@ -6,6 +6,7 @@ import com.example.weatherapi.domain.entities.WeatherEntity;
 import com.example.weatherapi.domain.weather.Weather;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class WeatherMapper {
                 .build();
     }
 
-    private static Map<LocalDateTime, Weather.WeatherData> convertToWeatherDataMap(List<WeatherDataEntity> weatherDataEntities) {
+    private static Map<ZonedDateTime, Weather.WeatherData> convertToWeatherDataMap(List<WeatherDataEntity> weatherDataEntities) {
         return weatherDataEntities.stream()
                 .sorted(Comparator.comparing(WeatherDataEntity::getValidTime))
                 .collect(Collectors.toMap(

@@ -24,9 +24,9 @@ public class Weather {
     private Information information = new Information();
 
     @Builder.Default
-    private Map<LocalDateTime, WeatherData> weatherData = new LinkedHashMap<>();
+    private Map<ZonedDateTime, WeatherData> weatherData = new LinkedHashMap<>();
 
-    public void addWeatherData(LocalDateTime validTime,
+    public void addWeatherData(ZonedDateTime validTime,
                                float temperature,
                                int weatherCode,
                                float windSpeed,

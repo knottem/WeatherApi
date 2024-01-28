@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -67,14 +68,12 @@ public class SmhiApi {
     private WeatherSmhi fetchWeatherSmhi(double lon, double lat, City city) throws ApiConnectionException {
         try {
             if (isTestMode) {
-                // cityMap is used to map the city name to the correct test file from the resources folder, so we can use the same method for all cities we have test data for
-                Map<String, String> cityMap = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class);
                 String cityName = city.getName().toLowerCase();
                 LOG.info("Using test data for SMHI: {}", cityName);
-                // return the WeatherSmhi object from the test file with the correct city name
-                return mapper.readValue(getClass().getResourceAsStream("/weatherexamples/smhi/" + cityMap.get(cityName)), WeatherSmhi.class);
+                return mapper.readValue(getClass().getResourceAsStream("/weatherexamples/smhi/" +
+                        mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class)
+                                .get(cityName)), WeatherSmhi.class);
             } else {
-                // return the WeatherSmhi object from the SMHI API for the given coordinates
                 return mapper.readValue(new URL("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
                         + lon + "/lat/" + lat + "/data.json"), WeatherSmhi.class);
             }
@@ -94,13 +93,13 @@ public class SmhiApi {
         if (city == null) {
             weather = Weather.builder()
                     .message("Weather for location Lon: " + lon + " and Lat: " + lat)
-                    .timestamp(LocalDateTime.now())
+                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                     .build();
         } else {
             weather = Weather.builder()
                     .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
                     .city(city)
-                    .timestamp(LocalDateTime.now())
+                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                     .build();
         }
         addWeatherDataSmhi(weather, weatherSmhi);

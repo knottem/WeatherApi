@@ -64,7 +64,7 @@ public class WeatherTestUtils {
      */
     public static void assertWeatherDataYrStockholm(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T10:00")))
-                .isEqualTo(buildWeatherData(15.0f, -1, 3.6f, 350.1f, 0.0f));
+                .isEqualTo(buildWeatherData(15.0f, 4, 3.6f, 350.1f, 0.0f));
     }
 
     /**
@@ -91,6 +91,6 @@ public class WeatherTestUtils {
      */
     public static void assertWeatherDataYrGothenburg(Weather weather){
         assertThat(weather.getWeatherData().get(LocalDateTime.parse("2023-09-17T15:00")))
-                .isEqualTo(buildWeatherData(19.7f, -1, 3.5f, 84.9f, 0.0f));
+                .isEqualTo(buildWeatherData(19.7f, 3, 3.5f, 84.9f, 0.0f));
     }
 }

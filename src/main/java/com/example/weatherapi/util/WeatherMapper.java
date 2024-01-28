@@ -21,11 +21,27 @@ public class WeatherMapper {
     }
 
     public static WeatherEntity convertToWeatherEntity(Weather weather, CityEntity cityEntity) {
-        return WeatherEntity.builder()
+        WeatherEntity weatherEntity = WeatherEntity.builder()
                 .message(weather.getMessage())
                 .timeStamp(weather.getTimestamp())
                 .city(cityEntity)
                 .build();
+
+        List<WeatherDataEntity> weatherDataEntities = weather.getWeatherData().entrySet().stream()
+                .map(entry -> WeatherDataEntity.builder()
+                        .validTime(entry.getKey())
+                        .temperature(entry.getValue().getTemperature())
+                        .weatherCode(entry.getValue().getWeatherCode())
+                        .windSpeed(entry.getValue().getWindSpeed())
+                        .windDirection(entry.getValue().getWindDirection())
+                        .precipitation(entry.getValue().getPrecipitation())
+                        .weatherEntity(weatherEntity)
+                        .build())
+                .toList();
+
+        weatherEntity.setWeatherDataList(weatherDataEntities);
+
+        return weatherEntity;
     }
 
     public static Weather convertToWeather(WeatherEntity weatherEntity) {
@@ -53,20 +69,5 @@ public class WeatherMapper {
                         LinkedHashMap::new
                 ));
     }
-
-    public static List<WeatherDataEntity> convertToWeatherDataEntity(Map<LocalDateTime, Weather.WeatherData> weatherData, WeatherEntity weatherEntity) {
-        return weatherData.entrySet().stream()
-                .map(entry -> WeatherDataEntity.builder()
-                        .validTime(entry.getKey())
-                        .temperature(entry.getValue().getTemperature())
-                        .weatherCode(entry.getValue().getWeatherCode())
-                        .windSpeed(entry.getValue().getWindSpeed())
-                        .windDirection(entry.getValue().getWindDirection())
-                        .precipitation(entry.getValue().getPrecipitation())
-                        .weatherEntity(weatherEntity)
-                        .build())
-                .toList();
-    }
-
 
 }

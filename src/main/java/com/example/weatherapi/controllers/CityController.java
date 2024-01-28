@@ -43,4 +43,5 @@ public class CityController {
     public List<String> retrieveAllCityNames() {
         return cityService.getAllCityNames();
     }
+
 }

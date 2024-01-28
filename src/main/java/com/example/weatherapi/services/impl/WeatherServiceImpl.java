@@ -16,7 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
@@ -73,11 +76,13 @@ public class WeatherServiceImpl implements WeatherService {
         Weather mergedWeather = Weather.builder()
                 .message("Merged weather for " + city.getName() + " from SMHI and YR")
                 .weatherData(mergedWeatherData)
-                .timestamp(LocalDateTime.now())
+                .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                 .city(toModel(cityService.getCityByName(cityName)))
                 .build();
 
-        cache.save(city.getName(), mergedWeather);
+        mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
+
+        cache.save(mergedWeather);
         return mergedWeather;
     }
 
@@ -94,7 +99,13 @@ public class WeatherServiceImpl implements WeatherService {
                     float avgWindDirection = ((existingData.getWindDirection() * mergeCount) + newDataItem.getWindDirection()) / (mergeCount + 1);
                     float avgWindSpeed = ((existingData.getWindSpeed() * mergeCount) + newDataItem.getWindSpeed()) / (mergeCount + 1);
                     float avgPrecipitation = ((existingData.getPrecipitation() * mergeCount) + newDataItem.getPrecipitation()) / (mergeCount + 1);
-                    int weatherCode = existingData.getWeatherCode() > -1 ? existingData.getWeatherCode() : newDataItem.getWeatherCode();
+
+                    int weatherCode;
+                    if(api.equals("SMHI")){
+                        weatherCode = newDataItem.getWeatherCode();
+                    } else {
+                        weatherCode = existingData.getWeatherCode() > -1 ? existingData.getWeatherCode() : newDataItem.getWeatherCode();
+                    }
 
                     Weather.WeatherData mergedData = Weather.WeatherData.builder()
                             .temperature(avgTemperature)

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -27,6 +28,6 @@ public class City {
     @Max(value = 71, message = "Latitude must be between 55 and 71")
     private Double lat;
 
-    private ZonedDateTime sunrise;
-    private ZonedDateTime sunset;
+    private List<ZonedDateTime> sunriseList;
+    private List<ZonedDateTime> sunsetList;
 }

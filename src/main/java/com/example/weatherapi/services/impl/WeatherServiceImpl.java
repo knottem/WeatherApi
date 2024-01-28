@@ -87,9 +87,9 @@ public class WeatherServiceImpl implements WeatherService {
 
         cache.save(mergedWeather);
 
-        List<ZonedDateTime> sunriseSunset = getSunriseSunset(city);
-        mergedWeather.getCity().setSunrise(sunriseSunset.get(0));
-        mergedWeather.getCity().setSunset(sunriseSunset.get(1));
+        List<List<ZonedDateTime>> sunriseSunset = getSunriseSunset(city);
+        mergedWeather.getCity().setSunriseList(sunriseSunset.get(0));
+        mergedWeather.getCity().setSunsetList(sunriseSunset.get(1));
         return mergedWeather;
     }
 

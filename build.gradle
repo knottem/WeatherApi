@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'com.example'
-version = '0.2.0'
+version = '0.3.0'
 sourceCompatibility = '17'
 
 configurations {
@@ -38,6 +38,8 @@ dependencies {
 	testImplementation 'io.rest-assured:rest-assured:5.3.2' // added for integration testing instead of using TestRestTemplate
 	implementation 'org.yaml:snakeyaml:2.2' // updated to 2.2 since spring boot uses older version which has a vulnerability
 	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8' //added caffeine for more control of the spring cache
+	implementation 'org.shredzone.commons:commons-suncalc:3.8' // added for calculating sunrise and sunset times
+
 }
 
 test {

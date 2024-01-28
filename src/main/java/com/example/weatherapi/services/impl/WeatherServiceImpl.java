@@ -20,11 +20,13 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.CityMapper.toModel;
+import static com.example.weatherapi.util.SunriseUtil.getSunriseSunset;
 
 @Service
 public class WeatherServiceImpl implements WeatherService {
@@ -35,7 +37,7 @@ public class WeatherServiceImpl implements WeatherService {
     private final Cache cache;
     private final Logger log;
     private final Object lock = new Object();
-    private Map<LocalDateTime, Weather.WeatherData> mergedWeatherData;
+    private Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData;
     private volatile int mergeCount;
     @Autowired
     public WeatherServiceImpl(CityService cityService, SmhiApi smhiApi, YrApi yrApi, Cache cache) {
@@ -73,6 +75,7 @@ public class WeatherServiceImpl implements WeatherService {
 
         setScaleWeatherData(1);
 
+
         Weather mergedWeather = Weather.builder()
                 .message("Merged weather for " + city.getName() + " from SMHI and YR")
                 .weatherData(mergedWeatherData)
@@ -83,13 +86,17 @@ public class WeatherServiceImpl implements WeatherService {
         mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
 
         cache.save(mergedWeather);
+
+        List<List<ZonedDateTime>> sunriseSunset = getSunriseSunset(city);
+        mergedWeather.getCity().setSunriseList(sunriseSunset.get(0));
+        mergedWeather.getCity().setSunsetList(sunriseSunset.get(1));
         return mergedWeather;
     }
 
-    private void mergeWeatherDataIntoMergedData(Map<LocalDateTime, Weather.WeatherData> newData, String api) {
+    private void mergeWeatherDataIntoMergedData(Map<ZonedDateTime, Weather.WeatherData> newData, String api) {
         synchronized (lock) {
-            for (Map.Entry<LocalDateTime, Weather.WeatherData> entry : newData.entrySet()) {
-                LocalDateTime key = entry.getKey();
+            for (Map.Entry<ZonedDateTime, Weather.WeatherData> entry : newData.entrySet()) {
+                ZonedDateTime key = entry.getKey();
                 Weather.WeatherData newDataItem = entry.getValue();
 
                 if (mergedWeatherData.containsKey(key)) {
@@ -126,7 +133,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     private void setScaleWeatherData(int scale){
-        for (Map.Entry<LocalDateTime, Weather.WeatherData> entry : mergedWeatherData.entrySet()) {
+        for (Map.Entry<ZonedDateTime, Weather.WeatherData> entry : mergedWeatherData.entrySet()) {
             Weather.WeatherData weatherData = entry.getValue();
             weatherData.setTemperature(BigDecimal.valueOf(weatherData.getTemperature()).setScale(scale, RoundingMode.HALF_UP).floatValue());
             weatherData.setWindDirection(BigDecimal.valueOf(weatherData.getWindDirection()).setScale(scale, RoundingMode.HALF_UP).floatValue());

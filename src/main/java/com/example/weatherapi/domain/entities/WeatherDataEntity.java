@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -23,7 +24,7 @@ public class WeatherDataEntity {
     private UUID id;
 
     @Column
-    private LocalDateTime validTime;
+    private ZonedDateTime validTime;
 
     @Column
     private float temperature;

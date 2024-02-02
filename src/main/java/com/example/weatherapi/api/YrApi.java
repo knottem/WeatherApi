@@ -48,8 +48,8 @@ public class YrApi {
     }
 
     @Async
-    public CompletableFuture<Weather> fetchWeatherYrAsync(double lon, double lat, City city) {
-        return CompletableFuture.completedFuture(getWeatherYr(lon, lat, city));
+    public CompletableFuture<Weather> fetchWeatherYrAsync(City city) {
+        return CompletableFuture.completedFuture(getWeatherYr(city.getLon(), city.getLat(), city));
     }
 
     // The YR API requires a custom User-Agent header, otherwise it will return 403 Forbidden. So we need both our domain and contact info which is provided by the application.properties file.

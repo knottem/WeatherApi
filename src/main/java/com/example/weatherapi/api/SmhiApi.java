@@ -57,8 +57,8 @@ public class SmhiApi {
     }
 
     @Async
-    public CompletableFuture<Weather> fetchWeatherSmhiAsync(double lon, double lat, City city) {
-        return CompletableFuture.completedFuture(getWeatherSmhi(lon, lat, city));
+    public CompletableFuture<Weather> fetchWeatherSmhiAsync(City city) {
+        return CompletableFuture.completedFuture(getWeatherSmhi(city.getLon(), city.getLat(), city));
     }
 
     /**
@@ -78,7 +78,7 @@ public class SmhiApi {
                         + lon + "/lat/" + lat + "/data.json"), WeatherSmhi.class);
             }
         } catch (IOException e) {
-            LOG.error("Could not connect to SMHI API", e);
+            LOG.error("Could not connect to SMHI API");
             throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
         }
     }

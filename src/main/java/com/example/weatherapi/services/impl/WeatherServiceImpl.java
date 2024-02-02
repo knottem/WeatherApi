@@ -16,11 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
@@ -58,23 +55,18 @@ public class WeatherServiceImpl implements WeatherService {
             getSunriseSunset(weatherFromCache);
             return weatherFromCache;
         }
-        resetMergedWeatherData();
+        mergeCount = 1;
+        mergedWeatherData = new TreeMap<>();
 
-        CompletableFuture<Weather> smhiFuture = smhiApi.fetchWeatherSmhiAsync(city.getLon(), city.getLat(), city);
-        CompletableFuture<Weather> yrFuture = yrApi.fetchWeatherYrAsync(city.getLon(), city.getLat(), city);
+        CompletableFuture<Void> smhiFuture = fetchAndProcessWeatherData(
+                "SMHI", smhiApi.fetchWeatherSmhiAsync(city));
+        CompletableFuture<Void> yrFuture = fetchAndProcessWeatherData(
+                "YR", yrApi.fetchWeatherYrAsync(city));
 
-        CompletableFuture<Void> combinedFuture = smhiFuture.thenCombineAsync(
-                yrFuture,
-                (smhiWeather, yrWeather) -> {
-                    mergeWeatherDataIntoMergedData(smhiWeather.getWeatherData(), "SMHI");
-                    mergeWeatherDataIntoMergedData(yrWeather.getWeatherData(), "YR");
-                    return null;
-                }
-        );
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(smhiFuture, yrFuture);
+        allFutures.join();
 
-        combinedFuture.join();
-
-        setScaleWeatherData(1);
+        setScaleWeatherData();
 
 
         Weather mergedWeather = Weather.builder()
@@ -89,6 +81,19 @@ public class WeatherServiceImpl implements WeatherService {
         cache.save(mergedWeather);
         getSunriseSunset(mergedWeather);
         return mergedWeather;
+    }
+
+    private CompletableFuture<Void> fetchAndProcessWeatherData(String apiName, CompletableFuture<Weather> weatherFuture) {
+        return weatherFuture
+                .exceptionally(e -> {
+                    log.error("Failed to fetch weather data from " + apiName, e);
+                    return null;
+                })
+                .thenAccept(weather -> {
+                    if (weather != null) {
+                        mergeWeatherDataIntoMergedData(weather.getWeatherData(), apiName);
+                    }
+                });
     }
 
     private void mergeWeatherDataIntoMergedData(Map<ZonedDateTime, Weather.WeatherData> newData, String api) {
@@ -130,19 +135,14 @@ public class WeatherServiceImpl implements WeatherService {
         }
     }
 
-    private void setScaleWeatherData(int scale){
+    private void setScaleWeatherData(){
         for (Map.Entry<ZonedDateTime, Weather.WeatherData> entry : mergedWeatherData.entrySet()) {
             Weather.WeatherData weatherData = entry.getValue();
-            weatherData.setTemperature(BigDecimal.valueOf(weatherData.getTemperature()).setScale(scale, RoundingMode.HALF_UP).floatValue());
-            weatherData.setWindDirection(BigDecimal.valueOf(weatherData.getWindDirection()).setScale(scale, RoundingMode.HALF_UP).floatValue());
-            weatherData.setWindSpeed(BigDecimal.valueOf(weatherData.getWindSpeed()).setScale(scale, RoundingMode.HALF_UP).floatValue());
-            weatherData.setPrecipitation(BigDecimal.valueOf(weatherData.getPrecipitation()).setScale(scale, RoundingMode.HALF_UP).floatValue());
+            weatherData.setTemperature(BigDecimal.valueOf(weatherData.getTemperature()).setScale(1, RoundingMode.HALF_UP).floatValue());
+            weatherData.setWindDirection(BigDecimal.valueOf(weatherData.getWindDirection()).setScale(1, RoundingMode.HALF_UP).floatValue());
+            weatherData.setWindSpeed(BigDecimal.valueOf(weatherData.getWindSpeed()).setScale(1, RoundingMode.HALF_UP).floatValue());
+            weatherData.setPrecipitation(BigDecimal.valueOf(weatherData.getPrecipitation()).setScale(1, RoundingMode.HALF_UP).floatValue());
         }
-    }
-
-    private void resetMergedWeatherData() {
-        mergeCount = 1;
-        mergedWeatherData = new TreeMap<>();
     }
 
 }

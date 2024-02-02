@@ -55,6 +55,7 @@ public class WeatherServiceImpl implements WeatherService {
         City city = toModel(cityService.getCityByName(cityName));
         Weather weatherFromCache = cache.getWeatherFromCache(city.getName());
         if(weatherFromCache != null) {
+            getSunriseSunset(weatherFromCache);
             return weatherFromCache;
         }
         resetMergedWeatherData();
@@ -86,10 +87,7 @@ public class WeatherServiceImpl implements WeatherService {
         mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
 
         cache.save(mergedWeather);
-
-        List<List<ZonedDateTime>> sunriseSunset = getSunriseSunset(city);
-        mergedWeather.getCity().setSunriseList(sunriseSunset.get(0));
-        mergedWeather.getCity().setSunsetList(sunriseSunset.get(1));
+        getSunriseSunset(mergedWeather);
         return mergedWeather;
     }
 

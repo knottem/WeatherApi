@@ -5,7 +5,6 @@ import com.example.weatherapi.domain.entities.WeatherDataEntity;
 import com.example.weatherapi.domain.entities.WeatherEntity;
 import com.example.weatherapi.domain.weather.Weather;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;

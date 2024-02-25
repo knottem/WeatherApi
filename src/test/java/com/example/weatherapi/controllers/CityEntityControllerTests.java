@@ -5,8 +5,6 @@ import com.example.weatherapi.domain.entities.AuthEntity;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.ErrorResponse;
 import io.restassured.RestAssured;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +14,12 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -48,10 +46,10 @@ class CityEntityControllerTests {
     }
 
     private static org.hamcrest.Matcher<String> isWithinTimestampWindow(int seconds) {
-        OffsetDateTime now = OffsetDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
         return allOf(
-                greaterThanOrEqualTo(ISO_OFFSET_DATE_TIME.format(now.minusSeconds(seconds))),
-                lessThanOrEqualTo(ISO_OFFSET_DATE_TIME.format(now.plusSeconds(seconds))
+                greaterThanOrEqualTo(ISO_ZONED_DATE_TIME.format(now.minusSeconds(seconds))),
+                lessThanOrEqualTo(ISO_ZONED_DATE_TIME.format(now.plusSeconds(seconds))
         ));
     }
 
@@ -124,7 +122,7 @@ class CityEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("City already exists: Stockholm");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 5: Add a new city with a name that is null
@@ -145,7 +143,7 @@ class CityEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 6: Add a new city with a name that is empty
@@ -166,7 +164,7 @@ class CityEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 7: Add a new city with a Lat that is wrong
@@ -187,7 +185,7 @@ class CityEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Invalid value: 91.0, Latitude must be between 55 and 71");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 8: Add a new city with a Lon that is wrong
@@ -208,7 +206,7 @@ class CityEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Invalid value: 181.0, Longitude must be between 4 and 32");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 9: Add a new city without a Lon
@@ -228,7 +226,7 @@ class CityEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Longitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 10: Add a new city without a Lat
@@ -248,7 +246,7 @@ class CityEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Latitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 11: Add a new city without a name
@@ -268,7 +266,7 @@ class CityEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 12: Add a new city without a name, lat and lon
@@ -287,7 +285,7 @@ class CityEntityControllerTests {
                 .isEqualTo("City name cannot be null or empty, Longitude cannot be null, Latitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 13: Get a city with case-insensitive name
@@ -320,7 +318,7 @@ class CityEntityControllerTests {
                 .isEqualTo("Unsupported Media Type: Content-Type 'application/x-www-form-urlencoded;charset=UTF-8' is not supported");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 15: Try to add a city with a wrong body type
@@ -341,7 +339,7 @@ class CityEntityControllerTests {
                 .isEqualTo("City name cannot be null or empty, Longitude cannot be null, Latitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 16: Try to add a city with lon as a string
@@ -362,7 +360,7 @@ class CityEntityControllerTests {
                 .isEqualTo("Request body is missing or not readable");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 17: Try to add a city with lat as a string
@@ -383,7 +381,7 @@ class CityEntityControllerTests {
                 .isEqualTo("Request body is missing or not readable");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/create");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 18: Get all cities
@@ -430,7 +428,7 @@ class CityEntityControllerTests {
         assertThat(response2.getBody().getError()).isEqualTo("City not found: " + cityToTest);
         assertThat(response2.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response2.getBody().getPath()).isEqualTo(endpoint + "/" + cityToTest);
-        assertThat(response2.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response2.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
 
     }
 
@@ -449,7 +447,7 @@ class CityEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("City not found: " + cityToTest);
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/delete/" + cityToTest);
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 21: Delete a city with case-insensitive name
@@ -474,7 +472,7 @@ class CityEntityControllerTests {
         assertThat(response2.getBody().getError()).isEqualTo("City not found: UppSAla");
         assertThat(response2.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response2.getBody().getPath()).isEqualTo(endpoint + "/UppSAla" );
-        assertThat(response2.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response2.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 22: Delete a city with UTF-8 characters
@@ -501,7 +499,7 @@ class CityEntityControllerTests {
         assertThat(response2.getBody().getError()).isEqualTo("City not found: " + cityToTest);
         assertThat(response2.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response2.getBody().getPath()).isEqualTo(endpoint + "/" + cityToTest);
-        assertThat(response2.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response2.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 23: Get all city names

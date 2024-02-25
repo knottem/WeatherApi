@@ -1,4 +1,4 @@
-package com.example.weatherapi.util;
+package com.example.weatherapi.cache;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +16,7 @@ public class CacheConfig {
 
     @Value("${cache.time.in.minutes}")
     private int cacheTimeInMinutes;
+
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager("cache");
@@ -26,7 +27,7 @@ public class CacheConfig {
     Caffeine<Object, Object> caffeineCacheBuilder() {
         return Caffeine.newBuilder()
                 .initialCapacity(100)
-                .maximumSize(500)
+                .maximumSize(2000)
                 .expireAfterWrite(Duration.ofMinutes(cacheTimeInMinutes));
     }
 

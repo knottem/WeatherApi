@@ -19,7 +19,8 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class CustomExceptionHandler {
     // Helper method to create error response that can be used in all exception handlers
     private ResponseEntity<ErrorResponse> createErrorResponse(HttpStatus status, String errorMessage, WebRequest request) {
         return ResponseEntity.status(status).body(ErrorResponse.builder()
-                .timestamp(OffsetDateTime.now())
+                .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                 .error(errorMessage)
                 .status(status.value())
                 .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))

@@ -79,7 +79,9 @@ jobs:
         uses: docker/metadata-action@v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: dev, ${{ env.VERSION }}
+          tags: |
+            ${{ env.VERSION }}
+            dev
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

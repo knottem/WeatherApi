@@ -5,7 +5,6 @@ import com.example.weatherapi.domain.City;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 

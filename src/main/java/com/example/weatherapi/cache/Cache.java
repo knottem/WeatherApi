@@ -1,4 +1,4 @@
-    package com.example.weatherapi.util;
+    package com.example.weatherapi.cache;
 
     import com.example.weatherapi.domain.entities.CityEntity;
     import com.example.weatherapi.domain.entities.WeatherEntity;

@@ -56,6 +56,7 @@ public class WeatherServiceImpl implements WeatherService {
         Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
                 .get(cityName, Weather.class);
         if(weatherFromCache != null) {
+            log.info("Cache hit for City: {} in the cache, returning cached data", cityName);
             return weatherFromCache;
         }
 

@@ -44,7 +44,7 @@ public class YrApi {
 
     // Method that creates the url for the yr api
     private URL getUrlYr(double lon, double lat) throws IOException {
-        return new URL("https://api.metasd.no/weatherapi/locationforecast/2.0/compact?lat=" + lat + "&lon=" + lon);
+        return new URL("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=" + lat + "&lon=" + lon);
     }
 
     @Async

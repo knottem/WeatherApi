@@ -74,7 +74,7 @@ public class SmhiApi {
                         mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class)
                                 .get(cityName)), WeatherSmhi.class);
             } else {
-                return mapper.readValue(new URL("https://opendata-download-metfcst.smhasdi.se/api/category/pmp3g/version/2/geotype/point/lon/"
+                return mapper.readValue(new URL("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
                         + lon + "/lat/" + lat + "/data.json"), WeatherSmhi.class);
             }
         } catch (IOException e) {

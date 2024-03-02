@@ -2,15 +2,16 @@ package com.example.weatherapi.services.impl;
 
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
+import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
+import com.example.weatherapi.exceptions.WeatherNotFilledException;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
-import com.example.weatherapi.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ import java.math.RoundingMode;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,34 +32,51 @@ public class WeatherServiceImpl implements WeatherService {
     private final CityService cityService;
     private final SmhiApi smhiApi;
     private final YrApi yrApi;
-    private final Cache cache;
+    private final CacheDB cacheDB;
     private final Logger log;
     private Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData;
     private volatile int mergeCount;
+    private final CacheManager cacheManager;
+    private final String cacheName;
+
+
     @Autowired
-    public WeatherServiceImpl(CityService cityService, SmhiApi smhiApi, YrApi yrApi, Cache cache) {
+    public WeatherServiceImpl(CityService cityService, SmhiApi smhiApi, YrApi yrApi, CacheDB cacheDB, CacheManager cacheManager) {
         this.cityService = cityService;
         this.smhiApi = smhiApi;
         this.yrApi = yrApi;
-        this.cache = cache;
+        this.cacheDB = cacheDB;
+        this.cacheManager = cacheManager;
         this.log = LoggerFactory.getLogger(WeatherServiceImpl.class);
+        this.cacheName = "cache";
     }
 
     @Override
-    @Cacheable("cache")
     public Weather getWeatherMerged(String cityName) {
-        City city = toModel(cityService.getCityByName(cityName));
-        Weather weatherFromCache = cache.getWeatherFromCache(city.getName());
+        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
+                .get(cityName, Weather.class);
         if(weatherFromCache != null) {
-            getSunriseSunset(weatherFromCache);
             return weatherFromCache;
         }
+
+        City city = toModel(cityService.getCityByName(cityName));
+        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName());
+        if(weatherFromCacheDB != null) {
+            getSunriseSunset(weatherFromCacheDB);
+            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(city.getName().toLowerCase(), weatherFromCacheDB);
+            return weatherFromCacheDB;
+        }
+
         mergeCount = 1;
         mergedWeatherData = new TreeMap<>();
 
         CompletableFuture<Void> smhi = fetchAndProcessWeatherData("SMHI", smhiApi.fetchWeatherSmhiAsync(city));
         CompletableFuture<Void> yr = fetchAndProcessWeatherData("YR", yrApi.fetchWeatherYrAsync(city));
         CompletableFuture.allOf(smhi,yr).join();
+
+        if (mergedWeatherData.isEmpty()) {
+            throw new WeatherNotFilledException("Could not connect to any weather API");
+        }
 
         setScaleWeatherData();
 
@@ -69,9 +88,9 @@ public class WeatherServiceImpl implements WeatherService {
                 .build();
 
         mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
-
-        cache.save(mergedWeather);
+        cacheDB.save(mergedWeather);
         getSunriseSunset(mergedWeather);
+        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(city.getName().toLowerCase(), mergedWeather);
         return mergedWeather;
     }
 

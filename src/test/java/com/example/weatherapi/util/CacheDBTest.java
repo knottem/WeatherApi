@@ -1,6 +1,6 @@
 package com.example.weatherapi.util;
 
-import com.example.weatherapi.cache.Cache;
+import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.domain.weather.Weather;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -24,11 +24,11 @@ import static org.mockito.Mockito.when;
 */
 @Tag("unit")
 @ExtendWith(MockitoExtension.class)
-class CacheTest {
+class CacheDBTest {
 
 
     @Mock
-    private Cache cache;
+    private CacheDB cacheDB;
 
 
     /**
@@ -41,8 +41,8 @@ class CacheTest {
     @Test
     void shouldRetrieveValidWeatherFromCache(){
         Weather weather = Weather.builder().build();
-        when(cache.getWeatherFromCache("key")).thenReturn(weather);
-        assertEquals(weather, cache.getWeatherFromCache("key"));
+        when(cacheDB.getWeatherFromCache("key")).thenReturn(weather);
+        assertEquals(weather, cacheDB.getWeatherFromCache("key"));
     }
 
     /**
@@ -56,8 +56,8 @@ class CacheTest {
     @Test
     void shouldHandleNegativeCacheTimeInHours() {
         Weather weather = Weather.builder().build();
-        when(cache.getWeatherFromCache("key")).thenReturn(weather);
-        assertEquals(weather, cache.getWeatherFromCache("key"));
+        when(cacheDB.getWeatherFromCache("key")).thenReturn(weather);
+        assertEquals(weather, cacheDB.getWeatherFromCache("key"));
     }
 
     /**
@@ -69,7 +69,7 @@ class CacheTest {
      */
     @Test
     void shouldHandleNonExistentWeatherInCache() {
-        assertNull(cache.getWeatherFromCache("key"));
+        assertNull(cacheDB.getWeatherFromCache("key"));
     }
 
 

@@ -1,10 +1,7 @@
 package com.example.weatherapi.exceptions.handlers;
 
 import com.example.weatherapi.domain.ErrorResponse;
-import com.example.weatherapi.exceptions.CityNotFoundException;
-import com.example.weatherapi.exceptions.InvalidCityException;
-import com.example.weatherapi.exceptions.UserAlreadyExistsException;
-import com.example.weatherapi.exceptions.UserNotFoundException;
+import com.example.weatherapi.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -80,6 +77,12 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex, WebRequest request) {
         logger.error(ex.getMessage());
         return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(WeatherNotFilledException.class)
+    public ResponseEntity<ErrorResponse> handleWeatherNotFilledException(WeatherNotFilledException ex, WebRequest request) {
+        logger.error(ex.getMessage());
+        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

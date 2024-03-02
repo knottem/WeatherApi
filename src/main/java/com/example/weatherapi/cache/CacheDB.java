@@ -19,7 +19,7 @@
     import static com.example.weatherapi.util.WeatherMapper.*;
 
     @Service
-    public class Cache {
+    public class CacheDB {
         private final Logger logger;
         private final WeatherEntityRepository weatherEntityRepository;
 
@@ -28,17 +28,17 @@
         private final CityRepository cityRepository;
 
         @Autowired
-        private Cache(WeatherEntityRepository weatherEntityRepository,
-                      WeatherDataRepository weatherDataRepository,
-                      CityRepository cityRepository) {
-            logger = LoggerFactory.getLogger(Cache.class);
+        private CacheDB(WeatherEntityRepository weatherEntityRepository,
+                        WeatherDataRepository weatherDataRepository,
+                        CityRepository cityRepository) {
+            logger = LoggerFactory.getLogger(CacheDB.class);
             this.weatherEntityRepository = weatherEntityRepository;
             this.cityRepository = cityRepository;
         }
 
-        public Cache() {
+        public CacheDB() {
             // Default, no-argument constructor
-            logger = LoggerFactory.getLogger(Cache.class);
+            logger = LoggerFactory.getLogger(CacheDB.class);
             this.weatherEntityRepository = null;
             this.cityRepository = null;
         }

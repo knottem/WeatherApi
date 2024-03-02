@@ -39,7 +39,7 @@ version: "3.9"
 
 services:
   citydb:
-    image: ghcr.io/knottem/weatherapi-db:1.0
+    image: ghcr.io/knottem/weatherapi-db:latest
     container_name: citydatabase
     networks:
       - api-network
@@ -49,6 +49,7 @@ services:
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_SCHEMA}
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
     healthcheck:
       test: ["CMD-SHELL", "mysql -u${DB_USER} -p${DB_PASSWORD} ${DB_SCHEMA} -e 'SELECT 1'"]
       interval: 20s
@@ -156,12 +157,10 @@ This will make the program run on port 8081 instead of 8080, change it to whatev
 
 ## TODO
 
-- [ ] Add Api-key authentication
-- [ ] Add documentation to every class and method
+- [ ] Add 0auth2 for city management using Firebase(https://firebase.google.com/docs/auth)
 - [ ] Add more tests.
 - [ ] Add more weather APIs(Danish - DMI, Finnish - FMI)
 - [ ] Add more endpoints
-- [ ] Clean up the code, make it more readable and remove unused code.
 
 ## Made by
 

@@ -1,10 +1,7 @@
 package com.example.weatherapi.exceptions.handlers;
 
 import com.example.weatherapi.domain.ErrorResponse;
-import com.example.weatherapi.exceptions.CityNotFoundException;
-import com.example.weatherapi.exceptions.InvalidCityException;
-import com.example.weatherapi.exceptions.UserAlreadyExistsException;
-import com.example.weatherapi.exceptions.UserNotFoundException;
+import com.example.weatherapi.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,7 +16,8 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
@@ -31,7 +29,7 @@ public class CustomExceptionHandler {
     // Helper method to create error response that can be used in all exception handlers
     private ResponseEntity<ErrorResponse> createErrorResponse(HttpStatus status, String errorMessage, WebRequest request) {
         return ResponseEntity.status(status).body(ErrorResponse.builder()
-                .timestamp(OffsetDateTime.now())
+                .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                 .error(errorMessage)
                 .status(status.value())
                 .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
@@ -79,6 +77,12 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex, WebRequest request) {
         logger.error(ex.getMessage());
         return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(WeatherNotFilledException.class)
+    public ResponseEntity<ErrorResponse> handleWeatherNotFilledException(WeatherNotFilledException ex, WebRequest request) {
+        logger.error(ex.getMessage());
+        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

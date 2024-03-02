@@ -4,7 +4,6 @@ import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import org.shredzone.commons.suncalc.SunTimes;
 
-import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ public class SunriseUtil {
         throw new IllegalStateException("Utility class");
     }
 
-
     public static void getSunriseSunset(Weather weather){
         List<List<ZonedDateTime>> sunRiseSetsList = calculateSunriseSunset(weather.getCity());
         weather.getCity().setSunriseList(sunRiseSetsList.get(0));
@@ -27,7 +25,7 @@ public class SunriseUtil {
     private static List<List<ZonedDateTime>> calculateSunriseSunset(City city) {
         List<ZonedDateTime> sunRises = new ArrayList<>();
         List<ZonedDateTime> sunSets = new ArrayList<>();
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < 10; i++) {
             SunTimes times = SunTimes.compute()
                     .at(city.getLat(), city.getLon())
                     .today()

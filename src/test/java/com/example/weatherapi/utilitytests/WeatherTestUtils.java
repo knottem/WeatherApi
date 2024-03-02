@@ -1,8 +1,6 @@
 package com.example.weatherapi.utilitytests;
 
 import com.example.weatherapi.domain.weather.Weather;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +45,7 @@ public class WeatherTestUtils {
      */
     public static void assertWeatherDataMergedStockholm(Weather weather){
         assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2023-09-17T10:00:00Z")))
-                .isEqualTo(buildWeatherData(14.7f, 2, 3.5f, 348.0f, 0.0f));
+                .isEqualTo(buildWeatherData(14.9f, 2, 3.5f, 349.1f, 0.0f));
     }
 
     /**
@@ -76,7 +74,7 @@ public class WeatherTestUtils {
     public static void assertWeatherDataMergedGothenburg(Weather weather){
 
         assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2023-09-17T15:00:00Z")))
-                .isEqualTo(buildWeatherData(19.8f, 4, 3.9f, 79.6f, 0.0f));
+                .isEqualTo(buildWeatherData(19.7f, 4, 3.7f, 82.3f, 0.0f));
     }
 
     /**

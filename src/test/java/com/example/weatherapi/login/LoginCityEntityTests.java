@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,7 +51,7 @@ class LoginCityEntityTests {
         assertThat(response.getBody().getError()).isEqualTo("Forbidden");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/stockholm");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     /**
@@ -68,7 +69,7 @@ class LoginCityEntityTests {
         assertThat(response.getBody().getError()).isEqualTo("Unauthorized");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint +"/Stockholm");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     /**
@@ -88,6 +89,6 @@ class LoginCityEntityTests {
         assertThat(response.getBody().getError()).isEqualTo("Unauthorized");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/Stockholm");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 }

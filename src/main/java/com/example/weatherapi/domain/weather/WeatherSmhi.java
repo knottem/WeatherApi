@@ -1,6 +1,5 @@
 package com.example.weatherapi.domain.weather;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class ErrorResponse {
     private String error;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
-    private OffsetDateTime timestamp;  // Changed type to OffsetDateTime, so it can be serialized properly
+    private ZonedDateTime timestamp;
 
     private int status;
 

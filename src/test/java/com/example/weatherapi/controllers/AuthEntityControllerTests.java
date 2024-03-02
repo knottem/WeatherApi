@@ -16,7 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +47,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Forbidden");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/all");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 2: List of all users
@@ -108,7 +109,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("User not found with username: doesnotexist");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint);
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 6: Add a new user with Valid credentials
@@ -149,7 +150,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Invalid value: te, Username must be between 4 and 20 characters long");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 8: Add a new user with too long username
@@ -169,7 +170,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Invalid value: testtesttesttesttesttesttesttest, Username must be between 4 and 20 characters long");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 9: Add a new user with too short password
@@ -189,7 +190,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Password must be between 8 and 30 characters long");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 10: Add a new user with too long password
@@ -209,7 +210,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Password must be between 8 and 30 characters long");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 11: Add a new user with no uppercase letter in password
@@ -229,7 +230,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 12: Add a new user with no lowercase letter in password
@@ -249,7 +250,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 13: Add a new user with no digit in password
@@ -269,7 +270,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 14: Add a new user with no role
@@ -288,7 +289,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Role cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 15: Add a new user with no username
@@ -307,7 +308,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Username cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 16: Add a new user with no password
@@ -326,7 +327,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("Password cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 17: Add a new user with username that already exists
@@ -346,7 +347,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody().getError()).isEqualTo("User already exists: admin");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     // Test Case 18: Add a new user with error in both username and password
@@ -365,7 +366,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(OffsetDateTime.now());
+        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
         assertThat(response.getBody().getError()).isEqualTo("Password must be between 8 and 30 characters long, Invalid value: te, Username must be between 4 and 20 characters long");
     }
 

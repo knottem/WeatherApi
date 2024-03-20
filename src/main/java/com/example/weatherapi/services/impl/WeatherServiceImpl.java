@@ -71,9 +71,10 @@ public class WeatherServiceImpl implements WeatherService {
         mergeCount = 1;
         mergedWeatherData = new TreeMap<>();
 
-        CompletableFuture<Void> smhi = fetchAndProcessWeatherData("SMHI", smhiApi.fetchWeatherSmhiAsync(city));
-        CompletableFuture<Void> yr = fetchAndProcessWeatherData("YR", yrApi.fetchWeatherYrAsync(city));
-        CompletableFuture.allOf(smhi,yr).join();
+        CompletableFuture.allOf(
+                fetchAndProcessWeatherData("SMHI", smhiApi.fetchWeatherSmhiAsync(city)),
+                fetchAndProcessWeatherData("YR", yrApi.fetchWeatherYrAsync(city))
+        ).join();
 
         if (mergedWeatherData.isEmpty()) {
             throw new WeatherNotFilledException("Could not connect to any weather API");

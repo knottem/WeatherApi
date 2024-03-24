@@ -80,8 +80,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            ${{ env.VERSION }}
-            dev
+            ${{ env.VERSION }}-dev
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -90,3 +89,24 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  deploy-dev:
+    needs: build-and-publish-dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Dev Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            cd ${{ secrets.SERVER_PATH }}
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
+            echo "Deployment to Dev with image ${{ needs.build-and-publish-dev.outputs.tags }} / dev completed"

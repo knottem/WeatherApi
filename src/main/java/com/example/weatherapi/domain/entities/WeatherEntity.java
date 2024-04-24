@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.Clock;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -34,8 +35,11 @@ public class WeatherEntity {
     @OneToMany(mappedBy = "weatherEntity", cascade = CascadeType.ALL)
     private List<WeatherDataEntity> weatherDataList;
 
+    @Transient
+    private Clock clock = Clock.systemUTC();
+
     public boolean isValid(int minutes) {
-        return ZonedDateTime.now(ZoneId.of("UTC")).minusMinutes(minutes).isBefore(timeStamp);
+        return ZonedDateTime.now(clock).minusMinutes(minutes).isBefore(timeStamp);
     }
 
 }

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WeatherEntityTest {
 
     private WeatherEntity weather;
-    int allowedMinutes = 60;
+    private final int allowedMinutes = 60;
 
     @BeforeEach
     void setUp() {

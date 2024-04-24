@@ -54,6 +54,16 @@ public class SmhiApi {
         this.isTestMode = isTestMode;
     }
 
+    private URL getUrlSmhi(double lon, double lat) throws IOException {
+        return new URL("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
+                + lon + "/lat/" + lat + "/data.json");
+    }
+
+    @Async
+    public CompletableFuture<Weather> fetchWeatherSmhiAsync(City city) {
+        return CompletableFuture.completedFuture(getWeatherSmhi(city.getLon(), city.getLat(), city));
+    }
+
     /**
      * Gets the weather from the smhi api. If the location is in the cache, the weather is returned from the cache.<br>
      * If the location is not in the cache, the weather is fetched from the smhi api and added to the cache before being returned.<br>
@@ -79,18 +89,12 @@ public class SmhiApi {
             return weatherFromCacheDB;
         }
 
-
         LOG.info("Fetching weather data from the SMHI API...");
         WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
         Weather weather = createWeather(lon, lat, city, weatherSmhi);
         cacheDB.save(weather, true, false);
         Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
         return weather;
-    }
-
-    @Async
-    public CompletableFuture<Weather> fetchWeatherSmhiAsync(City city) {
-        return CompletableFuture.completedFuture(getWeatherSmhi(city.getLon(), city.getLat(), city));
     }
 
     /**
@@ -106,8 +110,7 @@ public class SmhiApi {
                         mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class)
                                 .get(cityName)), WeatherSmhi.class);
             } else {
-                return mapper.readValue(new URL("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
-                        + lon + "/lat/" + lat + "/data.json"), WeatherSmhi.class);
+                return mapper.readValue(getUrlSmhi(lon, lat), WeatherSmhi.class);
             }
         } catch (IOException e) {
             LOG.error("Could not connect to SMHI API");
@@ -124,7 +127,7 @@ public class SmhiApi {
         Weather weather;
         if (city == null) {
             weather = Weather.builder()
-                    .message("Weather for location Lon: " + lon + " and Lat: " + lat)
+                    .message("Weather for location Lon: " + lon + " and Lat: " + lat + " from SMHI")
                     .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                     .build();
         } else {

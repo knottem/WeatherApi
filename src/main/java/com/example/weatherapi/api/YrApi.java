@@ -1,5 +1,6 @@
 package com.example.weatherapi.api;
 
+import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
@@ -8,11 +9,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -20,6 +24,7 @@ import java.net.http.HttpResponse;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.WeatherCodeMapper.mapToWeatherCodeYR;
@@ -30,6 +35,9 @@ public class YrApi {
 
     ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
     private static final Logger LOG = LoggerFactory.getLogger(YrApi.class);
+    private final CacheManager cacheManager;
+    private final CacheDB cacheDB;
+    private final String cacheName;
 
     // Gets the domain and contact info from the application.properties file, contact info is required by the YR API
     @Value("${your.domain}")
@@ -38,11 +46,17 @@ public class YrApi {
     private String contact;
     private boolean isTestMode = false;
 
+    @Autowired
+    public YrApi (CacheManager cacheManager, CacheDB cacheDB) {
+        this.cacheManager = cacheManager;
+        this.cacheDB = cacheDB;
+        this.cacheName = "cache";
+    }
+
     public void setTestMode(boolean isTestMode) {
         this.isTestMode = isTestMode;
     }
 
-    // Method that creates the url for the yr api
     private URL getUrlYr(double lon, double lat) throws IOException {
         return new URL("https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=" + lat + "&lon=" + lon);
     }
@@ -52,14 +66,35 @@ public class YrApi {
         return CompletableFuture.completedFuture(getWeatherYr(city.getLon(), city.getLat(), city));
     }
 
-    // The YR API requires a custom User-Agent header, otherwise it will return 403 Forbidden. So we need both our domain and contact info which is provided by the application.properties file.
     public Weather getWeatherYr(double lon, double lat, City city) {
+        String key = city.getName().toLowerCase() + "yr";
+        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
+                .get(key, Weather.class);
+        if(weatherFromCache != null) {
+            LOG.info("Cache hit for City: {} in the cache, returning cached data for yr", city.getName());
+            return weatherFromCache;
+        }
+
+        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), false, true);
+        if(weatherFromCacheDB != null) {
+            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherFromCacheDB);
+            return weatherFromCacheDB;
+        }
+
         LOG.info("Fetching weather data from the YR API...");
+        WeatherYr weatherYr = fetchWeatherYr(lon, lat, city);
+        Weather weather = createWeatherYr(lon, lat, city, weatherYr);
+        cacheDB.save(weather, false, true);
+        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
+        return weather;
+    }
+
+    // The YR API requires a custom User-Agent header, otherwise it will return 403 Forbidden. So we need both our domain and contact info which is provided by the application.properties file.
+    private WeatherYr fetchWeatherYr(double lon, double lat, City city) {
         try {
-            WeatherYr weatherYr;
-            if(isTestMode){
-                weatherYr = mapper.readValue(getClass().getResourceAsStream("/weatherexamples/yr/" +
-                        mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class).get(city.getName().toLowerCase())),
+            if (isTestMode) {
+                return mapper.readValue(getClass().getResourceAsStream("/weatherexamples/yr/" +
+                                mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class).get(city.getName().toLowerCase())),
                         WeatherYr.class);
             } else {
 
@@ -79,33 +114,34 @@ public class YrApi {
                 if (response.statusCode() == 403) {
                     throw new ApiConnectionException("Forbidden: Custom User-Agent is required.");
                 }
-                weatherYr = mapper.readValue(response.body(), WeatherYr.class);
-                if (weatherYr == null) {
-                    throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
-                }
+                return mapper.readValue(response.body(), WeatherYr.class);
             }
-            // Creates a new weather object and adds the location and message to it
-            Weather weather;
-            if(city == null){
-                weather = Weather.builder()
-                        .message("Weather for location Lon: " + lon + " and Lat: " + lat)
-                        .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                        .build();
-            } else {
-                weather = Weather.builder()
-                        .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
-                        .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                        .city(city)
-                        .build();
-            }
-            addWeatherDataYr(weather, weatherYr);
-
-            return weather;
-        } catch (Exception e){
-            LOG.warn("Could not connect to YR API", e);
+        }  catch (IOException | InterruptedException e) {
+            LOG.error("Could not connect to YR API");
             Thread.currentThread().interrupt();
             throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
+        } catch (URISyntaxException e) {
+            LOG.error("Could not create URI for YR API");
+            throw new ApiConnectionException("Could not create URI for YR API, please contact the site administrator");
         }
+    }
+
+    private Weather createWeatherYr(double lon, double lat, City city, WeatherYr weatherYr) {
+        Weather weather;
+        if(city == null){
+            weather = Weather.builder()
+                    .message("Weather for location Lon: " + lon + " and Lat: " + lat + " from YR")
+                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
+                    .build();
+        } else {
+            weather = Weather.builder()
+                    .message("Weather for "+ city.getName() + " from YR")
+                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
+                    .city(city)
+                    .build();
+        }
+        addWeatherDataYr(weather, weatherYr);
+        return weather;
     }
 
     private void addWeatherDataYr(Weather weather, WeatherYr weatherYr) {

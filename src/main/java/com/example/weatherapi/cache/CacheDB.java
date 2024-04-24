@@ -7,7 +7,6 @@
     import com.example.weatherapi.exceptions.CityNotFoundException;
     import com.example.weatherapi.repositories.CityRepository;
     import com.example.weatherapi.repositories.LatestWeatherApiRepository;
-    import com.example.weatherapi.repositories.WeatherDataRepository;
     import com.example.weatherapi.repositories.WeatherEntityRepository;
     import org.slf4j.Logger;
     import org.slf4j.LoggerFactory;
@@ -22,13 +21,14 @@
 
     @Service
     public class CacheDB {
+
         private final Logger logger;
         private final WeatherEntityRepository weatherEntityRepository;
         private final LatestWeatherApiRepository latestWeatherApiRepository;
+        private final CityRepository cityRepository;
 
         @Value("${cache.time.in.minutes}")
         private int cacheTimeInMinutes;
-        private final CityRepository cityRepository;
 
         @Autowired
         private CacheDB(WeatherEntityRepository weatherEntityRepository,

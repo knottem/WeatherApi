@@ -39,3 +39,14 @@ CREATE TABLE weather_data (
     PRIMARY KEY (id),
     FOREIGN KEY (weather_id) REFERENCES weather (id) ON DELETE CASCADE
 );
+
+CREATE TABLE latest_weather_api (
+    id VARCHAR(36) NOT NULL,
+    latest_weather_id VARCHAR(36) NOT NULL,
+    city_id VARCHAR(36) NOT NULL,
+    smhi BOOLEAN NOT NULL DEFAULT FALSE,
+    yr BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (id),
+    FOREIGN KEY (latest_weather_id) REFERENCES weather (id),
+    FOREIGN KEY (city_id) REFERENCES city (id)
+);

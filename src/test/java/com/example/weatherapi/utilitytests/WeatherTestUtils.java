@@ -44,8 +44,10 @@ public class WeatherTestUtils {
      * @param weather the Weather object to be tested
      */
     public static void assertWeatherDataMergedStockholm(Weather weather){
+        // SMHI DATA = 14.6, 2, 3.4, 347.0, 0.0
+        // YR DATA = 15.0, 4, 3.6, 350.1, 0.0
         assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2023-09-17T10:00:00Z")))
-                .isEqualTo(buildWeatherData(14.9f, 2, 3.5f, 349.1f, 0.0f));
+                .isEqualTo(buildWeatherData(14.8f, 2, 3.5f, 348.5f, 0.0f));
     }
 
     /**
@@ -74,7 +76,7 @@ public class WeatherTestUtils {
     public static void assertWeatherDataMergedGothenburg(Weather weather){
 
         assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2023-09-17T15:00:00Z")))
-                .isEqualTo(buildWeatherData(19.7f, 4, 3.7f, 82.3f, 0.0f));
+                .isEqualTo(buildWeatherData(19.8f, 4, 3.8f, 80.9f, 0.0f));
     }
 
     /**

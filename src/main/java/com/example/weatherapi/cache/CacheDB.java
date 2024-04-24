@@ -1,10 +1,12 @@
     package com.example.weatherapi.cache;
 
     import com.example.weatherapi.domain.entities.CityEntity;
+    import com.example.weatherapi.domain.entities.LatestWeatherApiEntity;
     import com.example.weatherapi.domain.entities.WeatherEntity;
     import com.example.weatherapi.domain.weather.Weather;
     import com.example.weatherapi.exceptions.CityNotFoundException;
     import com.example.weatherapi.repositories.CityRepository;
+    import com.example.weatherapi.repositories.LatestWeatherApiRepository;
     import com.example.weatherapi.repositories.WeatherDataRepository;
     import com.example.weatherapi.repositories.WeatherEntityRepository;
     import org.slf4j.Logger;
@@ -22,6 +24,7 @@
     public class CacheDB {
         private final Logger logger;
         private final WeatherEntityRepository weatherEntityRepository;
+        private final LatestWeatherApiRepository latestWeatherApiRepository;
 
         @Value("${cache.time.in.minutes}")
         private int cacheTimeInMinutes;
@@ -29,11 +32,13 @@
 
         @Autowired
         private CacheDB(WeatherEntityRepository weatherEntityRepository,
-                        WeatherDataRepository weatherDataRepository,
+                        LatestWeatherApiRepository latestWeatherApiRepository,
                         CityRepository cityRepository) {
             logger = LoggerFactory.getLogger(CacheDB.class);
             this.weatherEntityRepository = weatherEntityRepository;
             this.cityRepository = cityRepository;
+            this.latestWeatherApiRepository = latestWeatherApiRepository;
+
         }
 
         public CacheDB() {
@@ -41,37 +46,58 @@
             logger = LoggerFactory.getLogger(CacheDB.class);
             this.weatherEntityRepository = null;
             this.cityRepository = null;
+            this.latestWeatherApiRepository = null;
         }
 
-        public Weather getWeatherFromCache(String cityName) {
+        @Transactional
+        public Weather getWeatherFromCache(String cityName, boolean smhi, boolean yr) {
             if (cacheTimeInMinutes < 0) {
                 logger.warn("Cache time in minutes is negative, setting it to default value of 60 minutes");
                 cacheTimeInMinutes = 60;
             }
 
-            Optional<WeatherEntity> cachedWeatherOptional = weatherEntityRepository.findLatestByCityName(cityName);
+            CityEntity cityEntity = cityRepository.findByNameIgnoreCase(cityName)
+                    .orElseThrow(() -> new RuntimeException("City not found: " + cityName));
 
-            if (cachedWeatherOptional.isPresent()) {
-                WeatherEntity cachedWeather = cachedWeatherOptional.get();
-                if (cachedWeather.isValid(cacheTimeInMinutes)) {
-                    logger.info("Cache hit for City: {} in the database, returning cached data", cityName);
+            Optional<LatestWeatherApiEntity> latestApiOptional = latestWeatherApiRepository
+                    .findByCityAndSmhiAndYr(cityEntity, smhi, yr);
+
+            if (latestApiOptional.isPresent()) {
+                WeatherEntity cachedWeather = latestApiOptional.get().getLatestWeather();
+                if(cachedWeather != null && cachedWeather.isValid(cacheTimeInMinutes)) {
+                    logger.info("Cache hit for City: {} with APIs SMHI: {}, YR: {} in the database, returning cached data", cityName, smhi, yr);
                     return convertToWeather(cachedWeather);
                 } else {
-                    logger.info("Cache expired for City: {} in the database, fetching new data", cityName);
-                    //Maybe remove cache, but for now we keep every cache in the database. If so just delete the cachedWeather object
+                    logger.info("Cache expired for City: {} with APIs SMHI: {}, YR: {} in the database, fetching new data", cityName, smhi, yr);
                     return null;
                 }
             } else {
-                logger.info("Cache doesn't exist for City: {} in the database, fetching new data", cityName);
+                logger.info("Cache doesn't exist for City: {} with APIs SMHI: {}, YR: {} in the database, fetching new data", cityName, smhi, yr);
             }
             return null;
         }
 
         @Transactional
-        public void save(Weather weather) {
+        public void save(Weather weather, boolean smhi, boolean yr) {
             CityEntity cityEntity = cityRepository.findByNameIgnoreCase(weather.getCity().getName())
-                    .orElseThrow(() -> new CityNotFoundException("City not found with ID: " + weather.getCity().getName()));
+                    .orElseThrow(() -> new CityNotFoundException("City not found: " + weather.getCity().getName()));
+
             WeatherEntity weatherEntity = weatherEntityRepository.save(convertToWeatherEntity(weather, cityEntity));
-            logger.info("Saved weather data to cache with id: {} and key: {}", weatherEntity.getId(), weather.getCity().getName());
+
+            LatestWeatherApiEntity latestWeatherApi = latestWeatherApiRepository
+                    .findByCityAndSmhiAndYr(cityEntity, smhi, yr)
+                    .orElse(null);
+
+            if (latestWeatherApi == null) {
+                latestWeatherApi = new LatestWeatherApiEntity();
+                latestWeatherApi.setCity(cityEntity);
+                latestWeatherApi.setSmhi(smhi);
+                latestWeatherApi.setYr(yr);
+            }
+
+            latestWeatherApi.setLatestWeather(weatherEntity);
+            latestWeatherApiRepository.save(latestWeatherApi);
+
+            logger.info("Saved weather data to cache with city: {}, and APIs SMHI: {}, YR: {}", cityEntity.getName(), smhi, yr);
         }
     }

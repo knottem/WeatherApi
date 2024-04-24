@@ -53,32 +53,38 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public Weather getWeatherMerged(String cityName) {
+        String key = cityName.toLowerCase() + "merged";
         Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
-                .get(cityName, Weather.class);
+                .get(key, Weather.class);
         if(weatherFromCache != null) {
             log.info("Cache hit for City: {} in the cache, returning cached data", cityName);
             return weatherFromCache;
         }
 
         City city = toModel(cityService.getCityByName(cityName));
-        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName());
+        Weather weatherFromCacheDB = cacheDB
+                .getWeatherFromCache(city.getName(), true, true);
         if(weatherFromCacheDB != null) {
             getSunriseSunset(weatherFromCacheDB);
-            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(city.getName().toLowerCase(), weatherFromCacheDB);
+            Objects.requireNonNull(cacheManager.getCache(cacheName))
+                    .put(key, weatherFromCacheDB);
             return weatherFromCacheDB;
         }
 
-        mergeCount = 1;
-        mergedWeatherData = new TreeMap<>();
+        this.mergeCount = 0;
+        this.mergedWeatherData = new TreeMap<>();
 
-        CompletableFuture<Void> smhi = fetchAndProcessWeatherData("SMHI", smhiApi.fetchWeatherSmhiAsync(city));
-        CompletableFuture<Void> yr = fetchAndProcessWeatherData("YR", yrApi.fetchWeatherYrAsync(city));
+        CompletableFuture<Void> smhi = fetchAndProcessWeatherData("SMHI",
+                smhiApi.fetchWeatherSmhiAsync(city));
+        CompletableFuture<Void> yr = fetchAndProcessWeatherData("YR",
+                yrApi.fetchWeatherYrAsync(city));
         CompletableFuture.allOf(smhi,yr).join();
 
         if (mergedWeatherData.isEmpty()) {
             throw new WeatherNotFilledException("Could not connect to any weather API");
         }
 
+        calculateAverages();
         setScaleWeatherData();
 
         Weather mergedWeather = Weather.builder()
@@ -89,16 +95,16 @@ public class WeatherServiceImpl implements WeatherService {
                 .build();
 
         mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
-        cacheDB.save(mergedWeather);
+        cacheDB.save(mergedWeather, true, true);
         getSunriseSunset(mergedWeather);
-        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(city.getName().toLowerCase(), mergedWeather);
+        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, mergedWeather);
         return mergedWeather;
     }
 
     private CompletableFuture<Void> fetchAndProcessWeatherData(String apiName, CompletableFuture<Weather> weatherFuture) {
         return weatherFuture
                 .exceptionally(e -> {
-                    log.error("Failed to fetch weather data from " + apiName, e);
+                    log.error("Failed to fetch weather data from {}", apiName, e);
                     return null;
                 })
                 .thenAccept(weather -> {
@@ -116,10 +122,9 @@ public class WeatherServiceImpl implements WeatherService {
             if (mergedWeatherData.containsKey(key)) {
                 Weather.WeatherData existingData = mergedWeatherData.get(key);
 
-                float avgTemperature = ((existingData.getTemperature() * mergeCount) + newDataItem.getTemperature()) / (mergeCount + 1);
-                float avgWindDirection = getAvgWindDirection(existingData, newDataItem);
-                float avgWindSpeed = ((existingData.getWindSpeed() * mergeCount) + newDataItem.getWindSpeed()) / (mergeCount + 1);
-                float avgPrecipitation = ((existingData.getPrecipitation() * mergeCount) + newDataItem.getPrecipitation()) / (mergeCount + 1);
+                existingData.setTemperature(existingData.getTemperature() + newDataItem.getTemperature());
+                existingData.setWindSpeed(existingData.getWindSpeed() + newDataItem.getWindSpeed());
+                existingData.setPrecipitation(existingData.getPrecipitation() + newDataItem.getPrecipitation());
 
                 int weatherCode;
                 if (api.equals("SMHI")) {
@@ -127,16 +132,11 @@ public class WeatherServiceImpl implements WeatherService {
                 } else {
                     weatherCode = existingData.getWeatherCode() > -1 ? existingData.getWeatherCode() : newDataItem.getWeatherCode();
                 }
+                existingData.setWeatherCode(weatherCode);
 
-                Weather.WeatherData mergedData = Weather.WeatherData.builder()
-                        .temperature(avgTemperature)
-                        .windDirection(avgWindDirection)
-                        .windSpeed(avgWindSpeed)
-                        .precipitation(avgPrecipitation)
-                        .weatherCode(weatherCode)
-                        .build();
+                // Calculate average wind direction using vector addition of Cartesian coordinates
+                existingData.setWindDirection(getAvgWindDirection(existingData, newDataItem));
 
-                mergedWeatherData.put(key, mergedData);
             } else {
                 mergedWeatherData.put(key, newDataItem);
             }
@@ -145,21 +145,35 @@ public class WeatherServiceImpl implements WeatherService {
         log.info("Merged weather data from {}", api);
     }
 
+    private void calculateAverages() {
+        for (Weather.WeatherData data : mergedWeatherData.values()) {
+            data.setTemperature(data.getTemperature() / mergeCount);
+            data.setWindSpeed(data.getWindSpeed() / mergeCount);
+            data.setPrecipitation(data.getPrecipitation() / mergeCount);
+        }
+    }
+
     private float getAvgWindDirection(Weather.WeatherData existingData, Weather.WeatherData newDataItem) {
-        double existingX = Math.cos(Math.toRadians(existingData.getWindDirection())) * mergeCount;
-        double existingY = Math.sin(Math.toRadians(existingData.getWindDirection())) * mergeCount;
+        // Convert wind directions to Cartesian coordinates
+        double existingX = Math.cos(Math.toRadians(existingData.getWindDirection()));
+        double existingY = Math.sin(Math.toRadians(existingData.getWindDirection()));
         double newX = Math.cos(Math.toRadians(newDataItem.getWindDirection()));
         double newY = Math.sin(Math.toRadians(newDataItem.getWindDirection()));
-        double avgX = (existingX + newX) / (mergeCount + 1);
-        double avgY = (existingY + newY) / (mergeCount + 1);
-        float avgWindDirection = (float) Math.toDegrees(Math.atan2(avgY, avgX));
+
+        // Sum up Cartesian coordinates
+        double sumX = existingX + newX;
+        double sumY = existingY + newY;
+
+        // Convert back to polar coordinates
+        float avgWindDirection = (float) Math.toDegrees(Math.atan2(sumY, sumX));
         if (avgWindDirection < 0) {
             avgWindDirection += 360;
         }
         return avgWindDirection;
     }
 
-    private void setScaleWeatherData(){
+
+        private void setScaleWeatherData(){
         for (Map.Entry<ZonedDateTime, Weather.WeatherData> entry : mergedWeatherData.entrySet()) {
             Weather.WeatherData weatherData = entry.getValue();
             weatherData.setTemperature(BigDecimal.valueOf(weatherData.getTemperature()).setScale(1, RoundingMode.HALF_UP).floatValue());

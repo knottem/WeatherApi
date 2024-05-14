@@ -1,10 +1,12 @@
 package com.example.weatherapi.util;
 
+import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.entities.WeatherDataEntity;
 import com.example.weatherapi.domain.entities.WeatherEntity;
 import com.example.weatherapi.domain.weather.Weather;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -68,6 +70,23 @@ public class WeatherMapper {
                         (existing, replacement) -> existing,
                         LinkedHashMap::new
                 ));
+    }
+
+    public static Weather createBaseWeather(double lon, double lat, City city) {
+        Weather weather;
+        if (city == null) {
+            weather = Weather.builder()
+                    .message("Weather for location Lon: " + lon + " and Lat: " + lat)
+                    .timestamp(ZonedDateTime.now(ZoneOffset.UTC))
+                    .build();
+        } else {
+            weather = Weather.builder()
+                    .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
+                    .city(city)
+                    .timestamp(ZonedDateTime.now(ZoneOffset.UTC))
+                    .build();
+        }
+        return weather;
     }
 
 }

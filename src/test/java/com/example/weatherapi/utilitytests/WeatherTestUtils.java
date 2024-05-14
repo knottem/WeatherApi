@@ -28,6 +28,13 @@ public class WeatherTestUtils {
                 .build();
     }
 
+    public static Weather.WeatherData buildWeatherDataWithoutWind(float temperature, float precipitation) {
+        return Weather.WeatherData.builder()
+                .temperature(temperature)
+                .precipitation(precipitation)
+                .build();
+    }
+
     /**
      * Asserts that the information part of the Weather object is always the same.
      * @param weather the Weather object to be tested
@@ -95,5 +102,10 @@ public class WeatherTestUtils {
     public static void assertWeatherDataYrGothenburg(Weather weather){
         assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2023-09-17T15:00:00Z")))
                 .isEqualTo(buildWeatherData(19.7f, 3, 3.5f, 84.9f, 0.0f));
+    }
+
+    public static void assertWeatherDataFmiRagsved(Weather weather){
+        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-05-14T17:00:00Z")))
+                .isEqualTo(buildWeatherDataWithoutWind(15.9f, 0.0f));
     }
 }

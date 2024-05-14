@@ -88,7 +88,7 @@ public class WeatherServiceImpl implements WeatherService {
         setScaleWeatherData();
 
         Weather mergedWeather = Weather.builder()
-                .message("Merged weather for " + city.getName() + " from SMHI and YR")
+                .message("Merged weather for " + city.getName() + " from SMHI, YR and FMI")
                 .weatherData(mergedWeatherData)
                 .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                 .city(city)

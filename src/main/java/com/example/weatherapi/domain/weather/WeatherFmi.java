@@ -35,6 +35,7 @@ public class WeatherFmi {
 
         @JacksonXmlProperty(localName = "result")
         private Result result;
+
     }
 
     @Getter
@@ -44,6 +45,7 @@ public class WeatherFmi {
 
         @JacksonXmlProperty(localName = "MeasurementTimeseries")
         private MeasurementTimeseries measurementTimeseries;
+
     }
 
     @Getter
@@ -65,6 +67,7 @@ public class WeatherFmi {
 
             @JacksonXmlProperty(localName = "MeasurementTVP")
             private MeasurementTVP measurementTVP;
+
         }
     }
 

@@ -1,9 +1,8 @@
 package com.example.weatherapi.api;
 
-import com.example.weatherapi.domain.weather.weatherFmi.*;
+import com.example.weatherapi.domain.weather.WeatherFmi;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
@@ -23,14 +22,14 @@ class FmiApiTests {
             File file = new File("src/test/resources/weatherexamples/fmi/rågsvedexample-4hours.xml");
             String xmlContent = new String(Files.readAllBytes(file.toPath()));
             xmlContent = xmlContent.replace("&param=", "&amp;param=").replace("&language=", "&amp;language=");
-            FeatureCollection featureCollection = xmlMapper.readValue(xmlContent, FeatureCollection.class);
-            assertThat(featureCollection).isNotNull();
+            WeatherFmi weatherFmi = xmlMapper.readValue(xmlContent, WeatherFmi.class);
+            assertThat(weatherFmi).isNotNull();
 
-            featureCollection.getMembers().stream()
-                    .map(FeatureMember::getPointTimeSeriesObservation)
+            weatherFmi.getMembers().stream()
+                    .map(WeatherFmi.FeatureMember::getPointTimeSeriesObservation)
                     .filter(observation -> observation != null && observation.getResult() != null)
-                    .map(PointTimeSeriesObservation::getResult)
-                    .map(Result::getMeasurementTimeseries)
+                    .map(WeatherFmi.PointTimeSeriesObservation::getResult)
+                    .map(WeatherFmi.Result::getMeasurementTimeseries)
                     .filter(Objects::nonNull)
                     .forEach(timeseries -> {
                         switch (extractRelevantPart(timeseries.getId())) {
@@ -56,14 +55,14 @@ class FmiApiTests {
         File file = new File("src/test/resources/weatherexamples/fmi/rågsvedexample-10Days.xml");
         String xmlContent = new String(Files.readAllBytes(file.toPath()));
         xmlContent = xmlContent.replace("&param=", "&amp;param=").replace("&language=", "&amp;language=");
-        FeatureCollection featureCollection = xmlMapper.readValue(xmlContent, FeatureCollection.class);
-        assertThat(featureCollection).isNotNull();
+        WeatherFmi weatherFmi = xmlMapper.readValue(xmlContent, WeatherFmi.class);
+        assertThat(weatherFmi).isNotNull();
 
-        featureCollection.getMembers().stream()
-                .map(FeatureMember::getPointTimeSeriesObservation)
+        weatherFmi.getMembers().stream()
+                .map(WeatherFmi.FeatureMember::getPointTimeSeriesObservation)
                 .filter(observation -> observation != null && observation.getResult() != null)
-                .map(PointTimeSeriesObservation::getResult)
-                .map(Result::getMeasurementTimeseries)
+                .map(WeatherFmi.PointTimeSeriesObservation::getResult)
+                .map(WeatherFmi.Result::getMeasurementTimeseries)
                 .filter(Objects::nonNull)
                 .forEach(timeseries -> {
                     switch (extractRelevantPart(timeseries.getId())) {
@@ -83,9 +82,9 @@ class FmiApiTests {
                 });
     }
 
-    private void assertMeasurement(MeasurementTimeseries timeseries, String expectedTime, double expectedValue) {
-        Optional<MeasurementTVP> matchingPoint = timeseries.getPoints().stream()
-                .map(MeasurementTimeseries.Point::getMeasurementTVP)
+    private void assertMeasurement(WeatherFmi.MeasurementTimeseries timeseries, String expectedTime, double expectedValue) {
+        Optional<WeatherFmi.MeasurementTVP> matchingPoint = timeseries.getPoints().stream()
+                .map(WeatherFmi.MeasurementTimeseries.Point::getMeasurementTVP)
                 .filter(data -> expectedTime.equals(data.getTime()))
                 .findFirst();
 

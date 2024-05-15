@@ -28,6 +28,16 @@ public class WeatherTestUtils {
                 .build();
     }
 
+    public static Weather.WeatherData buildWeatherDataWithoutWind(float temperature, float precipitation) {
+        return Weather.WeatherData.builder()
+                .temperature(temperature)
+                .precipitation(precipitation)
+                .weatherCode(-1)
+                .windSpeed(-99f)
+                .windDirection(-99f)
+                .build();
+    }
+
     /**
      * Asserts that the information part of the Weather object is always the same.
      * @param weather the Weather object to be tested
@@ -44,8 +54,11 @@ public class WeatherTestUtils {
      * @param weather the Weather object to be tested
      */
     public static void assertWeatherDataMergedStockholm(Weather weather){
-        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2023-09-17T10:00:00Z")))
-                .isEqualTo(buildWeatherData(14.9f, 2, 3.5f, 349.1f, 0.0f));
+        // SMHI DATA = 20.4, 1, 3.7, 196.0, 0.0
+        // YR DATA = 21.4, 1, 3.8, 187.0, 0.0
+        // FMI DATA = 17.2, ,    ,      , 0.0
+        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-05-15T17:00:00Z")))
+                .isEqualTo(buildWeatherData(19.7f, 1, 3.8f, 191.5f, 0.0f));
     }
 
     /**
@@ -53,8 +66,8 @@ public class WeatherTestUtils {
      * @param weather the Weather object to be tested
      */
     public static void assertWeatherDataSmhiStockholm(Weather weather){
-        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2023-09-17T10:00:00Z")))
-                .isEqualTo(buildWeatherData(14.6f, 2, 3.4f, 347.0f, 0.0f));
+        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-05-15T17:00:00Z")))
+                .isEqualTo(buildWeatherData(20.4f, 1, 3.7f, 196.0f, 0.0f));
     }
 
 
@@ -63,8 +76,8 @@ public class WeatherTestUtils {
      * @param weather the Weather object to be tested
      */
     public static void assertWeatherDataYrStockholm(Weather weather){
-        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2023-09-17T10:00:00Z")))
-                .isEqualTo(buildWeatherData(15.0f, 4, 3.6f, 350.1f, 0.0f));
+        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-05-15T17:00:00Z")))
+                .isEqualTo(buildWeatherData(21.4f, 1, 3.8f, 187.0f, 0.0f));
     }
 
     /**
@@ -74,7 +87,7 @@ public class WeatherTestUtils {
     public static void assertWeatherDataMergedGothenburg(Weather weather){
 
         assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2023-09-17T15:00:00Z")))
-                .isEqualTo(buildWeatherData(19.7f, 4, 3.7f, 82.3f, 0.0f));
+                .isEqualTo(buildWeatherData(19.8f, 4, 3.8f, 80.9f, 0.0f));
     }
 
     /**
@@ -93,5 +106,15 @@ public class WeatherTestUtils {
     public static void assertWeatherDataYrGothenburg(Weather weather){
         assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2023-09-17T15:00:00Z")))
                 .isEqualTo(buildWeatherData(19.7f, 3, 3.5f, 84.9f, 0.0f));
+    }
+
+    public static void assertWeatherDataFmiRagsved(Weather weather){
+        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-05-14T17:00:00Z")))
+                .isEqualTo(buildWeatherDataWithoutWind(15.9f, 0.0f));
+    }
+
+    public static void assertWeatherDataFmiStockholm(Weather weather){
+        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-05-15T17:00:00Z")))
+                .isEqualTo(buildWeatherDataWithoutWind(17.2f, 0.0f));
     }
 }

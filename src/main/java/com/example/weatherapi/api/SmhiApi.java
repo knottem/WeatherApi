@@ -1,5 +1,6 @@
 package com.example.weatherapi.api;
 
+import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
@@ -8,15 +9,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+
+import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 
 /**
  * This class handles all the communication with the smhi api.<br>
@@ -30,7 +34,17 @@ public class SmhiApi {
 
     ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
     private static final Logger LOG = LoggerFactory.getLogger(SmhiApi.class);
+    private final CacheManager cacheManager;
+    private final CacheDB cacheDB;
     private boolean isTestMode = false;
+    private final String cacheName;
+
+    @Autowired
+    public SmhiApi (CacheManager cacheManager, CacheDB cacheDB) {
+        this.cacheManager = cacheManager;
+        this.cacheDB = cacheDB;
+        this.cacheName = "cache";
+    }
 
     /**
      * Sets the test mode to true or false.
@@ -38,6 +52,16 @@ public class SmhiApi {
      */
     public void setTestMode(boolean isTestMode) {
         this.isTestMode = isTestMode;
+    }
+
+    private URL getUrlSmhi(double lon, double lat) throws IOException {
+        return new URL("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
+                + lon + "/lat/" + lat + "/data.json");
+    }
+
+    @Async
+    public CompletableFuture<Weather> fetchWeatherSmhiAsync(City city) {
+        return CompletableFuture.completedFuture(getWeatherSmhi(city.getLon(), city.getLat(), city));
     }
 
     /**
@@ -51,14 +75,27 @@ public class SmhiApi {
      */
 
     public Weather getWeatherSmhi(double lon, double lat, City city) {
+        String key = city.getName().toLowerCase() + "smhi";
+        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
+                .get(key, Weather.class);
+        if(weatherFromCache != null) {
+            LOG.info("Cache hit for City: {} in the cache, returning cached data for smhi", city.getName());
+            return weatherFromCache;
+        }
+
+        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), true, false, false);
+        if(weatherFromCacheDB != null) {
+            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherFromCacheDB);
+            return weatherFromCacheDB;
+        }
+
         LOG.info("Fetching weather data from the SMHI API...");
         WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
-        return createWeather(lon, lat, city, weatherSmhi);
-    }
-
-    @Async
-    public CompletableFuture<Weather> fetchWeatherSmhiAsync(City city) {
-        return CompletableFuture.completedFuture(getWeatherSmhi(city.getLon(), city.getLat(), city));
+        Weather weather = createBaseWeather(lon, lat, city, "SMHI");
+        addWeatherDataSmhi(weather, weatherSmhi);
+        cacheDB.save(weather, true, false, false);
+        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
+        return weather;
     }
 
     /**
@@ -74,36 +111,12 @@ public class SmhiApi {
                         mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class)
                                 .get(cityName)), WeatherSmhi.class);
             } else {
-                return mapper.readValue(new URL("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
-                        + lon + "/lat/" + lat + "/data.json"), WeatherSmhi.class);
+                return mapper.readValue(getUrlSmhi(lon, lat), WeatherSmhi.class);
             }
         } catch (IOException e) {
             LOG.error("Could not connect to SMHI API");
             throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
         }
-    }
-
-    /**
-     * Creates the Weather object for the given location. <br>
-     * Uses city information if provided, otherwise uses only coordinates.<br>
-     * @return Constructed Weather object with relevant information.
-     */
-    private Weather createWeather(double lon, double lat, City city, WeatherSmhi weatherSmhi) {
-        Weather weather;
-        if (city == null) {
-            weather = Weather.builder()
-                    .message("Weather for location Lon: " + lon + " and Lat: " + lat)
-                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                    .build();
-        } else {
-            weather = Weather.builder()
-                    .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
-                    .city(city)
-                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                    .build();
-        }
-        addWeatherDataSmhi(weather, weatherSmhi);
-        return weather;
     }
 
     /**

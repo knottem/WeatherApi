@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -33,9 +31,5 @@ public class WeatherEntity {
 
     @OneToMany(mappedBy = "weatherEntity", cascade = CascadeType.ALL)
     private List<WeatherDataEntity> weatherDataList;
-
-    public boolean isValid(int minutes) {
-        return ZonedDateTime.now(ZoneId.of("UTC")).minusMinutes(minutes).isBefore(timeStamp);
-    }
 
 }

@@ -1,9 +1,11 @@
 package com.example.weatherapi.controllers.weathercontroller;
 
+import com.example.weatherapi.api.FmiApi;
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.domain.ErrorResponse;
 import com.example.weatherapi.domain.weather.Weather;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +39,14 @@ class WeatherControllerMergedTests {
     @Autowired
     private YrApi yrApi;
 
+    @Autowired
+    private FmiApi fmiApi;
+
     @BeforeEach
     public void setupBeforeEach() {
         smhiApi.setTestMode(true);
         yrApi.setTestMode(true);
+        fmiApi.setTestMode(true);
     }
 
     // Test Case 1: Check that the response is correct
@@ -52,7 +58,7 @@ class WeatherControllerMergedTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage())
-                .isEqualTo("Merged weather for Stockholm from SMHI and YR");
+                .isEqualTo("Merged weather for Stockholm from FMI, SMHI and YR");
         assertWeatherInformation(response.getBody());
         assertWeatherDataMergedStockholm(response.getBody());
     }
@@ -66,7 +72,7 @@ class WeatherControllerMergedTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage())
-                .isEqualTo("Merged weather for Stockholm from SMHI and YR");
+                .isEqualTo("Merged weather for Stockholm from FMI, SMHI and YR");
         assertWeatherInformation(response.getBody());
         assertWeatherDataMergedStockholm(response.getBody());
     }
@@ -110,7 +116,7 @@ class WeatherControllerMergedTests {
             // Assert
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(Objects.requireNonNull(response.getBody()).getMessage())
-                    .isEqualTo("Merged weather for Stockholm from SMHI and YR");
+                    .isEqualTo("Merged weather for Stockholm from FMI, SMHI and YR");
             assertWeatherInformation(response.getBody());
             assertWeatherDataMergedStockholm(response.getBody());
         }

@@ -76,7 +76,7 @@ public class WeatherMapper {
         Weather weather;
         if (city == null) {
             weather = Weather.builder()
-                    .message("Weather for location Lon: " + lon + " and Lat: " + lat)
+                    .message("Weather for location Lon: " + lon + " and Lat: " + lat + " from: " + api)
                     .timestamp(ZonedDateTime.now(ZoneOffset.UTC))
                     .build();
         } else {

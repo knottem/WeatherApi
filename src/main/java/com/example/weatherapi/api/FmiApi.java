@@ -102,7 +102,7 @@ public class FmiApi {
             } else {
                 xmlContent = getXmlContentFromUrl(
                         getUrlFMI(lon, lat,
-                                generateFutureTimestamp(ZonedDateTime.now(ZoneOffset.UTC), 10)));
+                                generateFutureTimestamp(ZonedDateTime.now(ZoneOffset.UTC), 9)));
             }
             xmlContent = parseXml(xmlContent);
             return xmlMapper.readValue(xmlContent, WeatherFmi.class);

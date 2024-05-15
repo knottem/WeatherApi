@@ -18,6 +18,7 @@
     import java.util.Optional;
 
     import static com.example.weatherapi.util.WeatherMapper.*;
+    import static com.example.weatherapi.util.WeatherValidation.isWeatherValid;
 
     @Service
     public class CacheDB {
@@ -50,7 +51,7 @@
         }
 
         @Transactional
-        public Weather getWeatherFromCache(String cityName, boolean smhi, boolean yr) {
+        public Weather getWeatherFromCache(String cityName, boolean smhi, boolean yr, boolean fmi) {
             if (cacheTimeInMinutes < 0) {
                 logger.warn("Cache time in minutes is negative, setting it to default value of 60 minutes");
                 cacheTimeInMinutes = 60;
@@ -60,32 +61,32 @@
                     .orElseThrow(() -> new RuntimeException("City not found: " + cityName));
 
             Optional<LatestWeatherApiEntity> latestApiOptional = latestWeatherApiRepository
-                    .findByCityAndSmhiAndYr(cityEntity, smhi, yr);
+                    .findByCityAndSmhiAndYrAndFmi(cityEntity, smhi, yr, fmi);
 
             if (latestApiOptional.isPresent()) {
                 WeatherEntity cachedWeather = latestApiOptional.get().getLatestWeather();
-                if(cachedWeather != null && cachedWeather.isValid(cacheTimeInMinutes)) {
-                    logger.info("Cache hit for City: {} with APIs SMHI: {}, YR: {} in the database, returning cached data", cityName, smhi, yr);
+                if(cachedWeather != null && isWeatherValid(cachedWeather.getTimeStamp(), cacheTimeInMinutes)) {
+                    logger.info("Cache hit for City: {} with APIs SMHI: {}, YR: {}, FMI: {} in the database, returning cached data", cityName, smhi, yr, fmi);
                     return convertToWeather(cachedWeather);
                 } else {
-                    logger.info("Cache expired for City: {} with APIs SMHI: {}, YR: {} in the database, fetching new data", cityName, smhi, yr);
+                    logger.info("Cache expired for City: {} with APIs SMHI: {}, YR: {}, FMI: {} in the database, fetching new data", cityName, smhi, yr, fmi);
                     return null;
                 }
             } else {
-                logger.info("Cache doesn't exist for City: {} with APIs SMHI: {}, YR: {} in the database, fetching new data", cityName, smhi, yr);
+                logger.info("Cache doesn't exist for City: {} with APIs SMHI: {}, YR: {}, FMI: {} in the database, fetching new data", cityName, smhi, yr, fmi);
             }
             return null;
         }
 
         @Transactional
-        public void save(Weather weather, boolean smhi, boolean yr) {
+        public void save(Weather weather, boolean smhi, boolean yr, boolean fmi) {
             CityEntity cityEntity = cityRepository.findByNameIgnoreCase(weather.getCity().getName())
                     .orElseThrow(() -> new CityNotFoundException("City not found: " + weather.getCity().getName()));
 
             WeatherEntity weatherEntity = weatherEntityRepository.save(convertToWeatherEntity(weather, cityEntity));
 
             LatestWeatherApiEntity latestWeatherApi = latestWeatherApiRepository
-                    .findByCityAndSmhiAndYr(cityEntity, smhi, yr)
+                    .findByCityAndSmhiAndYrAndFmi(cityEntity, smhi, yr, fmi)
                     .orElse(null);
 
             if (latestWeatherApi == null) {
@@ -98,6 +99,6 @@
             latestWeatherApi.setLatestWeather(weatherEntity);
             latestWeatherApiRepository.save(latestWeatherApi);
 
-            logger.info("Saved weather data to cache with city: {}, and APIs SMHI: {}, YR: {}", cityEntity.getName(), smhi, yr);
+            logger.info("Saved weather data to cache with city: {}, and APIs SMHI: {}, YR: {}, FMI: {}", cityEntity.getName(), smhi, yr, fmi);
         }
     }

@@ -1,21 +1,21 @@
 package com.example.weatherapi.api;
 
+import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherFmi;
 import com.example.weatherapi.exceptions.ApiConnectionException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.time.ZoneOffset;
@@ -31,10 +31,19 @@ import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 @Component
 public class FmiApi {
 
-    ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
     XmlMapper xmlMapper = new XmlMapper();
     private static final Logger LOG = LoggerFactory.getLogger(FmiApi.class);
+    private final CacheManager cacheManager;
+    private final CacheDB cacheDB;
+    private final String cacheName;
     private boolean isTestMode = false;
+
+    @Autowired
+    public FmiApi (CacheManager cacheManager, CacheDB cacheDB) {
+        this.cacheManager = cacheManager;
+        this.cacheDB = cacheDB;
+        this.cacheName = "cache";
+    }
 
     public void setTestMode(boolean isTestMode) {
         this.isTestMode = isTestMode;
@@ -50,10 +59,27 @@ public class FmiApi {
     }
 
     public Weather getWeatherFMI(double lon, double lat, City city) {
+        String key = city.getName().toLowerCase() + "fmi";
+        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
+                .get(key, Weather.class);
+        if(weatherFromCache != null) {
+            LOG.info("Cache hit for City: {} in the cache, returning cached data for fmi", city.getName());
+            return weatherFromCache;
+        }
+
+        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), false, false, true);
+        if(weatherFromCacheDB != null) {
+            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherFromCacheDB);
+            return weatherFromCacheDB;
+        }
+
+
         LOG.info("Fetching weather data from the FMI API...");
         WeatherFmi weatherFmi = fetchWeatherFMI(lon, lat, city);
-        Weather weather = createBaseWeather(lon, lat, city);
+        Weather weather = createBaseWeather(lon, lat, city, "FMI");
         addWeatherDataFmi(weather, weatherFmi);
+        cacheDB.save(weather, false, false, true);
+        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
         return weather;
     }
 
@@ -110,13 +136,20 @@ public class FmiApi {
         }
 
         for (ZonedDateTime validTime : temperatures.keySet()) {
-            float temperature = temperatures.getOrDefault(validTime, Float.NaN);
-            float windSpeed = windSpeeds.getOrDefault(validTime, Float.NaN);
-            float windDirection = windDirections.getOrDefault(validTime, Float.NaN);
-            float precipitation = precipitations.getOrDefault(validTime, Float.NaN);
+            float temperature = sanitizeFloat(temperatures.get(validTime));
+            float windSpeed = sanitizeFloat(windSpeeds.get(validTime));
+            float windDirection = sanitizeFloat(windDirections.get(validTime));
+            float precipitation = sanitizeFloat(precipitations.get(validTime));
             int weatherCode = -1;
             weather.addWeatherData(validTime, temperature, weatherCode, windSpeed, windDirection, precipitation);
         }
+    }
+
+    private float sanitizeFloat(Float value) {
+        if (value == null || Float.isNaN(value)) {
+            return -99;
+        }
+        return value;
     }
 
     private String parseXml(String xmlContent) {

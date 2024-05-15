@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -85,7 +83,7 @@ public class SmhiApi {
             return weatherFromCache;
         }
 
-        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), true, false);
+        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), true, false, false);
         if(weatherFromCacheDB != null) {
             Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherFromCacheDB);
             return weatherFromCacheDB;
@@ -93,9 +91,9 @@ public class SmhiApi {
 
         LOG.info("Fetching weather data from the SMHI API...");
         WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
-        Weather weather = createBaseWeather(lon, lat, city);
+        Weather weather = createBaseWeather(lon, lat, city, "SMHI");
         addWeatherDataSmhi(weather, weatherSmhi);
-        cacheDB.save(weather, true, false);
+        cacheDB.save(weather, true, false, false);
         Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
         return weather;
     }

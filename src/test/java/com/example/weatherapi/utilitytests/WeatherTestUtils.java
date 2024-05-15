@@ -33,8 +33,8 @@ public class WeatherTestUtils {
                 .temperature(temperature)
                 .precipitation(precipitation)
                 .weatherCode(-1)
-                .windSpeed(Float.NaN)
-                .windDirection(Float.NaN)
+                .windSpeed(-99f)
+                .windDirection(-99f)
                 .build();
     }
 

@@ -16,19 +16,15 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.WeatherCodeMapper.mapToWeatherCodeYR;
-import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 
 //YrAPI class that handles all the communication with the yr api
@@ -77,7 +73,7 @@ public class YrApi {
             return weatherFromCache;
         }
 
-        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), false, true);
+        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), false, true, false);
         if(weatherFromCacheDB != null) {
             Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherFromCacheDB);
             return weatherFromCacheDB;
@@ -85,9 +81,9 @@ public class YrApi {
 
         LOG.info("Fetching weather data from the YR API...");
         WeatherYr weatherYr = fetchWeatherYr(lon, lat, city);
-        Weather weather = createBaseWeather(lon, lat, city);
+        Weather weather = createBaseWeather(lon, lat, city, "YR");
         addWeatherDataYr(weather, weatherYr);
-        cacheDB.save(weather, false, true);
+        cacheDB.save(weather, false, true, false);
         Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
         return weather;
     }

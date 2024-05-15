@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Scanner;
 
 import static com.example.weatherapi.utilitytests.WeatherTestUtils.assertWeatherDataFmiRagsved;
+import static com.example.weatherapi.utilitytests.WeatherTestUtils.assertWeatherDataFmiStockholm;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
@@ -40,7 +41,13 @@ class FmiApiTests {
         City city = new City("Rågsved", 18.0319, 59.2572, null, null);
         Weather weather = fmiApi.getWeatherFMI(city.getLon(), city.getLat(), city);
         assertWeatherDataFmiRagsved(weather);
-        System.out.println(weather.getWeatherData().get(ZonedDateTime.parse("2024-05-14T17:00:00Z")).toString());
+    }
+
+    @Test
+    void getWeatherFmiTestStockholm_Valid() {
+        City city = new City("Stockholm", 18.0686, 59.3294, null, null);
+        Weather weather = fmiApi.getWeatherFMI(city.getLon(), city.getLat(), city);
+        assertWeatherDataFmiStockholm(weather);
     }
 
     @Test

@@ -28,6 +28,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.WeatherCodeMapper.mapToWeatherCodeYR;
+import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
+import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 
 //YrAPI class that handles all the communication with the yr api
 @Component
@@ -83,7 +85,8 @@ public class YrApi {
 
         LOG.info("Fetching weather data from the YR API...");
         WeatherYr weatherYr = fetchWeatherYr(lon, lat, city);
-        Weather weather = createWeatherYr(lon, lat, city, weatherYr);
+        Weather weather = createBaseWeather(lon, lat, city);
+        addWeatherDataYr(weather, weatherYr);
         cacheDB.save(weather, false, true);
         Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
         return weather;
@@ -116,32 +119,11 @@ public class YrApi {
                 }
                 return mapper.readValue(response.body(), WeatherYr.class);
             }
-        }  catch (IOException | InterruptedException e) {
-            LOG.error("Could not connect to YR API");
+        } catch (Exception e){
+            LOG.warn("Could not connect to YR API", e);
             Thread.currentThread().interrupt();
             throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
-        } catch (URISyntaxException e) {
-            LOG.error("Could not create URI for YR API");
-            throw new ApiConnectionException("Could not create URI for YR API, please contact the site administrator");
         }
-    }
-
-    private Weather createWeatherYr(double lon, double lat, City city, WeatherYr weatherYr) {
-        Weather weather;
-        if(city == null){
-            weather = Weather.builder()
-                    .message("Weather for location Lon: " + lon + " and Lat: " + lat + " from YR")
-                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                    .build();
-        } else {
-            weather = Weather.builder()
-                    .message("Weather for "+ city.getName() + " from YR")
-                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                    .city(city)
-                    .build();
-        }
-        addWeatherDataYr(weather, weatherYr);
-        return weather;
     }
 
     private void addWeatherDataYr(Weather weather, WeatherYr weatherYr) {

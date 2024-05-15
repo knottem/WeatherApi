@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
+
 /**
  * This class handles all the communication with the smhi api.<br>
  * It contains methods for fetching the weather from the smhi api and creating the Weather object for the location.
@@ -91,7 +93,8 @@ public class SmhiApi {
 
         LOG.info("Fetching weather data from the SMHI API...");
         WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
-        Weather weather = createWeather(lon, lat, city, weatherSmhi);
+        Weather weather = createBaseWeather(lon, lat, city);
+        addWeatherDataSmhi(weather, weatherSmhi);
         cacheDB.save(weather, true, false);
         Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
         return weather;
@@ -116,29 +119,6 @@ public class SmhiApi {
             LOG.error("Could not connect to SMHI API");
             throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
         }
-    }
-
-    /**
-     * Creates the Weather object for the given location. <br>
-     * Uses city information if provided, otherwise uses only coordinates.<br>
-     * @return Constructed Weather object with relevant information.
-     */
-    private Weather createWeather(double lon, double lat, City city, WeatherSmhi weatherSmhi) {
-        Weather weather;
-        if (city == null) {
-            weather = Weather.builder()
-                    .message("Weather for location Lon: " + lon + " and Lat: " + lat + " from SMHI")
-                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                    .build();
-        } else {
-            weather = Weather.builder()
-                    .message("Weather for "+ city.getName() + " from SMHI")
-                    .city(city)
-                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                    .build();
-        }
-        addWeatherDataSmhi(weather, weatherSmhi);
-        return weather;
     }
 
     /**

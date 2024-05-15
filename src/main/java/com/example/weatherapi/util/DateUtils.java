@@ -14,7 +14,7 @@ public class DateUtils {
                 .plusDays(daysAhead)
                 .withMinute(0)
                 .withSecond(0)
-                .withNano(0);;
+                .withNano(0);
         return futureDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
     }
 }

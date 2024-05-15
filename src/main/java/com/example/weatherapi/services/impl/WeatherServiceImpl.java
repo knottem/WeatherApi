@@ -1,5 +1,6 @@
 package com.example.weatherapi.services.impl;
 
+import com.example.weatherapi.api.FmiApi;
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.cache.CacheDB;
@@ -18,9 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.CityMapper.toModel;
@@ -30,6 +29,7 @@ import static com.example.weatherapi.util.SunriseUtil.getSunriseSunset;
 public class WeatherServiceImpl implements WeatherService {
 
     private final CityService cityService;
+    private final FmiApi fmiApi;
     private final SmhiApi smhiApi;
     private final YrApi yrApi;
     private final CacheDB cacheDB;
@@ -38,11 +38,13 @@ public class WeatherServiceImpl implements WeatherService {
     private volatile int mergeCount;
     private final CacheManager cacheManager;
     private final String cacheName;
+    private List<String> successfulApis;
 
 
     @Autowired
-    public WeatherServiceImpl(CityService cityService, SmhiApi smhiApi, YrApi yrApi, CacheDB cacheDB, CacheManager cacheManager) {
+    public WeatherServiceImpl(CityService cityService, SmhiApi smhiApi, YrApi yrApi, FmiApi fmiApi, CacheDB cacheDB, CacheManager cacheManager) {
         this.cityService = cityService;
+        this.fmiApi = fmiApi;
         this.smhiApi = smhiApi;
         this.yrApi = yrApi;
         this.cacheDB = cacheDB;
@@ -73,12 +75,15 @@ public class WeatherServiceImpl implements WeatherService {
 
         this.mergeCount = 0;
         this.mergedWeatherData = new TreeMap<>();
+        this.successfulApis = Collections.synchronizedList(new ArrayList<>());
 
-        CompletableFuture<Void> smhi = fetchAndProcessWeatherData("SMHI",
-                smhiApi.fetchWeatherSmhiAsync(city));
-        CompletableFuture<Void> yr = fetchAndProcessWeatherData("YR",
-                yrApi.fetchWeatherYrAsync(city));
-        CompletableFuture.allOf(smhi,yr).join();
+        CompletableFuture<Void> smhi = fetchAndProcessWeatherData("SMHI", smhiApi.fetchWeatherSmhiAsync(city));
+        CompletableFuture<Void> yr = fetchAndProcessWeatherData("YR", yrApi.fetchWeatherYrAsync(city));
+
+        // Wait for both SMHI and YR to finish before fetching FMI
+        CompletableFuture.allOf(smhi,yr)
+                //.thenRun(() -> fetchAndProcessWeatherData("FMI", fmiApi.fetchWeatherFmiAsync(city)).join())
+                .join();
 
         if (mergedWeatherData.isEmpty()) {
             throw new WeatherNotFilledException("Could not connect to any weather API");
@@ -88,7 +93,7 @@ public class WeatherServiceImpl implements WeatherService {
         setScaleWeatherData();
 
         Weather mergedWeather = Weather.builder()
-                .message("Merged weather for " + city.getName() + " from SMHI, YR and FMI")
+                .message(createMessage(city))
                 .weatherData(mergedWeatherData)
                 .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                 .city(city)
@@ -110,6 +115,7 @@ public class WeatherServiceImpl implements WeatherService {
                 .thenAccept(weather -> {
                     if (weather != null) {
                         mergeWeatherDataIntoMergedData(weather.getWeatherData(), apiName);
+                        successfulApis.add(apiName);
                     }
                 });
     }
@@ -137,7 +143,8 @@ public class WeatherServiceImpl implements WeatherService {
                 // Calculate average wind direction using vector addition of Cartesian coordinates
                 existingData.setWindDirection(getAvgWindDirection(existingData, newDataItem));
 
-            } else {
+            } else if (!api.equals("FMI")){
+                // If the data is from FMI, we don't want to add it to the merged data if it doesn't already exist due to differences in timestamps compared to SMHI and YR
                 mergedWeatherData.put(key, newDataItem);
             }
         }
@@ -181,6 +188,25 @@ public class WeatherServiceImpl implements WeatherService {
             weatherData.setWindSpeed(BigDecimal.valueOf(weatherData.getWindSpeed()).setScale(1, RoundingMode.HALF_UP).floatValue());
             weatherData.setPrecipitation(BigDecimal.valueOf(weatherData.getPrecipitation()).setScale(1, RoundingMode.HALF_UP).floatValue());
         }
+    }
+
+    private String createMessage(City city){
+        List<String> sortedApis = new ArrayList<>(successfulApis);
+        Collections.sort(sortedApis);
+
+        StringBuilder messageBuilder = new StringBuilder("Merged weather for ")
+                .append(city.getName())
+                .append(" from ");
+
+        if (sortedApis.size() == 1) {
+            messageBuilder.append(sortedApis.get(0));
+        } else {
+            messageBuilder.append(String.join(", ", sortedApis.subList(0, sortedApis.size() - 1)))
+                    .append(" and ")
+                    .append(sortedApis.get(sortedApis.size() - 1));
+        }
+
+        return messageBuilder.toString();
     }
 
 }

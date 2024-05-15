@@ -1,6 +1,5 @@
 package com.example.weatherapi.domain.weather;
 
-
 import com.example.weatherapi.domain.City;
 import lombok.Builder;
 import lombok.Data;

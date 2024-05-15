@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.WeatherCodeMapper.mapToWeatherCodeYR;
+import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 
 //YrAPI class that handles all the communication with the yr api
 @Component
@@ -84,22 +85,8 @@ public class YrApi {
                     throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
                 }
             }
-            // Creates a new weather object and adds the location and message to it
-            Weather weather;
-            if(city == null){
-                weather = Weather.builder()
-                        .message("Weather for location Lon: " + lon + " and Lat: " + lat)
-                        .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                        .build();
-            } else {
-                weather = Weather.builder()
-                        .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
-                        .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                        .city(city)
-                        .build();
-            }
+            Weather weather = createBaseWeather(lon, lat, city);
             addWeatherDataYr(weather, weatherYr);
-
             return weather;
         } catch (Exception e){
             LOG.warn("Could not connect to YR API", e);

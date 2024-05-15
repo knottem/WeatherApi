@@ -82,11 +82,14 @@ class FmiApiTests {
         ClassLoader classLoader = getClass().getClassLoader();
 
         // Use getResourceAsStream to handle special characters in filenames
-        String resourcePath = "weatherexamples/fmi/rågsvedexample-10Days.xml";
+        String resourcePath = "weatherexamples/fmi/rågsvedexample-10days.xml";
         try (InputStream inputStream = classLoader.getResourceAsStream(resourcePath)) {
             if (inputStream == null) {
+                System.err.println("Resource not found: " + resourcePath);
                 throw new IOException("Resource not found: " + resourcePath);
             }
+
+            System.out.println("Resource found: " + resourcePath);
 
             String xmlContent = new Scanner(inputStream, StandardCharsets.UTF_8).useDelimiter("\\A").next();
             xmlContent = xmlContent.replace("&param=", "&amp;param=").replace("&language=", "&amp;language=");

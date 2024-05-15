@@ -12,7 +12,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -75,9 +77,9 @@ class FmiApiTests {
     }
 
     @Test
-    void parseXmlTestToWeatherFmiTest10Days() throws IOException {
+    void parseXmlTestToWeatherFmiTest10Days() throws IOException, URISyntaxException {
         XmlMapper xmlMapper = new XmlMapper();
-        File file = new File("src/test/resources/weatherexamples/fmi/rågsvedexample-10Days.xml");
+        File file = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("weatherexamples/fmi/rågsvedexample-10Days.xml")).toURI()).toFile();
         String xmlContent = new String(Files.readAllBytes(file.toPath()));
         xmlContent = xmlContent.replace("&param=", "&amp;param=").replace("&language=", "&amp;language=");
         WeatherFmi weatherFmi = xmlMapper.readValue(xmlContent, WeatherFmi.class);

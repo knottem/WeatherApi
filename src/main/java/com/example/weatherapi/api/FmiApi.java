@@ -16,8 +16,10 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -90,7 +92,8 @@ public class FmiApi {
                 String cityName = city.getName().toLowerCase();
                 if(cityName.equals("rågsved")) cityName = "rågsvedexample-10days";
                 LOG.info("Using test data for FMI: {}", cityName);
-                xmlContent = new String(Files.readAllBytes(new File("src/test/resources/weatherexamples/fmi/" + cityName + ".xml").toPath()));
+                File file = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("weatherexamples/fmi/" + cityName + ".xml")).toURI()).toFile();
+                xmlContent = new String(Files.readAllBytes(file.toPath()));
             } else {
                 xmlContent = getXmlContentFromUrl(
                         getUrlFMI(lon, lat,
@@ -101,6 +104,8 @@ public class FmiApi {
         } catch (IOException e) {
             LOG.error("Could not connect to FMI API");
             throw new ApiConnectionException("Could not connect to FMI API, please contact the site administrator");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 

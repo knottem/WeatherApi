@@ -46,6 +46,7 @@ CREATE TABLE latest_weather_api (
     city_id VARCHAR(36) NOT NULL,
     smhi BOOLEAN NOT NULL DEFAULT FALSE,
     yr BOOLEAN NOT NULL DEFAULT FALSE,
+    fmi BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id),
     FOREIGN KEY (latest_weather_id) REFERENCES weather (id),
     FOREIGN KEY (city_id) REFERENCES city (id)

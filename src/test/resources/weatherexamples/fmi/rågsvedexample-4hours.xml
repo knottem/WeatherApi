@@ -1,0 +1,2099 @@
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:om="http://www.opengis.net/om/2.0" xmlns:omso="http://inspire.ec.europa.eu/schemas/omso/3.0" xmlns:ompr="http://inspire.ec.europa.eu/schemas/ompr/3.0" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0" xmlns:sam="http://www.opengis.net/sampling/2.0" xmlns:sams="http://www.opengis.net/samplingSpatial/2.0" xmlns:wml2="http://www.opengis.net/waterml/2.0" xmlns:target="http://xml.fmi.fi/namespace/om/atmosphericfeatures/1.1" timeStamp="2024-05-14T12:03:08Z" numberMatched="24" numberReturned="24" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gmlcov/1.0 http://schemas.opengis.net/gmlcov/1.0/gmlcovAll.xsd http://www.opengis.net/sampling/2.0 http://schemas.opengis.net/sampling/2.0/samplingFeature.xsd http://www.opengis.net/samplingSpatial/2.0 http://schemas.opengis.net/samplingSpatial/2.0/spatialSamplingFeature.xsd http://www.opengis.net/swe/2.0 http://schemas.opengis.net/sweCommon/2.0/swe.xsd http://inspire.ec.europa.eu/schemas/omso/3.0 https://inspire.ec.europa.eu/schemas/omso/3.0/SpecialisedObservations.xsd http://inspire.ec.europa.eu/schemas/ompr/3.0 https://inspire.ec.europa.eu/schemas/ompr/3.0/Processes.xsd http://www.opengis.net/waterml/2.0 http://schemas.opengis.net/waterml/2.0/waterml2.xsd http://xml.fmi.fi/namespace/om/atmosphericfeatures/1.1 https://xml.fmi.fi/schema/om/atmosphericfeatures/1.1/atmosphericfeatures.xsd">
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-5muYPiAI0pFb55tNWS8vPhEB6cOJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtakfLv4SMunPo6Nzn038suTj1y8vN_TkrdCy49vfM6dZt_LLjw8.jp1z68s2HHldOuG_Tu6OnXTTty9sOzrl4YdPJodNO3LT6ZeE_ITQ6aduW1v3ZaxqtSGAA---GeopHeight">
+            <om:phenomenonTime>
+                <gml:TimePeriod gml:id="time-interval-1-1">
+                    <gml:beginPosition>2024-05-14T13:00:00Z</gml:beginPosition>
+                    <gml:endPosition>2024-05-14T18:00:00Z</gml:endPosition>
+                </gml:TimePeriod>
+            </om:phenomenonTime>
+            <om:resultTime>
+                <gml:TimeInstant gml:id="time-1-1">
+                    <gml:timePosition>2024-05-14T08:02:15Z</gml:timePosition>
+                </gml:TimeInstant>
+            </om:resultTime>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-GeopHeight--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=GeopHeight&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-GeopHeight">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-GeopHeight">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-GeopHeight">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-GeopHeight"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-GeopHeight">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-GeopHeight" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-GeopHeight">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-wRe2YgzVuDE1BilRZvQTxsh2l.GJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5Ydta1TLt4ZeWHp15ZW5z6b.WXJx65eXm_pyVuhZce3vmdOs2_llx4efR0659eWbDjyunXDfp3dHTrpp25e2HZ1y8MOnk0Omnblp9MvCfkJodNO3La37stY1WpDA---Temperature">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-Temperature--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=Temperature&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-Temperature">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-Temperature">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-Temperature">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-Temperature"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-Temperature">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-Temperature" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-Temperature">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>20.2</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>19.5</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>18.8</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>17.3</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>15.9</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>14.4</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-NzC6l2xV_O85v1wPVXV4LcyusOiJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtaFDll58.vLK3OfTfyy5OPXLy839OSt0LLj298zp1m38suPDz6OnXPryzYceV064b9O7o6ddNO3L2w7OuXhh08mh007ctPpl4T8hNDpp25bW_dlrGq1IYA--Pressure">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-Pressure--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=Pressure&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-Pressure">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-Pressure">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-Pressure">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-Pressure"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-Pressure">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-Pressure" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-Pressure">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>1020.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>1020.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>1020.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>1020.2</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>1020.5</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>1020.7</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-foYfOkJdsJuAf.RxLjHC2IVVKNKJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtaEjrt05NPTy3OfTfyy5OPXLy839OSt0LLj298zp1m38suPDz6OnXPryzYceV064b9O7o6ddNO3L2w7OuXhh08mh007ctPpl4T8hNDpp25bW_dlrGq1IYA--Humidity">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-Humidity--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=Humidity&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-Humidity">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-Humidity">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-Humidity">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-Humidity"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-Humidity">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-Humidity" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-Humidity">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>44.3</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>45.8</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>47.3</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>52.3</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>57.4</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>62.5</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-jZCd8EnXz4E5OXfe9ox7RyYHmhCJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtbVfTuyRNPLLj6ad.5uc.m_llyceuXl5v6clboWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5NDpp25afTLwn5CaHTTty2t.7LWNVqQw-WindDirection">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-WindDirection--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=WindDirection&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-WindDirection">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-WindDirection">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-WindDirection">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-WindDirection"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-WindDirection">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-WindDirection" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-WindDirection">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-wAtftSzuHGLk1MX0CMglnQEc0dmJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5Ydta1fTuyU.GXLkm025z6b.WXJx65eXm_pyVuhZce3vmdOs2_llx4efR0659eWbDjyunXDfp3dHTrpp25e2HZ1y8MOnk0Omnblp9MvCfkJodNO3La37stY1WpDA---WindSpeedMS">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-WindSpeedMS--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=WindSpeedMS&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-WindSpeedMS">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-WindSpeedMS">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-WindSpeedMS">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-WindSpeedMS"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-WindSpeedMS">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-WindSpeedMS" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-WindSpeedMS">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-aJOJJ3Lk8.gCg4y.NC4.9eJg.C.JTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtZ1fTuyVZtNuc.m_llyceuXl5v6clboWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5NDpp25afTLwn5CaHTTty2t.7LWNVqQwA---WindUMS">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-WindUMS--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=WindUMS&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-WindUMS">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-WindUMS">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-WindUMS">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-WindUMS"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-WindUMS">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-WindUMS" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-WindUMS">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>0.9</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>1.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>1.1</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>1.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>0.9</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>0.8</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-85wJussYY7kz6DegLOL6ejbPzRSJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtZ1fTuyVptNuc.m_llyceuXl5v6clboWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5NDpp25afTLwn5CaHTTty2t.7LWNVqQwA---WindVMS">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-WindVMS--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=WindVMS&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-WindVMS">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-WindVMS">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-WindVMS">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-WindVMS"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-WindVMS">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-WindVMS" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-WindVMS">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>3.7</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>3.8</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>3.9</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>3.6</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>3.4</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>3.1</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-vx7cl7FPHtmnGvNnvksMNDOs6wSJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5Ydta03D407eu2vp3ZG5z6b.WXJx65eXm_pyVuhZce3vmdOs2_llx4efR0659eWbDjyunXDfp3dHTrpp25e2HZ1y8MOnk0Omnblp9MvCfkJodNO3La37stY1WpDA---MaximumWind">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-MaximumWind--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=MaximumWind&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-MaximumWind">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-MaximumWind">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-MaximumWind">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-MaximumWind"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-MaximumWind">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-MaximumWind" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-MaximumWind">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-DynJU0DWyAQC7xvQtjQ_wIRg0oaJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtaFfTuyR.vPo3OfTfyy5OPXLy839OSt0LLj298zp1m38suPDz6OnXPryzYceV064b9O7o6ddNO3L2w7OuXhh08mh007ctPpl4T8hNDpp25bW_dlrGq1IYA--WindGust">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-WindGust--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=WindGust&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-WindGust">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-WindGust">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-WindGust">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-WindGust"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-WindGust">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-WindGust" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-WindGust">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-zYqEtB0UiYtLem6JO1S.fPTo1pGJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtaETL3ob9O7o3OfTfyy5OPXLy839OSt0LLj298zp1m38suPDz6OnXPryzYceV064b9O7o6ddNO3L2w7OuXhh08mh007ctPpl4T8hNDpp25bW_dlrGq1IYA--DewPoint">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-DewPoint--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=DewPoint&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-DewPoint">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-DewPoint">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-DewPoint">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-DewPoint"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-DewPoint">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-DewPoint" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-DewPoint">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-84U.2R9pw4SUpFlRENZ7HE.PwqqJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5Ydtb1Tf0w7Iezf1yQ9_bLybnPpv5ZcnHrl5eb.nJW6Flx7e.Z06zb.WXHh59HTrn15ZsOPK6dcN.nd0dOumnbl7YdnXLww6eTQ6aduWn0y8J.Qmh007ctrfuy1jVakMA--TotalCloudCover">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-TotalCloudCover--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=TotalCloudCover&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-TotalCloudCover">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-TotalCloudCover">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-TotalCloudCover">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-TotalCloudCover"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-TotalCloudCover">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-TotalCloudCover" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-TotalCloudCover">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-MLwbUnKh2x_Oa2hIMZC8YTAiJy2JTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtblfLh6aMvKn524t.xm3OfTfyy5OPXLy839OSt0LLj298zp1m38suPDz6OnXPryzYceV064b9O7o6ddNO3L2w7OuXhh08mh007ctPpl4T8hNDpp25bW_dlrGq1IYA---WeatherSymbol3">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-WeatherSymbol3--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=WeatherSymbol3&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-WeatherSymbol3">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-WeatherSymbol3">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-WeatherSymbol3">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-WeatherSymbol3"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-WeatherSymbol3">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-WeatherSymbol3" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-WeatherSymbol3">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-c_0MzgAvCMjUIUD5hS9u6y5tWPWJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtbUzf3h7N_XJD39svJuc.m_llyceuXl5v6clboWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5NDpp25afTLwn5CaHTTty2t.7LWNVqQw-LowCloudCover">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-LowCloudCover--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=LowCloudCover&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-LowCloudCover">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-LowCloudCover">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-LowCloudCover">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-LowCloudCover"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-LowCloudCover">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-LowCloudCover" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-LowCloudCover">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-Y1BVCoptOnt97gvnQlyy6cr9TKOJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtcE3Lk09dsPZv65Ie_tl5Nzn038suTj1y8vN_TkrdCy49vfM6dZt_LLjw8.jp1z68s2HHldOuG_Tu6OnXTTty9sOzrl4YdPJodNO3LT6ZeE_ITQ6aduW1v3ZaxqtSGA-MediumCloudCover">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-MediumCloudCover--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=MediumCloudCover&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-MediumCloudCover">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-MediumCloudCover">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-MediumCloudCover">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-MediumCloudCover"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-MediumCloudCover">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-MediumCloudCover" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-MediumCloudCover">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-9_CvtXQAmlCXMIbXGb_ZHLYWgKmJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtbkjTn0Q9m_rkh7.2Xk3OfTfyy5OPXLy839OSt0LLj298zp1m38suPDz6OnXPryzYceV064b9O7o6ddNO3L2w7OuXhh08mh007ctPpl4T8hNDpp25bW_dlrGq1IYA---HighCloudCover">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-HighCloudCover--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=HighCloudCover&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-HighCloudCover">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-HighCloudCover">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-HighCloudCover">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-HighCloudCover"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-HighCloudCover">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-HighCloudCover" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-HighCloudCover">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-yUx67_3QsGfhfaKDKF2y0bRMTKWJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5Ydtb1Dllx6eGnph6ad.5jobnPpv5ZcnHrl5eb.nJW6Flx7e.Z06zb.WXHh59HTrn15ZsOPK6dcN.nd0dOumnbl7YdnXLww6eTQ6aduWn0y8J.Qmh007ctrfuy1jVakMA--Precipitation1h">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-Precipitation1h--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=Precipitation1h&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-Precipitation1h">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-Precipitation1h">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-Precipitation1h">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-Precipitation1h"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-Precipitation1h">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-Precipitation1h" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-Precipitation1h">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>0.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>0.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>0.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>0.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>0.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>0.0</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-kq4cCBh_kLd7vJrK4ECX99nWk3WJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5Ydtc1Dllx6eGnph6ad.6Dt39d3Ruc.m_llyceuXl5v6clboWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5NDpp25afTLwn5CaHTTty2t.7LWNVqQw--PrecipitationAmount">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-PrecipitationAmount--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=PrecipitationAmount&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-PrecipitationAmount">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-PrecipitationAmount">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-PrecipitationAmount">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-PrecipitationAmount"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-PrecipitationAmount">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-PrecipitationAmount" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-PrecipitationAmount">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-xZg7vrTHhjxtpTBE2ni.3.5jhKaJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5Ydte1LDk04emnfuj7N.LDsg48fXb12YemnfubnPpv5ZcnHrl5eb.nJW6Flx7e.Z06zb.WXHh59HTrn15ZsOPK6dcN.nd0dOumnbl7YdnXLww6eTQ6aduWn0y8J.Qmh007ctrfuy1jVakM-RadiationGlobalAccumulation">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-RadiationGlobalAccumulation--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=RadiationGlobalAccumulation&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-RadiationGlobalAccumulation">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-RadiationGlobalAccumulation">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-RadiationGlobalAccumulation">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-RadiationGlobalAccumulation"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-RadiationGlobalAccumulation">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-RadiationGlobalAccumulation" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-RadiationGlobalAccumulation">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-o3R_Wi.XUs9cPgREZOAgF3ICUZKJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5Ydtd1LDk04emnfumV4OPH129dmHpp37m5z6b.WXJx65eXm_pyVuhZce3vmdOs2_llx4efR0659eWbDjyunXDfp3dHTrpp25e2HZ1y8MOnk0Omnblp9MvCfkJodNO3La37stY1WpDA-RadiationLWAccumulation">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-RadiationLWAccumulation--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=RadiationLWAccumulation&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-RadiationLWAccumulation">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-RadiationLWAccumulation">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-RadiationLWAccumulation">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-RadiationLWAccumulation"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-RadiationLWAccumulation">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-RadiationLWAccumulation" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-RadiationLWAccumulation">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-2GAOXKVxz0WW05fCgtc03IwM.NKJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtYYVLDk04emnfunZelPryzYceWZXg48fXb12YemnfubnPpv5ZcnHrl5eb.nJW6Flx7e.Z06zb.WXHh59HTrn15ZsOPK6dcN.nd0dOumnbl7YdnXLww6eTQ6aduWn0y8J.Qmh007ctrfuy1jVakM-RadiationNetSurfaceLWAccumulation">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-RadiationNetSurfaceLWAccumulation--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=RadiationNetSurfaceLWAccumulation&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-RadiationNetSurfaceLWAccumulation">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-RadiationNetSurfaceLWAccumulation">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-RadiationNetSurfaceLWAccumulation">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-RadiationNetSurfaceLWAccumulation"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-RadiationNetSurfaceLWAccumulation">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-RadiationNetSurfaceLWAccumulation" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-RadiationNetSurfaceLWAccumulation">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-SwWW.iiG.5bYdujCLWkpqqou4GqJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtYYVLDk04emnfunZelPryzYceWnXg48fXb12YemnfubnPpv5ZcnHrl5eb.nJW6Flx7e.Z06zb.WXHh59HTrn15ZsOPK6dcN.nd0dOumnbl7YdnXLww6eTQ6aduWn0y8J.Qmh007ctrfuy1jVakM-RadiationNetSurfaceSWAccumulation">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-RadiationNetSurfaceSWAccumulation--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=RadiationNetSurfaceSWAccumulation&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-RadiationNetSurfaceSWAccumulation">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-RadiationNetSurfaceSWAccumulation">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-RadiationNetSurfaceSWAccumulation">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-RadiationNetSurfaceSWAccumulation"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-RadiationNetSurfaceSWAccumulation">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-RadiationNetSurfaceSWAccumulation" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-RadiationNetSurfaceSWAccumulation">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-Q_H23.BGH.du1fg8TpbCTttpwOCJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5YdtfFLDk04emnfuiac2brzywcePrt67MPTTv3Nzn038suTj1y8vN_TkrdCy49vfM6dZt_LLjw8.jp1z68s2HHldOuG_Tu6OnXTTty9sOzrl4YdPJodNO3LT6ZeE_ITQ6aduW1v3ZaxqtSGA---RadiationDiffuseAccumulation">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-RadiationDiffuseAccumulation--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=RadiationDiffuseAccumulation&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-RadiationDiffuseAccumulation">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-RadiationDiffuseAccumulation">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-RadiationDiffuseAccumulation">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-RadiationDiffuseAccumulation"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-RadiationDiffuseAccumulation">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-RadiationDiffuseAccumulation" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-RadiationDiffuseAccumulation">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+    <wfs:member>
+        <omso:PointTimeSeriesObservation gml:id="WFS-KRxNB5_e8Lou4PM2dH4yZRQafHuJTowroWXHt75nTrNv5ZceHn0dOufXlmw48rp1w36d3R066aduXth2dcvDDp5QtLFlz6d1TTty2qP4Uq58rqhMbHy51qRaFOO6dNGTVwzsu7JU07ctqj.FKuYKf4Tgzad2Sdlw8svPpWw7NOSQzM.Xfpyc6zmTdg1csGjo15fPffyyX9_bLy78tPTDi2ZYmlsy9suyp54ZamZs348OzLWpm0340ld16ZnDW24fETTz6Yd2PLStXQgNbbp589O7PUy.OlY07DOZW3fky7KysuPb3zMrhh5Ydta0zDuyU8uGbh5625z6b.WXJx65eXm_pyVuhZce3vmdOs2_llx4efR0659eWbDjyunXDfp3dHTrpp25e2HZ1y8MOnk0Omnblp9MvCfkJodNO3La37stY1WpDA---LandSeaMask">
+            <om:phenomenonTime xlink:href="#time-interval-1-1"/>
+            <om:resultTime xlink:href="#time-1-1"/>
+            <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/ecmwf"/>
+            <om:parameter>
+                <om:NamedValue>
+                    <om:name xlink:href="https://inspire.ec.europa.eu/codeList/ProcessParameterValue/value/numericalModel/analysisTime"/>
+                    <om:value>
+                        <gml:TimeInstant gml:id="analysis-time-1-1-LandSeaMask--">
+                            <gml:timePosition>2024-05-14T00:00:00Z</gml:timePosition>
+                        </gml:TimeInstant>
+                    </om:value>
+                </om:NamedValue>
+            </om:parameter>
+            <om:observedProperty xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&param=LandSeaMask&language=eng"/>
+            <om:featureOfInterest>
+                <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-LandSeaMask">
+                    <sam:sampledFeature>
+                        <target:LocationCollection gml:id="sampled-target-1-1-LandSeaMask">
+                            <target:member>
+                                <target:Location gml:id="forloc-geoid-2705904-pos-LandSeaMask">
+                                    <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">2705904</gml:identifier>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Högdalen</gml:name>
+                                    <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">2705904</gml:name>
+                                    <target:representativePoint xlink:href="#point-2705904-LandSeaMask"/>
+                                    <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Sweden</target:country>
+                                    <target:timezone>Europe/Stockholm</target:timezone>
+                                    <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Sweden</target:region>
+                                </target:Location>
+                            </target:member>
+                        </target:LocationCollection>
+                    </sam:sampledFeature>
+                    <sams:shape>
+                        <gml:MultiPoint gml:id="foi-multipoint-1-1-LandSeaMask">
+                            <gml:pointMembers>
+                                <gml:Point gml:id="point-2705904-LandSeaMask" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                                    <gml:name>Högdalen</gml:name>
+                                    <gml:pos>59.25720 18.03190 </gml:pos>
+                                </gml:Point>
+                            </gml:pointMembers>
+                        </gml:MultiPoint>
+                    </sams:shape>
+                </sams:SF_SpatialSamplingFeature>
+            </om:featureOfInterest>
+            <om:result>
+                <wml2:MeasurementTimeseries gml:id="mts-1-1-LandSeaMask">
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T13:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T14:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T15:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T16:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T17:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                    <wml2:point>
+                        <wml2:MeasurementTVP>
+                            <wml2:time>2024-05-14T18:00:00Z</wml2:time>
+                            <wml2:value>NaN</wml2:value>
+                        </wml2:MeasurementTVP>
+                    </wml2:point>
+                </wml2:MeasurementTimeseries>
+            </om:result>
+        </omso:PointTimeSeriesObservation>
+    </wfs:member>
+</wfs:FeatureCollection>

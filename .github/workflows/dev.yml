@@ -54,6 +54,8 @@ jobs:
           distribution: 'temurin'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+      - name: List Test Resources
+        run: ls -R src/test/resources/weatherexamples/fmi/
       - name: Execute All Tests
         run: ./gradlew test
 

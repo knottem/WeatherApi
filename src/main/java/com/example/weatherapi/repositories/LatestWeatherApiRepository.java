@@ -9,6 +9,6 @@ import java.util.UUID;
 
 public interface LatestWeatherApiRepository extends JpaRepository<LatestWeatherApiEntity, UUID> {
 
-    Optional<LatestWeatherApiEntity> findByCityAndSmhiAndYr(CityEntity city, boolean smhi, boolean yr);
+    Optional<LatestWeatherApiEntity> findByCityAndSmhiAndYrAndFmi(CityEntity city, boolean smhi, boolean yr, boolean fmi);
 
 }

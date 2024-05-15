@@ -35,4 +35,7 @@ public class LatestWeatherApiEntity {
     @Column(nullable = false)
     private boolean yr;
 
+    @Column(nullable = false)
+    private boolean fmi;
+
 }

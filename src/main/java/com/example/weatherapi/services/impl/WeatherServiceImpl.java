@@ -65,9 +65,8 @@ public class WeatherServiceImpl implements WeatherService {
         }
 
         City city = toModel(cityService.getCityByName(cityName));
-        //temp fmi false
         Weather weatherFromCacheDB = cacheDB
-                .getWeatherFromCache(city.getName(), true, true, false);
+                .getWeatherFromCache(city.getName(), true, true, true);
         if(weatherFromCacheDB != null) {
             getSunriseSunset(weatherFromCacheDB);
             Objects.requireNonNull(cacheManager.getCache(cacheName))
@@ -102,8 +101,7 @@ public class WeatherServiceImpl implements WeatherService {
                 .build();
 
         mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
-        // temp fmi false
-        cacheDB.save(mergedWeather, true, true, false);
+        cacheDB.save(mergedWeather, true, true, true);
         getSunriseSunset(mergedWeather);
         Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, mergedWeather);
         return mergedWeather;

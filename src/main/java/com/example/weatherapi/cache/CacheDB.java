@@ -94,6 +94,7 @@
                 latestWeatherApi.setCity(cityEntity);
                 latestWeatherApi.setSmhi(smhi);
                 latestWeatherApi.setYr(yr);
+                latestWeatherApi.setFmi(fmi);
             }
 
             latestWeatherApi.setLatestWeather(weatherEntity);

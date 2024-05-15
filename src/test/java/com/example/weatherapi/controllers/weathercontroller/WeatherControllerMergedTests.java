@@ -58,7 +58,7 @@ class WeatherControllerMergedTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage())
-                .isEqualTo("Merged weather for Stockholm from SMHI and YR");
+                .isEqualTo("Merged weather for Stockholm from FMI, SMHI and YR");
         assertWeatherInformation(response.getBody());
         assertWeatherDataMergedStockholm(response.getBody());
     }
@@ -72,7 +72,7 @@ class WeatherControllerMergedTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(response.getBody()).getMessage())
-                .isEqualTo("Merged weather for Stockholm from SMHI and YR");
+                .isEqualTo("Merged weather for Stockholm from FMI, SMHI and YR");
         assertWeatherInformation(response.getBody());
         assertWeatherDataMergedStockholm(response.getBody());
     }
@@ -116,7 +116,7 @@ class WeatherControllerMergedTests {
             // Assert
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(Objects.requireNonNull(response.getBody()).getMessage())
-                    .isEqualTo("Merged weather for Stockholm from SMHI and YR");
+                    .isEqualTo("Merged weather for Stockholm from FMI, SMHI and YR");
             assertWeatherInformation(response.getBody());
             assertWeatherDataMergedStockholm(response.getBody());
         }

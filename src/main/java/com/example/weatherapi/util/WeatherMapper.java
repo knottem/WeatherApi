@@ -72,7 +72,7 @@ public class WeatherMapper {
                 ));
     }
 
-    public static Weather createBaseWeather(double lon, double lat, City city) {
+    public static Weather createBaseWeather(double lon, double lat, City city, String api) {
         Weather weather;
         if (city == null) {
             weather = Weather.builder()
@@ -81,7 +81,7 @@ public class WeatherMapper {
                     .build();
         } else {
             weather = Weather.builder()
-                    .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat())
+                    .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat() + " from: " + api)
                     .city(city)
                     .timestamp(ZonedDateTime.now(ZoneOffset.UTC))
                     .build();

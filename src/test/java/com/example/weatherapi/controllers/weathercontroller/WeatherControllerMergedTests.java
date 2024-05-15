@@ -1,5 +1,6 @@
 package com.example.weatherapi.controllers.weathercontroller;
 
+import com.example.weatherapi.api.FmiApi;
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.domain.ErrorResponse;
@@ -38,10 +39,14 @@ class WeatherControllerMergedTests {
     @Autowired
     private YrApi yrApi;
 
+    @Autowired
+    private FmiApi fmiApi;
+
     @BeforeEach
     public void setupBeforeEach() {
         smhiApi.setTestMode(true);
         yrApi.setTestMode(true);
+        fmiApi.setTestMode(true);
     }
 
     // Test Case 1: Check that the response is correct

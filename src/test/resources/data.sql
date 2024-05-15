@@ -13,7 +13,8 @@ INSERT INTO `city` (`id`,`lat`, `lon`, `name`)VALUES
     ('89da212f-a051-4905-acfe-1c52d537f45f',62.4,17.3167,'Sundsvall'), -- 12
     ('55cc986f-4d7c-44e2-9e6f-d2160942e0e7',60.6747,17.1417,'Gävle'), -- 13
     ('b00290a6-a66e-466a-b27d-06c0d56b0691',63.825,20.2639,'Umeå'), -- 14
-    ('a8068ada-ccd8-4260-905c-b0bf5bd60ed9',64.75,20.95,'Skellefteå'); -- 15
+    ('a8068ada-ccd8-4260-905c-b0bf5bd60ed9',64.75,20.95,'Skellefteå'), -- 15
+    ('26654284-92ca-4c60-b95f-3e1160701cb0',59.2572,18.0319,'Rågsved'); -- 16
 
 INSERT INTO `auth` (`id`, `username`, `password`, `role`)VALUES
     ('232d5741-f551-443a-a1b0-b7b1eb26ba9f','admin','$2a$10$Eq3yxcRlqmIaxBv7w9qkDuZCfw7lhgYS12ndADouoUogkNMWGmELK', 'ADMIN' ), -- pass123 for testing

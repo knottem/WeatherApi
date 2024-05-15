@@ -65,13 +65,9 @@ public class WeatherServiceImpl implements WeatherService {
         }
 
         City city = toModel(cityService.getCityByName(cityName));
-        Weather weatherFromCacheDB = cacheDB
-                .getWeatherFromCache(city.getName(), true, true, true);
-        if(weatherFromCacheDB != null) {
-            getSunriseSunset(weatherFromCacheDB);
-            Objects.requireNonNull(cacheManager.getCache(cacheName))
-                    .put(key, weatherFromCacheDB);
-            return weatherFromCacheDB;
+        Optional<Weather> optionalWeather = checkForMergedWeatherData(city, key);
+        if (optionalWeather.isPresent()) {
+            return optionalWeather.get();
         }
 
         this.updateCountMap = new ConcurrentHashMap<>();
@@ -101,10 +97,51 @@ public class WeatherServiceImpl implements WeatherService {
                 .build();
 
         mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
-        cacheDB.save(mergedWeather, true, true, true);
+        saveDB(mergedWeather, successfulApis);
         getSunriseSunset(mergedWeather);
         Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, mergedWeather);
         return mergedWeather;
+    }
+
+    private Optional<Weather> checkForMergedWeatherData(City city, String cacheKey) {
+        // Check for fully merged data
+        Weather weather = cacheDB.getWeatherFromCache(city.getName(), true, true, true);
+        if (weather != null) {
+            getSunriseSunset(weather);
+            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(cacheKey, weather);
+            return Optional.of(weather);
+        }
+
+        // Check for combinations of two APIs
+        weather = cacheDB.getWeatherFromCache(city.getName(), true, true, false);
+        if (weather != null) {
+            getSunriseSunset(weather);
+            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(cacheKey, weather);
+            return Optional.of(weather);
+        }
+
+        weather = cacheDB.getWeatherFromCache(city.getName(), true, false, true);
+        if (weather != null) {
+            getSunriseSunset(weather);
+            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(cacheKey, weather);
+            return Optional.of(weather);
+        }
+
+        weather = cacheDB.getWeatherFromCache(city.getName(), false, true, true);
+        if (weather != null) {
+            getSunriseSunset(weather);
+            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(cacheKey, weather);
+            return Optional.of(weather);
+        }
+
+        return Optional.empty();
+    }
+
+    public void saveDB(Weather weather, List<String> successfulApis) {
+        boolean smhi = successfulApis.contains("SMHI");
+        boolean yr = successfulApis.contains("YR");
+        boolean fmi = successfulApis.contains("FMI");
+        cacheDB.save(weather, smhi, yr, fmi);
     }
 
     private CompletableFuture<Void> fetchAndProcessWeatherData(String apiName, CompletableFuture<Weather> weatherFuture) {

@@ -14,7 +14,6 @@
     import org.springframework.beans.factory.annotation.Value;
     import org.springframework.stereotype.Service;
     import org.springframework.transaction.annotation.Transactional;
-
     import java.util.Optional;
 
     import static com.example.weatherapi.util.WeatherMapper.*;
@@ -69,11 +68,11 @@
                     logger.info("Cache hit for City: {} with APIs SMHI: {}, YR: {}, FMI: {} in the database, returning cached data", cityName, smhi, yr, fmi);
                     return convertToWeather(cachedWeather);
                 } else {
-                    logger.info("Cache expired for City: {} with APIs SMHI: {}, YR: {}, FMI: {} in the database, fetching new data", cityName, smhi, yr, fmi);
+                    logger.info("Cache expired for City: {} with APIs SMHI: {}, YR: {}, FMI: {} in the database", cityName, smhi, yr, fmi);
                     return null;
                 }
             } else {
-                logger.info("Cache doesn't exist for City: {} with APIs SMHI: {}, YR: {}, FMI: {} in the database, fetching new data", cityName, smhi, yr, fmi);
+                logger.info("Cache doesn't exist for City: {} with APIs SMHI: {}, YR: {}, FMI: {} in the database", cityName, smhi, yr, fmi);
             }
             return null;
         }

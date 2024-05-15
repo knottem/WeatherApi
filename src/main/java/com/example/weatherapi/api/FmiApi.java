@@ -13,18 +13,16 @@ import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.DateUtils.generateFutureTimestamp;
@@ -90,10 +88,16 @@ public class FmiApi {
             String xmlContent;
             if (isTestMode) {
                 String cityName = city.getName().toLowerCase();
-                if(cityName.equals("rågsved")) cityName = "rågsvedexample-10days";
+                if (cityName.equals("rågsved")) cityName = "rågsvedexample-10days.xml";
                 LOG.info("Using test data for FMI: {}", cityName);
-                File file = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("weatherexamples/fmi/" + cityName + ".xml")).toURI()).toFile();
-                xmlContent = new String(Files.readAllBytes(file.toPath()));
+
+                String resourcePath = "weatherexamples/fmi/" + cityName;
+                try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+                    if (inputStream == null) {
+                        throw new IOException("Resource not found: " + resourcePath);
+                    }
+                    xmlContent = new Scanner(inputStream, StandardCharsets.UTF_8).useDelimiter("\\A").next();
+                }
             } else {
                 xmlContent = getXmlContentFromUrl(
                         getUrlFMI(lon, lat,
@@ -104,8 +108,6 @@ public class FmiApi {
         } catch (IOException e) {
             LOG.error("Could not connect to FMI API");
             throw new ApiConnectionException("Could not connect to FMI API, please contact the site administrator");
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 

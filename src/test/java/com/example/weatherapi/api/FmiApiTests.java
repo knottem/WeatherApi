@@ -12,15 +12,15 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Scanner;
 
 import static com.example.weatherapi.utilitytests.WeatherTestUtils.assertWeatherDataFmiRagsved;
-import static com.example.weatherapi.utilitytests.WeatherTestUtils.assertWeatherDataSmhiStockholm;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
@@ -77,36 +77,45 @@ class FmiApiTests {
     }
 
     @Test
-    void parseXmlTestToWeatherFmiTest10Days() throws IOException, URISyntaxException {
+    void parseXmlTestToWeatherFmiTest10Days() throws IOException {
         XmlMapper xmlMapper = new XmlMapper();
-        File file = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("weatherexamples/fmi/rågsvedexample-10Days.xml")).toURI()).toFile();
-        String xmlContent = new String(Files.readAllBytes(file.toPath()));
-        xmlContent = xmlContent.replace("&param=", "&amp;param=").replace("&language=", "&amp;language=");
-        WeatherFmi weatherFmi = xmlMapper.readValue(xmlContent, WeatherFmi.class);
-        assertThat(weatherFmi).isNotNull();
+        ClassLoader classLoader = getClass().getClassLoader();
 
-        weatherFmi.getMembers().stream()
-                .map(WeatherFmi.FeatureMember::getPointTimeSeriesObservation)
-                .filter(observation -> observation != null && observation.getResult() != null)
-                .map(WeatherFmi.PointTimeSeriesObservation::getResult)
-                .map(WeatherFmi.Result::getMeasurementTimeseries)
-                .filter(Objects::nonNull)
-                .forEach(timeseries -> {
-                    switch (extractRelevantPart(timeseries.getId())) {
-                        case "Temperature" -> {
-                            assertMeasurement(timeseries, "2024-05-16T11:00:00Z", 20.0);
-                            assertMeasurement(timeseries, "2024-05-16T12:00:00Z", 20.3);
+        // Use getResourceAsStream to handle special characters in filenames
+        String resourcePath = "weatherexamples/fmi/rågsvedexample-10Days.xml";
+        try (InputStream inputStream = classLoader.getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + resourcePath);
+            }
+
+            String xmlContent = new Scanner(inputStream, StandardCharsets.UTF_8).useDelimiter("\\A").next();
+            xmlContent = xmlContent.replace("&param=", "&amp;param=").replace("&language=", "&amp;language=");
+            WeatherFmi weatherFmi = xmlMapper.readValue(xmlContent, WeatherFmi.class);
+            assertThat(weatherFmi).isNotNull();
+
+            weatherFmi.getMembers().stream()
+                    .map(WeatherFmi.FeatureMember::getPointTimeSeriesObservation)
+                    .filter(observation -> observation != null && observation.getResult() != null)
+                    .map(WeatherFmi.PointTimeSeriesObservation::getResult)
+                    .map(WeatherFmi.Result::getMeasurementTimeseries)
+                    .filter(Objects::nonNull)
+                    .forEach(timeseries -> {
+                        switch (extractRelevantPart(timeseries.getId())) {
+                            case "Temperature" -> {
+                                assertMeasurement(timeseries, "2024-05-16T11:00:00Z", 20.0);
+                                assertMeasurement(timeseries, "2024-05-16T12:00:00Z", 20.3);
+                            }
+                            case "WindSpeedMS", "WindDirection" -> {
+                                assertMeasurement(timeseries, "2024-05-16T11:00:00Z", Double.NaN);
+                                assertMeasurement(timeseries, "2024-05-16T12:00:00Z", Double.NaN);
+                            }
+                            case "Precipitation1h" -> {
+                                assertMeasurement(timeseries, "2024-05-19T12:00:00Z", 0.0);
+                                assertMeasurement(timeseries, "2024-05-19T13:00:00Z", 0.1);
+                            }
                         }
-                        case "WindSpeedMS", "WindDirection" -> {
-                            assertMeasurement(timeseries, "2024-05-16T11:00:00Z", Double.NaN);
-                            assertMeasurement(timeseries, "2024-05-16T12:00:00Z", Double.NaN);
-                        }
-                        case "Precipitation1h" -> {
-                            assertMeasurement(timeseries, "2024-05-19T12:00:00Z", 0.0);
-                            assertMeasurement(timeseries, "2024-05-19T13:00:00Z", 0.1);
-                        }
-                    }
-                });
+                    });
+        }
     }
 
     private void assertMeasurement(WeatherFmi.MeasurementTimeseries timeseries, String expectedTime, double expectedValue) {

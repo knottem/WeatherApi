@@ -5,6 +5,10 @@ import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.exceptions.ApiConnectionException;
 import com.example.weatherapi.exceptions.CityNotFoundException;
 import com.example.weatherapi.services.WeatherService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,8 +39,11 @@ public class WeatherController {
      * @throws CityNotFoundException if the city is not found in the database
      */
     @GetMapping(path = "/{city}")
-    public Weather getWeatherMerged(@PathVariable final String city){
-        return weatherService.getWeatherMerged(city.toLowerCase());
+    public ResponseEntity<Weather> getWeatherMerged(@PathVariable final String city){
+        Weather weather = weatherService.getWeatherMerged(city.toLowerCase());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(weather, headers, HttpStatus.OK);
     }
 
 }

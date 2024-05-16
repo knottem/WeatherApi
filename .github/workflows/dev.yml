@@ -124,5 +124,5 @@ jobs:
             port: ${{ secrets.SSH_PORT }}
             script: |
                 cd app/
-                docker-compose pull weatherapi-dev
-                docker-compose up -d weatherapi-dev
+                docker compose pull weatherapi-dev
+                docker compose up -d weatherapi-dev

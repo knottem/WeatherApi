@@ -70,12 +70,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-        # Todo add deploy with ssh to server and do docker-compose down, pull, up
-      - name: Deploy to Main
-        run: |
-          echo "Deploying to Dev with image ${{ needs.build-and-publish-dev.outputs.tags }}"
-          echo "Deployment done"
-
-
+      - name: Run SSH commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd app/
+            docker compose pull weatherapi
+            docker compose up -d weatherapi

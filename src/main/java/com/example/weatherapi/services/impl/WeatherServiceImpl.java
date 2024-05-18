@@ -13,6 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,6 +26,8 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.example.weatherapi.util.CityMapper.toModel;
 import static com.example.weatherapi.util.SunriseUtil.getSunriseSunset;
@@ -40,6 +46,7 @@ public class WeatherServiceImpl implements WeatherService {
     private final CacheManager cacheManager;
     private final String cacheName;
     private List<String> successfulApis;
+    private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
 
 
     @Autowired
@@ -55,53 +62,67 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
+    public ResponseEntity<Weather> fetchWeatherMergedResponse(String cityName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(getWeatherMerged(cityName.toLowerCase()), headers, HttpStatus.OK);
+    }
+
     public Weather getWeatherMerged(String cityName) {
         String key = cityName.toLowerCase() + "merged";
-        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
-                .get(key, Weather.class);
-        if(weatherFromCache != null) {
-            log.info("Cache hit for City: {} in the cache, returning cached data", cityName);
-            return weatherFromCache;
+        Lock lock = locks.computeIfAbsent(key, k -> new ReentrantLock());
+        lock.lock();
+
+        try {
+            Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
+                    .get(key, Weather.class);
+            if (weatherFromCache != null) {
+                log.info("Cache hit for City: {} in the cache, returning cached data", cityName);
+                return weatherFromCache;
+            }
+
+            City city = toModel(cityService.getCityByName(cityName));
+            Optional<Weather> optionalWeather = checkForMergedWeatherData(city, key);
+            if (optionalWeather.isPresent()) {
+                return optionalWeather.get();
+            }
+
+            this.updateCountMap = new ConcurrentHashMap<>();
+            this.mergedWeatherData = new TreeMap<>();
+            this.successfulApis = Collections.synchronizedList(new ArrayList<>());
+
+            CompletableFuture<Void> smhi = fetchAndProcessWeatherData("SMHI", smhiApi.fetchWeatherSmhiAsync(city));
+            CompletableFuture<Void> yr = fetchAndProcessWeatherData("YR", yrApi.fetchWeatherYrAsync(city));
+            CompletableFuture<Weather> fmiWeatherFuture = fmiApi.fetchWeatherFmiAsync(city);
+
+            CompletableFuture<Void> fmi = CompletableFuture.anyOf(smhi, yr)
+                    .thenCompose(v -> fetchAndProcessWeatherData("FMI", fmiWeatherFuture));
+
+            CompletableFuture.allOf(smhi, yr, fmi).join();
+
+            if (mergedWeatherData.isEmpty()) {
+                throw new WeatherNotFilledException("Could not connect to any weather API");
+            }
+
+            calculateAverages();
+            setScaleWeatherData();
+
+            Weather mergedWeather = Weather.builder()
+                    .message(createMessage(city))
+                    .weatherData(mergedWeatherData)
+                    .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
+                    .city(city)
+                    .build();
+
+            mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
+            saveDB(mergedWeather, successfulApis);
+            getSunriseSunset(mergedWeather);
+            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, mergedWeather);
+            return mergedWeather;
+        } finally {
+            lock.unlock();
+            locks.remove(key, lock);
         }
-
-        City city = toModel(cityService.getCityByName(cityName));
-        Optional<Weather> optionalWeather = checkForMergedWeatherData(city, key);
-        if (optionalWeather.isPresent()) {
-            return optionalWeather.get();
-        }
-
-        this.updateCountMap = new ConcurrentHashMap<>();
-        this.mergedWeatherData = new TreeMap<>();
-        this.successfulApis = Collections.synchronizedList(new ArrayList<>());
-
-        CompletableFuture<Void> smhi = fetchAndProcessWeatherData("SMHI", smhiApi.fetchWeatherSmhiAsync(city));
-        CompletableFuture<Void> yr = fetchAndProcessWeatherData("YR", yrApi.fetchWeatherYrAsync(city));
-        CompletableFuture<Weather> fmiWeatherFuture = fmiApi.fetchWeatherFmiAsync(city);
-
-        CompletableFuture<Void> fmi = CompletableFuture.anyOf(smhi, yr)
-                .thenCompose(v -> fetchAndProcessWeatherData("FMI", fmiWeatherFuture));
-
-        CompletableFuture.allOf(smhi, yr, fmi).join();
-
-        if (mergedWeatherData.isEmpty()) {
-            throw new WeatherNotFilledException("Could not connect to any weather API");
-        }
-
-        calculateAverages();
-        setScaleWeatherData();
-
-        Weather mergedWeather = Weather.builder()
-                .message(createMessage(city))
-                .weatherData(mergedWeatherData)
-                .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                .city(city)
-                .build();
-
-        mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
-        saveDB(mergedWeather, successfulApis);
-        getSunriseSunset(mergedWeather);
-        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, mergedWeather);
-        return mergedWeather;
     }
 
     private Optional<Weather> checkForMergedWeatherData(City city, String cacheKey) {

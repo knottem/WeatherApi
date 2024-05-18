@@ -70,11 +70,20 @@ public class WeatherServiceImpl implements WeatherService {
 
     public Weather getWeatherMerged(String cityName) {
         String key = cityName.toLowerCase() + "merged";
+
+        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
+                .get(key, Weather.class);
+        if (weatherFromCache != null) {
+            log.info("Cache hit for City: {} in the cache, returning cached data", cityName);
+            return weatherFromCache;
+        }
+
         Lock lock = locks.computeIfAbsent(key, k -> new ReentrantLock());
         lock.lock();
 
         try {
-            Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
+            // Double check if the data has been added to the cache while waiting for the lock
+            weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
                     .get(key, Weather.class);
             if (weatherFromCache != null) {
                 log.info("Cache hit for City: {} in the cache, returning cached data", cityName);

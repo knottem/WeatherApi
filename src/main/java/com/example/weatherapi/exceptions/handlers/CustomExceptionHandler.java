@@ -2,6 +2,7 @@ package com.example.weatherapi.exceptions.handlers;
 
 import com.example.weatherapi.domain.ErrorResponse;
 import com.example.weatherapi.exceptions.*;
+import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,13 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
         logger.error("Unexpected error occurred", ex);
         return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please try again later.", request);
+    }
+
+    // Exception handler for ClientAbortException
+    @ExceptionHandler(ClientAbortException.class)
+    public void handleClientAbortException(ClientAbortException ex) {
+        logger.warn("Client aborted the request: {}", ex.getMessage());
+        // Do nothing, just log the exception
     }
 
     @ExceptionHandler(CityNotFoundException.class)

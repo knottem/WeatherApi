@@ -41,11 +41,8 @@ public class WeatherServiceImpl implements WeatherService {
     private final YrApi yrApi;
     private final CacheDB cacheDB;
     private final Logger log;
-    private Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData;
-    private Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap;
     private final CacheManager cacheManager;
     private final String cacheName;
-    private List<String> successfulApis;
     private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
 
 
@@ -96,16 +93,34 @@ public class WeatherServiceImpl implements WeatherService {
                 return optionalWeather.get();
             }
 
-            this.updateCountMap = new ConcurrentHashMap<>();
-            this.mergedWeatherData = new TreeMap<>();
-            this.successfulApis = Collections.synchronizedList(new ArrayList<>());
+            Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData = new TreeMap<>();
+            Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap = new ConcurrentHashMap<>();
+            List<String> successfulApis = Collections.synchronizedList(new ArrayList<>());
 
-            CompletableFuture<Void> smhi = fetchAndProcessWeatherData("SMHI", smhiApi.fetchWeatherSmhiAsync(city));
-            CompletableFuture<Void> yr = fetchAndProcessWeatherData("YR", yrApi.fetchWeatherYrAsync(city));
+            CompletableFuture<Void> smhi = fetchAndProcessWeatherData(
+                    "SMHI",
+                    smhiApi.fetchWeatherSmhiAsync(city),
+                    mergedWeatherData,
+                    updateCountMap,
+                    successfulApis);
+
+            CompletableFuture<Void> yr = fetchAndProcessWeatherData(
+                    "YR",
+                    yrApi.fetchWeatherYrAsync(city),
+                    mergedWeatherData,
+                    updateCountMap,
+                    successfulApis);
+
             CompletableFuture<Weather> fmiWeatherFuture = fmiApi.fetchWeatherFmiAsync(city);
 
             CompletableFuture<Void> fmi = CompletableFuture.anyOf(smhi, yr)
-                    .thenCompose(v -> fetchAndProcessWeatherData("FMI", fmiWeatherFuture));
+                    .thenCompose(v -> fetchAndProcessWeatherData(
+                            "FMI",
+                            fmiWeatherFuture,
+                            mergedWeatherData,
+                            updateCountMap,
+                            successfulApis)
+                    );
 
             CompletableFuture.allOf(smhi, yr, fmi).join();
 
@@ -113,11 +128,11 @@ public class WeatherServiceImpl implements WeatherService {
                 throw new WeatherNotFilledException("Could not connect to any weather API");
             }
 
-            calculateAverages();
-            setScaleWeatherData();
+            calculateAverages(mergedWeatherData, updateCountMap);
+            setScaleWeatherData(mergedWeatherData);
 
             Weather mergedWeather = Weather.builder()
-                    .message(createMessage(city))
+                    .message(createMessage(city, successfulApis))
                     .weatherData(mergedWeatherData)
                     .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
                     .city(city)
@@ -159,7 +174,11 @@ public class WeatherServiceImpl implements WeatherService {
         cacheDB.save(weather, smhi, yr, fmi);
     }
 
-    private CompletableFuture<Void> fetchAndProcessWeatherData(String apiName, CompletableFuture<Weather> weatherFuture) {
+    private CompletableFuture<Void> fetchAndProcessWeatherData(String apiName,
+                                                               CompletableFuture<Weather> weatherFuture,
+                                                               Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData,
+                                                               Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap,
+                                                               List<String> successfulApis) {
         return weatherFuture
                 .exceptionally(e -> {
                     log.error("Failed to fetch weather data from {}", apiName, e);
@@ -167,13 +186,16 @@ public class WeatherServiceImpl implements WeatherService {
                 })
                 .thenAccept(weather -> {
                     if (weather != null) {
-                        mergeWeatherDataIntoMergedData(weather.getWeatherData(), apiName);
+                        mergeWeatherDataIntoMergedData(weather.getWeatherData(), apiName, mergedWeatherData, updateCountMap);
                         successfulApis.add(apiName);
                     }
                 });
     }
 
-    private synchronized void mergeWeatherDataIntoMergedData(Map<ZonedDateTime, Weather.WeatherData> newData, String api) {
+    private synchronized void mergeWeatherDataIntoMergedData(Map<ZonedDateTime, Weather.WeatherData> newData,
+                                                             String api,
+                                                             Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData,
+                                                             Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap) {
         for (Map.Entry<ZonedDateTime, Weather.WeatherData> entry : newData.entrySet()) {
             ZonedDateTime key = entry.getKey();
             Weather.WeatherData newDataItem = entry.getValue();
@@ -186,16 +208,16 @@ public class WeatherServiceImpl implements WeatherService {
 
                 if(newDataItem.getTemperature() != -99f) {
                     existingData.setTemperature(existingData.getTemperature() + newDataItem.getTemperature());
-                    updateCount(key, temp);
+                    updateCount(key, temp, updateCountMap);
                 }
 
                 if(newDataItem.getWindSpeed() != -99f) {
                     existingData.setWindSpeed(existingData.getWindSpeed() + newDataItem.getWindSpeed());
-                    updateCount(key, windSpeed);
+                    updateCount(key, windSpeed, updateCountMap);
                 }
                 if(newDataItem.getPrecipitation() != -99f) {
                     existingData.setPrecipitation(existingData.getPrecipitation() + newDataItem.getPrecipitation());
-                    updateCount(key, precipitation);
+                    updateCount(key, precipitation, updateCountMap);
                 }
 
                 if(newDataItem.getWindDirection() != -99f) {
@@ -215,35 +237,35 @@ public class WeatherServiceImpl implements WeatherService {
             } else if (!api.equals("FMI")){
                 // If the data is from FMI, we don't want to add it to the merged data if it doesn't already exist due to differences in timestamps compared to SMHI and YR
                 mergedWeatherData.put(key, newDataItem);
-                updateCount(key, temp);
-                updateCount(key, windSpeed);
-                updateCount(key, precipitation);
+                updateCount(key, temp, updateCountMap);
+                updateCount(key, windSpeed, updateCountMap);
+                updateCount(key, precipitation, updateCountMap);
             }
         }
 
         log.info("Merged weather data from {}", api);
     }
 
-    private void updateCount(ZonedDateTime key, String attribute) {
+    private void updateCount(ZonedDateTime key, String attribute, Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap) {
         updateCountMap.computeIfAbsent(attribute, k -> new ConcurrentHashMap<>())
                 .computeIfAbsent(key, k -> new ConcurrentHashMap<>())
                 .merge(attribute, 1, Integer::sum);
     }
 
-    private int getUpdateCount(ZonedDateTime key, String attribute) {
+    private int getUpdateCount(ZonedDateTime key, String attribute, Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap) {
         return updateCountMap.getOrDefault(attribute, Collections.emptyMap())
                 .getOrDefault(key, Collections.emptyMap())
                 .getOrDefault(attribute, 1);
     }
 
-    private void calculateAverages() {
+    private void calculateAverages(Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData, Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap) {
         for (Map.Entry<ZonedDateTime, Weather.WeatherData> entry : mergedWeatherData.entrySet()) {
             ZonedDateTime key = entry.getKey();
             Weather.WeatherData data = entry.getValue();
 
-            data.setTemperature(data.getTemperature() / getUpdateCount(key, "temperature"));
-            data.setWindSpeed(data.getWindSpeed() / getUpdateCount(key, "windSpeed"));
-            data.setPrecipitation(data.getPrecipitation() / getUpdateCount(key, "precipitation"));
+            data.setTemperature(data.getTemperature() / getUpdateCount(key, "temperature", updateCountMap));
+            data.setWindSpeed(data.getWindSpeed() / getUpdateCount(key, "windSpeed", updateCountMap));
+            data.setPrecipitation(data.getPrecipitation() / getUpdateCount(key, "precipitation", updateCountMap));
 
         }
     }
@@ -268,7 +290,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
 
-        private void setScaleWeatherData(){
+        private void setScaleWeatherData(Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData){
         for (Map.Entry<ZonedDateTime, Weather.WeatherData> entry : mergedWeatherData.entrySet()) {
             Weather.WeatherData weatherData = entry.getValue();
             weatherData.setTemperature(BigDecimal.valueOf(weatherData.getTemperature()).setScale(1, RoundingMode.HALF_UP).floatValue());
@@ -278,7 +300,7 @@ public class WeatherServiceImpl implements WeatherService {
         }
     }
 
-    private String createMessage(City city){
+    private String createMessage(City city, List<String> successfulApis){
         List<String> sortedApis = new ArrayList<>(successfulApis);
         Collections.sort(sortedApis);
 

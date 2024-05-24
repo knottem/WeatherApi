@@ -1,16 +1,10 @@
 package com.example.weatherapi.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
 
@@ -20,14 +14,14 @@ public class HttpUtil {
         throw new IllegalStateException("Utility class");
     }
 
-    private static final int CONNECTION_TIMEOUT = 5000; // 5 seconds
-    private static final int REQUEST_TIMEOUT = 10000; // 10 seconds
+    private static final int CONNECTION_TIMEOUT = 3; // 3 seconds
+    private static final int REQUEST_TIMEOUT = 6; // 6 seconds
 
     public static HttpResponse<String> getContentFromUrl(URI uri) throws IOException, InterruptedException {
-        return getContentFromUrlWithHeaders(uri, null);
+        return getContentFromUrl(uri, null);
     }
 
-    public static HttpResponse<String> getContentFromUrlWithHeaders(URI uri, Map<String, String> headers) throws IOException, InterruptedException {
+    public static HttpResponse<String> getContentFromUrl(URI uri, Map<String, String> headers) throws IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(CONNECTION_TIMEOUT))

@@ -5,8 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
 
 public class HttpUtil {
@@ -16,25 +21,29 @@ public class HttpUtil {
     }
 
     private static final int CONNECTION_TIMEOUT = 5000; // 5 seconds
-    private static final int READ_TIMEOUT = 10000; // 10 seconds
+    private static final int REQUEST_TIMEOUT = 10000; // 10 seconds
 
-    public static String getContentFromUrl(URL url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setConnectTimeout(CONNECTION_TIMEOUT);
-        connection.setReadTimeout(READ_TIMEOUT);
-        connection.setRequestMethod("GET");
+    public static HttpResponse<String> getContentFromUrl(URI uri) throws IOException, InterruptedException {
+        return getContentFromUrlWithHeaders(uri, null);
+    }
 
-        try (InputStream inputStream = connection.getInputStream();
-             InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-             BufferedReader bufferedReader = new BufferedReader(reader)) {
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-            return stringBuilder.toString();
-        } finally {
-            connection.disconnect();
+    public static HttpResponse<String> getContentFromUrlWithHeaders(URI uri, Map<String, String> headers) throws IOException, InterruptedException {
+        HttpClient httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofSeconds(CONNECTION_TIMEOUT))
+                .build();
+
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                .uri(uri)
+                .timeout(Duration.ofSeconds(REQUEST_TIMEOUT))
+                .GET();
+
+        if (headers != null) {
+            headers.forEach(requestBuilder::header);
         }
+
+        HttpRequest request = requestBuilder.build();
+
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 }

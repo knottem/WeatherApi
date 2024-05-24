@@ -5,6 +5,7 @@ import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
@@ -19,8 +20,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -119,9 +125,16 @@ public class SmhiApi {
                         mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class)
                                 .get(cityName)), WeatherSmhi.class);
             } else {
-                return mapper.readValue(getContentFromUrl(getUrlSmhi(lon, lat)), WeatherSmhi.class);
+                URI uri = getUrlSmhi(lon, lat).toURI();
+                HttpResponse<String> response = HttpUtil.getContentFromUrl(uri);
+
+                if (response.statusCode() != 200) {
+                    throw new ApiConnectionException("Error: Received status code " + response.statusCode());
+                }
+
+                return mapper.readValue(response.body(), WeatherSmhi.class);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error("Could not connect to SMHI API");
             throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
         }

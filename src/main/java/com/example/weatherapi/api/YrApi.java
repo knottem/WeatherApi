@@ -19,10 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -104,7 +101,7 @@ public class YrApi {
                         "User-Agent", domain,
                         "sitename", contact
                 );
-                HttpResponse<String> response = HttpUtil.getContentFromUrlWithHeaders(uri, headers);
+                HttpResponse<String> response = HttpUtil.getContentFromUrl(uri, headers);
 
                 if (response.statusCode() == 403) {
                     throw new ApiConnectionException("Forbidden: Custom User-Agent is required.");

@@ -5,6 +5,7 @@ import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherFmi;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,13 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -26,6 +32,7 @@ import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.DateUtils.generateFutureTimestamp;
+import static com.example.weatherapi.util.HttpUtil.getContentFromUrl;
 import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 
 @Component
@@ -100,13 +107,20 @@ public class FmiApi {
                     xmlContent = new Scanner(inputStream, StandardCharsets.UTF_8).useDelimiter("\\A").next();
                 }
             } else {
-                xmlContent = getXmlContentFromUrl(
-                        getUrlFMI(lon, lat,
-                                generateFutureTimestamp(ZonedDateTime.now(ZoneOffset.UTC), 9)));
+                URI uri = getUrlFMI(lon, lat,
+                        generateFutureTimestamp(ZonedDateTime.now(ZoneOffset.UTC), 9))
+                        .toURI();
+                HttpResponse<String> response = HttpUtil.getContentFromUrl(uri);
+
+                if (response.statusCode() != 200) {
+                    throw new ApiConnectionException("Error: Received status code " + response.statusCode());
+                }
+
+                xmlContent = response.body();
             }
             xmlContent = parseXml(xmlContent);
             return xmlMapper.readValue(xmlContent, WeatherFmi.class);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error("Could not connect to FMI API");
             throw new ApiConnectionException("Could not connect to FMI API, please contact the site administrator");
         }
@@ -163,12 +177,6 @@ public class FmiApi {
     private String parseXml(String xmlContent) {
         xmlContent = xmlContent.replace("&param=", "&amp;param=").replace("&language=", "&amp;language=");
         return xmlContent;
-    }
-
-    private String getXmlContentFromUrl(URL url) throws IOException {
-        try (InputStream inputStream = url.openStream()) {
-            return new String(inputStream.readAllBytes());
-        }
     }
 
     private String extractRelevantPart(String id) {

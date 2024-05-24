@@ -73,7 +73,7 @@ public class CacheDB {
                 logger.info("Cache hit for city: {} with APIs: {} in the database. Returning cached data.", cityName, apisUsed);
                 return convertToWeather(cachedWeather);
             } else {
-                logger.info("Cache expired for city: {} with APIs: {} in the database", cityName, apisUsed);
+                logger.debug("Cache expired for city: {} with APIs: {} in the database", cityName, apisUsed);
                 return null;
             }
         } else {

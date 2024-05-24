@@ -28,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 import static com.example.weatherapi.util.CityMapper.toModel;
 import static com.example.weatherapi.util.SunriseUtil.getSunriseSunset;
@@ -44,6 +45,11 @@ public class WeatherServiceImpl implements WeatherService {
     private final CacheManager cacheManager;
     private final String cacheName;
     private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
+    private static final String TEMPERATURE = "temperature";
+    private static final String WIND_SPEED = "windSpeed";
+    private static final String PRECIPITATION = "precipitation";
+
+
 
 
     @Autowired
@@ -192,58 +198,64 @@ public class WeatherServiceImpl implements WeatherService {
                 });
     }
 
-    private synchronized void mergeWeatherDataIntoMergedData(Map<ZonedDateTime, Weather.WeatherData> newData,
-                                                             String api,
-                                                             Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData,
-                                                             Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap) {
-        for (Map.Entry<ZonedDateTime, Weather.WeatherData> entry : newData.entrySet()) {
-            ZonedDateTime key = entry.getKey();
-            Weather.WeatherData newDataItem = entry.getValue();
+    private synchronized void mergeWeatherDataIntoMergedData(
+            Map<ZonedDateTime, Weather.WeatherData> newData,
+            String api,
+            Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData,
+            Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap) {
 
-            String precipitation = "precipitation";
-            String temp = "temperature";
-            String windSpeed = "windSpeed";
+        newData.forEach((key, newDataItem) -> {
             if (mergedWeatherData.containsKey(key)) {
-                Weather.WeatherData existingData = mergedWeatherData.get(key);
+                updateDataField(newDataItem.getTemperature(),
+                        mergedWeatherData.get(key)::setTemperature,
+                        mergedWeatherData.get(key).getTemperature(),
+                        key,
+                        TEMPERATURE,
+                        updateCountMap);
+                updateDataField(newDataItem.getPrecipitation(),
+                        mergedWeatherData.get(key)::setPrecipitation,
+                        mergedWeatherData.get(key).getPrecipitation(),
+                        key,
+                        PRECIPITATION,
+                        updateCountMap);
+                updateDataField(newDataItem.getWindSpeed(),
+                        mergedWeatherData.get(key)::setWindSpeed,
+                        mergedWeatherData.get(key).getWindSpeed(),
+                        key,
+                        WIND_SPEED,
+                        updateCountMap);
 
-                if(newDataItem.getTemperature() != -99f) {
-                    existingData.setTemperature(existingData.getTemperature() + newDataItem.getTemperature());
-                    updateCount(key, temp, updateCountMap);
+                if (newDataItem.getWindDirection() != -99f) {
+                    mergedWeatherData.get(key).setWindDirection(
+                            getAvgWindDirection(mergedWeatherData.get(key).getWindDirection(), newDataItem.getWindDirection()));
                 }
+                mergedWeatherData.get(key).setWeatherCode(determineWeatherCode(api, mergedWeatherData.get(key), newDataItem));
 
-                if(newDataItem.getWindSpeed() != -99f) {
-                    existingData.setWindSpeed(existingData.getWindSpeed() + newDataItem.getWindSpeed());
-                    updateCount(key, windSpeed, updateCountMap);
-                }
-                if(newDataItem.getPrecipitation() != -99f) {
-                    existingData.setPrecipitation(existingData.getPrecipitation() + newDataItem.getPrecipitation());
-                    updateCount(key, precipitation, updateCountMap);
-                }
-
-                if(newDataItem.getWindDirection() != -99f) {
-                    existingData.setWindDirection(getAvgWindDirection(
-                            existingData.getWindDirection(),
-                            newDataItem.getWindDirection()));
-                }
-
-                int weatherCode;
-                if (api.equals("SMHI")) {
-                    weatherCode = newDataItem.getWeatherCode();
-                } else {
-                    weatherCode = existingData.getWeatherCode() > -1 ? existingData.getWeatherCode() : newDataItem.getWeatherCode();
-                }
-                existingData.setWeatherCode(weatherCode);
-
-            } else if (!api.equals("FMI")){
-                // If the data is from FMI, we don't want to add it to the merged data if it doesn't already exist due to differences in timestamps compared to SMHI and YR
+            } else if (!api.equals("FMI")) {
                 mergedWeatherData.put(key, newDataItem);
-                updateCount(key, temp, updateCountMap);
-                updateCount(key, windSpeed, updateCountMap);
-                updateCount(key, precipitation, updateCountMap);
+                updateCount(key, TEMPERATURE, updateCountMap);
+                updateCount(key, WIND_SPEED, updateCountMap);
+                updateCount(key, PRECIPITATION, updateCountMap);
             }
-        }
+        });
 
         log.info("Merged weather data from {}", api);
+    }
+
+    private void updateDataField(float newDataValue, Consumer<Float> setter, float existingValue, ZonedDateTime key,
+                                 String fieldName, Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap) {
+        if (newDataValue != -99f) {
+            setter.accept(existingValue + newDataValue);
+            updateCount(key, fieldName, updateCountMap);
+        }
+    }
+
+    private int determineWeatherCode(String api, Weather.WeatherData existingData, Weather.WeatherData newDataItem) {
+        if (api.equals("SMHI")) {
+            return newDataItem.getWeatherCode();
+        } else {
+            return existingData.getWeatherCode() > -1 ? existingData.getWeatherCode() : newDataItem.getWeatherCode();
+        }
     }
 
     private void updateCount(ZonedDateTime key, String attribute, Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap) {
@@ -263,9 +275,9 @@ public class WeatherServiceImpl implements WeatherService {
             ZonedDateTime key = entry.getKey();
             Weather.WeatherData data = entry.getValue();
 
-            data.setTemperature(data.getTemperature() / getUpdateCount(key, "temperature", updateCountMap));
-            data.setWindSpeed(data.getWindSpeed() / getUpdateCount(key, "windSpeed", updateCountMap));
-            data.setPrecipitation(data.getPrecipitation() / getUpdateCount(key, "precipitation", updateCountMap));
+            data.setTemperature(data.getTemperature() / getUpdateCount(key, TEMPERATURE, updateCountMap));
+            data.setWindSpeed(data.getWindSpeed() / getUpdateCount(key, WIND_SPEED, updateCountMap));
+            data.setPrecipitation(data.getPrecipitation() / getUpdateCount(key, PRECIPITATION, updateCountMap));
 
         }
     }

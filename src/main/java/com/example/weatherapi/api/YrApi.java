@@ -5,6 +5,7 @@ import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
@@ -16,10 +17,12 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -96,23 +99,21 @@ public class YrApi {
                                 mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class).get(city.getName().toLowerCase())),
                         WeatherYr.class);
             } else {
-
-                HttpClient httpClient = HttpClient.newBuilder()
-                        .version(HttpClient.Version.HTTP_1_1)
-                        .build();
-
-                // Adds User-Agent and sitename to header since YR requires it
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(getUrlYr(lon, lat).toURI())
-                        .header("User-Agent", domain)
-                        .header("sitename", contact)
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                URI uri = getUrlYr(lon, lat).toURI();
+                Map<String, String> headers = Map.of(
+                        "User-Agent", domain,
+                        "sitename", contact
+                );
+                HttpResponse<String> response = HttpUtil.getContentFromUrlWithHeaders(uri, headers);
 
                 if (response.statusCode() == 403) {
                     throw new ApiConnectionException("Forbidden: Custom User-Agent is required.");
                 }
+
+                if (response.statusCode() != 200) {
+                    throw new ApiConnectionException("Could not connect to YR API, please contact the site administrator");
+                }
+
                 return mapper.readValue(response.body(), WeatherYr.class);
             }
         } catch (Exception e){

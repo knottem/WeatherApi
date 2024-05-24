@@ -26,6 +26,7 @@ import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.DateUtils.generateFutureTimestamp;
+import static com.example.weatherapi.util.HttpUtil.getContentFromUrl;
 import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 
 @Component
@@ -100,7 +101,7 @@ public class FmiApi {
                     xmlContent = new Scanner(inputStream, StandardCharsets.UTF_8).useDelimiter("\\A").next();
                 }
             } else {
-                xmlContent = getXmlContentFromUrl(
+                xmlContent = getContentFromUrl(
                         getUrlFMI(lon, lat,
                                 generateFutureTimestamp(ZonedDateTime.now(ZoneOffset.UTC), 9)));
             }
@@ -163,12 +164,6 @@ public class FmiApi {
     private String parseXml(String xmlContent) {
         xmlContent = xmlContent.replace("&param=", "&amp;param=").replace("&language=", "&amp;language=");
         return xmlContent;
-    }
-
-    private String getXmlContentFromUrl(URL url) throws IOException {
-        try (InputStream inputStream = url.openStream()) {
-            return new String(inputStream.readAllBytes());
-        }
     }
 
     private String extractRelevantPart(String id) {

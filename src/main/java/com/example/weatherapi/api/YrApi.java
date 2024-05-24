@@ -20,6 +20,7 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -99,11 +100,13 @@ public class YrApi {
 
                 HttpClient httpClient = HttpClient.newBuilder()
                         .version(HttpClient.Version.HTTP_1_1)
+                        .connectTimeout(Duration.ofSeconds(5))
                         .build();
 
                 // Adds User-Agent and sitename to header since YR requires it
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(getUrlYr(lon, lat).toURI())
+                        .timeout(Duration.ofSeconds(10))
                         .header("User-Agent", domain)
                         .header("sitename", contact)
                         .build();

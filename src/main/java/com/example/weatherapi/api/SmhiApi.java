@@ -14,12 +14,18 @@ import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import static com.example.weatherapi.util.HttpUtil.getContentFromUrl;
 import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 
 /**
@@ -38,6 +44,8 @@ public class SmhiApi {
     private final CacheDB cacheDB;
     private boolean isTestMode = false;
     private final String cacheName;
+    private static final int CONNECTION_TIMEOUT = 5000; // 5 seconds
+    private static final int READ_TIMEOUT = 10000; // 10 seconds
 
     @Autowired
     public SmhiApi (CacheManager cacheManager, CacheDB cacheDB) {
@@ -111,13 +119,14 @@ public class SmhiApi {
                         mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class)
                                 .get(cityName)), WeatherSmhi.class);
             } else {
-                return mapper.readValue(getUrlSmhi(lon, lat), WeatherSmhi.class);
+                return mapper.readValue(getContentFromUrl(getUrlSmhi(lon, lat)), WeatherSmhi.class);
             }
         } catch (IOException e) {
             LOG.error("Could not connect to SMHI API");
             throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
         }
     }
+
 
     /**
      * Adds the weather data to the Weather object.

@@ -48,7 +48,13 @@ public class FmiApi {
     }
 
     private URL getUrlFMI(double lon, double lat, String timestamp) throws IOException {
-        return new URL("https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=ecmwf::forecast::surface::point::timevaluepair&latlon=" + lat + "," + lon + "&endtime=" + timestamp);
+        //setting parameters to only get temperature and precipitation since the other parameters are not filled in by the FMI API
+        return new URL("https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=ecmwf::forecast::surface::point::timevaluepair&latlon="
+                + lat +
+                ","
+                + lon +
+                "&endtime=" + timestamp +
+                "&parameters=temperature,precipitation1h");
     }
 
     @Async

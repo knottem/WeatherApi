@@ -44,6 +44,13 @@ public class CustomExceptionHandler {
         return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please try again later.", request);
     }
 
+    // Exception handler for ApiDisabledException
+    @ExceptionHandler(ApiDisabledException.class)
+    public ResponseEntity<ErrorResponse> handleApiDisabledException(ApiDisabledException ex, WebRequest request) {
+        logger.warn(ex.getMessage());
+        return createErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);
+    }
+
     // Exception handler for ClientAbortException
     @ExceptionHandler(ClientAbortException.class)
     public void handleClientAbortException(ClientAbortException ex) {

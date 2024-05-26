@@ -1,23 +1,25 @@
 package com.example.weatherapi.api;
 
-import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.services.WeatherApiService;
+import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpResponse;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
@@ -34,16 +36,12 @@ public class SmhiApi {
 
     ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
     private static final Logger LOG = LoggerFactory.getLogger(SmhiApi.class);
-    private final CacheManager cacheManager;
-    private final CacheDB cacheDB;
+    private final WeatherApiService weatherApiService;
     private boolean isTestMode = false;
-    private final String cacheName;
 
     @Autowired
-    public SmhiApi (CacheManager cacheManager, CacheDB cacheDB) {
-        this.cacheManager = cacheManager;
-        this.cacheDB = cacheDB;
-        this.cacheName = "cache";
+    public SmhiApi (WeatherApiService weatherApiService) {
+        this.weatherApiService = weatherApiService;
     }
 
     /**
@@ -75,26 +73,15 @@ public class SmhiApi {
      */
 
     public Weather getWeatherSmhi(double lon, double lat, City city) {
-        String key = city.getName().toLowerCase() + "smhi";
-        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
-                .get(key, Weather.class);
-        if(weatherFromCache != null) {
-            LOG.info("Cache hit for City: {} in the cache, returning cached data for smhi", city.getName());
-            return weatherFromCache;
+        Weather weather = weatherApiService.fetchWeatherData("SMHI", city, true, false, false);
+        if(weather != null) {
+            return weather;
         }
-
-        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), true, false, false);
-        if(weatherFromCacheDB != null) {
-            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherFromCacheDB);
-            return weatherFromCacheDB;
-        }
-
         LOG.info("Fetching weather data from the SMHI API...");
         WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
-        Weather weather = createBaseWeather(lon, lat, city, "SMHI");
+        weather = createBaseWeather(lon, lat, city, "SMHI");
         addWeatherDataSmhi(weather, weatherSmhi);
-        cacheDB.save(weather, true, false, false);
-        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
+        weatherApiService.saveWeatherData("SMHI", weather, true, false, false);
         return weather;
     }
 
@@ -111,13 +98,21 @@ public class SmhiApi {
                         mapper.readValue(getClass().getResourceAsStream("/weatherexamples/citiesexamples.json"), Map.class)
                                 .get(cityName)), WeatherSmhi.class);
             } else {
-                return mapper.readValue(getUrlSmhi(lon, lat), WeatherSmhi.class);
+                URI uri = getUrlSmhi(lon, lat).toURI();
+                HttpResponse<String> response = HttpUtil.getContentFromUrl(uri);
+
+                if (response.statusCode() != 200) {
+                    throw new ApiConnectionException("Error: Received status code " + response.statusCode());
+                }
+
+                return mapper.readValue(response.body(), WeatherSmhi.class);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error("Could not connect to SMHI API");
             throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
         }
     }
+
 
     /**
      * Adds the weather data to the Weather object.

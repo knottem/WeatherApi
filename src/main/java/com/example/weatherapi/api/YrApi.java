@@ -1,10 +1,10 @@
 package com.example.weatherapi.api;
 
-import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.services.WeatherApiService;
 import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +20,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpResponse;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.WeatherCodeMapper.mapToWeatherCodeYR;
@@ -33,9 +31,7 @@ public class YrApi {
 
     ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
     private static final Logger LOG = LoggerFactory.getLogger(YrApi.class);
-    private final CacheManager cacheManager;
-    private final CacheDB cacheDB;
-    private final String cacheName;
+    private final WeatherApiService weatherApiService;
 
     // Gets the domain and contact info from the application.properties file, contact info is required by the YR API
     @Value("${your.domain}")
@@ -45,10 +41,8 @@ public class YrApi {
     private boolean isTestMode = false;
 
     @Autowired
-    public YrApi (CacheManager cacheManager, CacheDB cacheDB) {
-        this.cacheManager = cacheManager;
-        this.cacheDB = cacheDB;
-        this.cacheName = "cache";
+    public YrApi (WeatherApiService weatherApiService) {
+        this.weatherApiService = weatherApiService;
     }
 
     public void setTestMode(boolean isTestMode) {
@@ -65,26 +59,15 @@ public class YrApi {
     }
 
     public Weather getWeatherYr(double lon, double lat, City city) {
-        String key = city.getName().toLowerCase() + "yr";
-        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
-                .get(key, Weather.class);
-        if(weatherFromCache != null) {
-            LOG.info("Cache hit for City: {} in the cache, returning cached data for yr", city.getName());
-            return weatherFromCache;
+        Weather weather = weatherApiService.fetchWeatherData("YR", city, false, true, false);
+        if(weather != null) {
+            return weather;
         }
-
-        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), false, true, false);
-        if(weatherFromCacheDB != null) {
-            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherFromCacheDB);
-            return weatherFromCacheDB;
-        }
-
         LOG.info("Fetching weather data from the YR API...");
         WeatherYr weatherYr = fetchWeatherYr(lon, lat, city);
-        Weather weather = createBaseWeather(lon, lat, city, "YR");
+        weather = createBaseWeather(lon, lat, city, "YR");
         addWeatherDataYr(weather, weatherYr);
-        cacheDB.save(weather, false, true, false);
-        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
+        weatherApiService.saveWeatherData("YR", weather, false, true, false);
         return weather;
     }
 

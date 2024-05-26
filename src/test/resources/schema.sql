@@ -51,3 +51,10 @@ CREATE TABLE latest_weather_api (
     FOREIGN KEY (latest_weather_id) REFERENCES weather (id),
     FOREIGN KEY (city_id) REFERENCES city (id)
 );
+
+CREATE TABLE api_status (
+    id VARCHAR(36) NOT NULL PRIMARY KEY,
+    api_name VARCHAR(50) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    last_checked TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

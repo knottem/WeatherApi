@@ -19,3 +19,8 @@ INSERT INTO `city` (`id`,`lat`, `lon`, `name`)VALUES
 INSERT INTO `auth` (`id`, `username`, `password`, `role`)VALUES
     ('232d5741-f551-443a-a1b0-b7b1eb26ba9f','admin','$2a$10$Eq3yxcRlqmIaxBv7w9qkDuZCfw7lhgYS12ndADouoUogkNMWGmELK', 'ADMIN' ), -- pass123 for testing
     ('2f42da30-7b17-4718-8782-563b4cc6c4c7','user','$2a$10$OMsvTvB3K5kHX6cTrSDEIuMFfKj2XASnIUPe/jPw.Fk6Vk9zQNK5W', 'USER'); -- pass123 for testing
+
+INSERT INTO api_status (id, api_name, is_active) VALUES
+    ('f6c1c0d9-62ab-4781-bdb3-e0b522886bd3', 'SMHI', TRUE),
+    ('b842c88b-9ccd-489c-92f9-5d3a3f5e5657', 'YR', TRUE),
+    ('f9e22288-6a73-4058-8c6e-df5cca979c48', 'FMI', TRUE);

@@ -70,14 +70,14 @@ public class CacheDB {
         if (latestApiOptional.isPresent()) {
             WeatherEntity cachedWeather = latestApiOptional.get().getLatestWeather();
             if (cachedWeather != null && isWeatherValid(cachedWeather.getTimeStamp(), cacheTimeInMinutes)) {
-                logger.info("Cache hit for city: {} with APIs: {} in the database. Returning cached data.", cityName, apisUsed);
+                logger.info("Database cache hit for city: {} with APIs: {} in the database. Returning cached data.", cityName, apisUsed);
                 return convertToWeather(cachedWeather);
             } else {
-                logger.debug("Cache expired for city: {} with APIs: {} in the database", cityName, apisUsed);
+                logger.debug("Database cache expired for city: {} with APIs: {} in the database", cityName, apisUsed);
                 return null;
             }
         } else {
-            logger.debug("Cache doesn't exist for city: {} with APIs: {} in the database", cityName, apisUsed);
+            logger.debug("Database cache doesn't exist for city: {} with APIs: {} in the database", cityName, apisUsed);
         }
         return null;
     }

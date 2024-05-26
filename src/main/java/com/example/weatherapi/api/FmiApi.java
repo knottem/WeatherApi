@@ -1,16 +1,16 @@
 package com.example.weatherapi.api;
 
-import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.domain.City;
+
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherFmi;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.services.WeatherApiService;
 import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -18,21 +18,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.DateUtils.generateFutureTimestamp;
-import static com.example.weatherapi.util.HttpUtil.getContentFromUrl;
 import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 
 @Component
@@ -40,16 +35,12 @@ public class FmiApi {
 
     XmlMapper xmlMapper = new XmlMapper();
     private static final Logger LOG = LoggerFactory.getLogger(FmiApi.class);
-    private final CacheManager cacheManager;
-    private final CacheDB cacheDB;
-    private final String cacheName;
+    private final WeatherApiService weatherApiService;
     private boolean isTestMode = false;
 
     @Autowired
-    public FmiApi (CacheManager cacheManager, CacheDB cacheDB) {
-        this.cacheManager = cacheManager;
-        this.cacheDB = cacheDB;
-        this.cacheName = "cache";
+    public FmiApi (WeatherApiService weatherApiService) {
+        this.weatherApiService = weatherApiService;
     }
 
     public void setTestMode(boolean isTestMode) {
@@ -72,27 +63,15 @@ public class FmiApi {
     }
 
     public Weather getWeatherFMI(double lon, double lat, City city) {
-        String key = city.getName().toLowerCase() + "fmi";
-        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
-                .get(key, Weather.class);
-        if(weatherFromCache != null) {
-            LOG.info("Cache hit for City: {} in the cache, returning cached data for fmi", city.getName());
-            return weatherFromCache;
+        Weather weather = weatherApiService.fetchWeatherData("FMI", city, false, false, true);
+        if(weather != null) {
+            return weather;
         }
-
-        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), false, false, true);
-        if(weatherFromCacheDB != null) {
-            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherFromCacheDB);
-            return weatherFromCacheDB;
-        }
-
-
         LOG.info("Fetching weather data from the FMI API...");
         WeatherFmi weatherFmi = fetchWeatherFMI(lon, lat, city);
-        Weather weather = createBaseWeather(lon, lat, city, "FMI");
+        weather = createBaseWeather(lon, lat, city, "FMI");
         addWeatherDataFmi(weather, weatherFmi);
-        cacheDB.save(weather, false, false, true);
-        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weather);
+        weatherApiService.saveWeatherData("FMI", weather, false, false, true);
         return weather;
     }
 

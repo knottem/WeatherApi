@@ -42,6 +42,7 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests(r -> r
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/weather/**").permitAll()
+                .requestMatchers("/status/**").permitAll()
                 .requestMatchers("/actuator/health").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/names").permitAll()
                 .requestMatchers("/city/all").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())

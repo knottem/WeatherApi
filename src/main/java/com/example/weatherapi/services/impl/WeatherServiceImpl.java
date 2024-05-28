@@ -234,16 +234,14 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     private Optional<Weather> checkForMergedWeatherData(City city, String cacheKey) {
-        List<ApiStatus> apiStatusList = apiStatusRepository.findAll();
+        Map<String, Boolean> apiStatusMap = getApiStatus();
 
-        boolean smhiActive = apiStatusList.stream()
-                .anyMatch(apiStatus -> apiStatus.getApiName().equals("SMHI") && apiStatus.isActive());
-        boolean yrActive = apiStatusList.stream()
-                .anyMatch(apiStatus -> apiStatus.getApiName().equals("YR") && apiStatus.isActive());
-        boolean fmiActive = apiStatusList.stream()
-                .anyMatch(apiStatus -> apiStatus.getApiName().equals("FMI") && apiStatus.isActive());
-
-        Weather weather = cacheDB.getWeatherFromCache(city.getName(), smhiActive, yrActive, fmiActive);
+        Weather weather = cacheDB.getWeatherFromCache(
+                city.getName(),
+                apiStatusMap.getOrDefault("SMHI", false),
+                apiStatusMap.getOrDefault("YR", false),
+                apiStatusMap.getOrDefault("FMI", false)
+        );
 
         if (weather != null) {
             getSunriseSunset(weather);

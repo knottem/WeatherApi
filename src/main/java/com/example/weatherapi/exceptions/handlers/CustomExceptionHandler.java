@@ -44,6 +44,13 @@ public class CustomExceptionHandler {
         return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please try again later.", request);
     }
 
+    // Exception for InvalidApiUsageException
+    @ExceptionHandler(InvalidApiUsageException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidApiUsageException(InvalidApiUsageException ex, WebRequest request) {
+        logger.error(ex.getMessage());
+        return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
     // Exception handler for ApiDisabledException
     @ExceptionHandler(ApiDisabledException.class)
     public ResponseEntity<ErrorResponse> handleApiDisabledException(ApiDisabledException ex, WebRequest request) {

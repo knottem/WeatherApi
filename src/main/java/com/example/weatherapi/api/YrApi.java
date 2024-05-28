@@ -32,6 +32,7 @@ public class YrApi {
     ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
     private static final Logger LOG = LoggerFactory.getLogger(YrApi.class);
     private final WeatherApiService weatherApiService;
+    private final Object lock = new Object();
 
     // Gets the domain and contact info from the application.properties file, contact info is required by the YR API
     @Value("${your.domain}")
@@ -63,12 +64,19 @@ public class YrApi {
         if(weather != null) {
             return weather;
         }
-        LOG.info("Fetching weather data from the YR API...");
-        WeatherYr weatherYr = fetchWeatherYr(lon, lat, city);
-        weather = createBaseWeather(lon, lat, city, "YR");
-        addWeatherDataYr(weather, weatherYr);
-        weatherApiService.saveWeatherData("YR", weather, false, true, false);
-        return weather;
+        synchronized (lock) {
+            // Check again in case another thread has already fetched the data
+            weather = weatherApiService.fetchWeatherDataCached("YR", city);
+            if (weather != null) {
+                return weather;
+            }
+            LOG.info("Fetching weather data from the YR API...");
+            WeatherYr weatherYr = fetchWeatherYr(lon, lat, city);
+            weather = createBaseWeather(lon, lat, city, "YR");
+            addWeatherDataYr(weather, weatherYr);
+            weatherApiService.saveWeatherData("YR", weather, false, true, false);
+            return weather;
+        }
     }
 
     // The YR API requires a custom User-Agent header, otherwise it will return 403 Forbidden. So we need both our domain and contact info which is provided by the application.properties file.

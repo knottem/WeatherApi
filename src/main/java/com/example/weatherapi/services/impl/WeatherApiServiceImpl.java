@@ -63,6 +63,20 @@ public class WeatherApiServiceImpl implements WeatherApiService {
 
     @Override
     @Transactional
+    public Weather fetchWeatherDataCached(String apiName, City city) {
+        String apiLower = apiName.toLowerCase();
+        String key = city.getName().toLowerCase() + apiLower;
+        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
+                .get(key, Weather.class);
+        if (weatherFromCache != null) {
+            LOG.info("Cache hit for City: {} in the cache, returning cached data for {}", city.getName(), apiLower);
+            return weatherFromCache;
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
     public void saveWeatherData(String apiName, Weather weather, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
         cacheDB.save(weather, smhiFlag, yrFlag, fmiFlag);
         Objects.requireNonNull(cacheManager.getCache(cacheName)).put(weather.getCity().getName().toLowerCase() + apiName.toLowerCase(), weather);

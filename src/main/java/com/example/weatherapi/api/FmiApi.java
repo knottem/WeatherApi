@@ -37,6 +37,7 @@ public class FmiApi {
     private static final Logger LOG = LoggerFactory.getLogger(FmiApi.class);
     private final WeatherApiService weatherApiService;
     private boolean isTestMode = false;
+    private final Object lock = new Object();
 
     @Autowired
     public FmiApi (WeatherApiService weatherApiService) {
@@ -67,12 +68,19 @@ public class FmiApi {
         if(weather != null) {
             return weather;
         }
-        LOG.info("Fetching weather data from the FMI API...");
-        WeatherFmi weatherFmi = fetchWeatherFMI(lon, lat, city);
-        weather = createBaseWeather(lon, lat, city, "FMI");
-        addWeatherDataFmi(weather, weatherFmi);
-        weatherApiService.saveWeatherData("FMI", weather, false, false, true);
-        return weather;
+        synchronized (lock) {
+            // Check again in case another thread has already fetched the data
+            weather = weatherApiService.fetchWeatherDataCached("FMI", city);
+            if(weather != null) {
+                return weather;
+            }
+            LOG.info("Fetching weather data from the FMI API...");
+            WeatherFmi weatherFmi = fetchWeatherFMI(lon, lat, city);
+            weather = createBaseWeather(lon, lat, city, "FMI");
+            addWeatherDataFmi(weather, weatherFmi);
+            weatherApiService.saveWeatherData("FMI", weather, false, false, true);
+            return weather;
+        }
     }
 
     private WeatherFmi fetchWeatherFMI(double lon, double lat, City city) throws ApiConnectionException {

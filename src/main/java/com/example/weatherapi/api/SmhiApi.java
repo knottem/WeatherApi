@@ -38,6 +38,7 @@ public class SmhiApi {
     private static final Logger LOG = LoggerFactory.getLogger(SmhiApi.class);
     private final WeatherApiService weatherApiService;
     private boolean isTestMode = false;
+    private final Object lock = new Object();
 
     @Autowired
     public SmhiApi (WeatherApiService weatherApiService) {
@@ -77,12 +78,20 @@ public class SmhiApi {
         if(weather != null) {
             return weather;
         }
-        LOG.info("Fetching weather data from the SMHI API...");
-        WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
-        weather = createBaseWeather(lon, lat, city, "SMHI");
-        addWeatherDataSmhi(weather, weatherSmhi);
-        weatherApiService.saveWeatherData("SMHI", weather, true, false, false);
-        return weather;
+        synchronized (lock) {
+            // Check again in case another thread has already fetched the data
+            weather = weatherApiService.fetchWeatherDataCached("SMHI", city);
+            if (weather != null) {
+                return weather;
+            }
+
+            LOG.info("Fetching weather data from the SMHI API...");
+            WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
+            weather = createBaseWeather(lon, lat, city, "SMHI");
+            addWeatherDataSmhi(weather, weatherSmhi);
+            weatherApiService.saveWeatherData("SMHI", weather, true, false, false);
+            return weather;
+        }
     }
 
     /**

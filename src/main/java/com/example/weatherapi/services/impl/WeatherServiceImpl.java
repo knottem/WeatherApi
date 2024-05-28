@@ -152,7 +152,12 @@ public class WeatherServiceImpl implements WeatherService {
 
         enabledApis = enabledApis.stream().map(String::toUpperCase).toList();
 
-        validateApis(enabledApis, apiStatusRepository);
+        List<String> allActiveApis = validateApis(enabledApis, apiStatusRepository);
+
+        // If all enabled APIs are used, return the merged weather data instead of fetching it again
+        if (new HashSet<>(allActiveApis).equals(new HashSet<>(enabledApis))){
+            return getWeatherMerged(cityName);
+        }
 
         City city = toModel(cityService.getCityByName(cityName));
         Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData = new TreeMap<>();

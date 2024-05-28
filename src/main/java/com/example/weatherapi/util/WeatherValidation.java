@@ -25,7 +25,7 @@ public class WeatherValidation {
         return isWeatherValid(timeStamp, minutes, Clock.systemUTC());
     }
 
-    public static void validateApis(List<String> enabledApis, ApiStatusRepository apiStatusRepository) {
+    public static List<String> validateApis(List<String> enabledApis, ApiStatusRepository apiStatusRepository) {
         List<ApiStatus> apis = apiStatusRepository.findAll();
 
         // Get all valid API names and inactive API names from the database
@@ -59,5 +59,10 @@ public class WeatherValidation {
         if (enabledApis.size() == 1 && enabledApis.contains("FMI")) {
             throw new InvalidApiUsageException("FMI API cannot be used alone");
         }
+
+        return apis.stream()
+                .filter(ApiStatus::isActive)
+                .map(ApiStatus::getApiName)
+                .toList();
     }
 }

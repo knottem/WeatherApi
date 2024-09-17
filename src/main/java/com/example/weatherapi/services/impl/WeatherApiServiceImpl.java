@@ -7,13 +7,14 @@ import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.exceptions.ApiDisabledException;
 import com.example.weatherapi.repositories.ApiStatusRepository;
 import com.example.weatherapi.services.WeatherApiService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Objects;
 
 @Service
@@ -25,6 +26,7 @@ public class WeatherApiServiceImpl implements WeatherApiService {
     private final CacheDB cacheDB;
     private final CacheManager cacheManager;
     private final String cacheName;
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     @Autowired
     public WeatherApiServiceImpl(ApiStatusRepository apiStatusRepository, CacheDB cacheDB, CacheManager cacheManager) {
         this.apiStatusRepository = apiStatusRepository;
@@ -42,8 +44,8 @@ public class WeatherApiServiceImpl implements WeatherApiService {
         Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
                 .get(key, Weather.class);
         if (weatherFromCache != null) {
-            LOG.info("Cache hit for City: {} in the cache, returning cached data for {}", city.getName(), apiLower); // added back logging
-            return weatherFromCache;
+            LOG.info("Cache hit for City: {} in the cache, returning cached data for {}", city.getName(), apiLower);
+            return objectMapper.convertValue(weatherFromCache, Weather.class);
         }
 
         Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), smhiFlag, yrFlag, fmiFlag);
@@ -78,8 +80,12 @@ public class WeatherApiServiceImpl implements WeatherApiService {
     @Override
     @Transactional
     public void saveWeatherData(String apiName, Weather weather, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
+        String key = weather.getCity().getName().toLowerCase() + apiName.toLowerCase();
         cacheDB.save(weather, smhiFlag, yrFlag, fmiFlag);
-        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(weather.getCity().getName().toLowerCase() + apiName.toLowerCase(), weather);
+        Weather weatherCopy;
+        weatherCopy = objectMapper.convertValue(weather, Weather.class);
+        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherCopy);
+
     }
 
 }

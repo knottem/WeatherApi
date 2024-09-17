@@ -29,6 +29,23 @@ public class Weather {
                                int weatherCode,
                                float windSpeed,
                                float windDirection,
+                               float humidity,
+                               float precipitation) {
+        weatherData.put(validTime, WeatherData.builder()
+                .temperature(temperature)
+                .weatherCode(weatherCode)
+                .windSpeed(windSpeed)
+                .windDirection(windDirection)
+                .humidity(humidity)
+                .precipitation(precipitation)
+                .build());
+    }
+
+    public void addWeatherData(ZonedDateTime validTime,
+                               float temperature,
+                               int weatherCode,
+                               float windSpeed,
+                               float windDirection,
                                float precipitation) {
         weatherData.put(validTime, WeatherData.builder()
                 .temperature(temperature)
@@ -56,6 +73,7 @@ public class Weather {
         private float windSpeed;
         private float windDirection;
         private float precipitation;
+        private float humidity;
     }
 
 }

@@ -44,6 +44,7 @@ public class WeatherApiServiceImpl implements WeatherApiService {
         Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
                 .get(key, Weather.class);
         if (weatherFromCache != null) {
+            LOG.info("Cache hit for City: {} in the cache, returning cached data for {}", city.getName(), apiLower);
             return objectMapper.convertValue(weatherFromCache, Weather.class);
         }
 

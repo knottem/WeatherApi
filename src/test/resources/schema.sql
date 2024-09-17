@@ -34,6 +34,7 @@ CREATE TABLE weather_data (
     weather_code int DEFAULT NULL,
     wind_direction float DEFAULT NULL,
     wind_speed float DEFAULT NULL,
+    humidity float DEFAULT NULL,
     valid_time timestamp DEFAULT NULL,
     weather_id varchar(36) DEFAULT NULL,
     PRIMARY KEY (id),

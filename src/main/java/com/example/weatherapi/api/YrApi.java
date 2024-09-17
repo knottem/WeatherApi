@@ -118,6 +118,7 @@ public class YrApi {
                         mapToWeatherCodeYR(t),
                         t.data().instant().details().wind_speed(),
                         t.data().instant().details().wind_from_direction(),
+                        t.data().instant().details().relative_humidity(),
                         t.data().instant().details().precipitation_amount()));
     }
 

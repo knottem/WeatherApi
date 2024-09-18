@@ -88,8 +88,8 @@ public class FmiApi {
             String xmlContent;
             if (isTestMode) {
                 String cityName = city.getName().toLowerCase();
-                if (cityName.equals("rågsved")) cityName = "rågsvedexample-10days.xml";
-                if (cityName.equals("stockholm")) cityName = "stockholmExample.xml";
+                if (cityName.equals("rågsved")) cityName = "rågsvedexample-10days-2.xml";
+                if (cityName.equals("stockholm")) cityName = "stockholmExample-2.xml";
                 LOG.info("Using test data for FMI: {}", cityName);
 
                 String resourcePath = "weatherexamples/fmi/" + cityName;

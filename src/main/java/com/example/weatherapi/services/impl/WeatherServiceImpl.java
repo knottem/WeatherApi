@@ -419,6 +419,7 @@ public class WeatherServiceImpl implements WeatherService {
             weatherData.setWindDirection(BigDecimal.valueOf(weatherData.getWindDirection()).setScale(1, RoundingMode.HALF_UP).floatValue());
             weatherData.setWindSpeed(BigDecimal.valueOf(weatherData.getWindSpeed()).setScale(1, RoundingMode.HALF_UP).floatValue());
             weatherData.setPrecipitation(BigDecimal.valueOf(weatherData.getPrecipitation()).setScale(1, RoundingMode.HALF_UP).floatValue());
+            weatherData.setHumidity(BigDecimal.valueOf(weatherData.getHumidity()).setScale(1, RoundingMode.HALF_UP).floatValue());
         }
     }
 

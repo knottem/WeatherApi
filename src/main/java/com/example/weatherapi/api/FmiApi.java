@@ -131,7 +131,7 @@ public class FmiApi {
             if (observation != null && observation.getResult() != null) {
                 WeatherFmi.MeasurementTimeseries timeseries = observation.getResult().getMeasurementTimeseries();
                 if (timeseries != null) {
-                    String type = extractRelevantPart(timeseries.getId());
+                    String type = extractRelevantPart(timeseries.getId()).toLowerCase();
                     for (WeatherFmi.MeasurementTimeseries.Point point : timeseries.getPoints()) {
                         WeatherFmi.MeasurementTVP measurement = point.getMeasurementTVP();
                         if (measurement != null) {

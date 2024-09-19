@@ -55,7 +55,7 @@ public class FmiApi {
                 ","
                 + lon +
                 "&endtime=" + timestamp +
-                "&parameters=temperature,precipitation1h");
+                "&parameters=temperature,precipitation1h,humidity");
     }
 
     @Async
@@ -88,8 +88,8 @@ public class FmiApi {
             String xmlContent;
             if (isTestMode) {
                 String cityName = city.getName().toLowerCase();
-                if (cityName.equals("rågsved")) cityName = "rågsvedexample-10days.xml";
-                if (cityName.equals("stockholm")) cityName = "stockholmExample.xml";
+                if (cityName.equals("rågsved")) cityName = "rågsvedexample-10days-2.xml";
+                if (cityName.equals("stockholm")) cityName = "stockholmExample-2.xml";
                 LOG.info("Using test data for FMI: {}", cityName);
 
                 String resourcePath = "weatherexamples/fmi/" + cityName;
@@ -124,6 +124,7 @@ public class FmiApi {
         Map<ZonedDateTime, Float> windSpeeds = new HashMap<>();
         Map<ZonedDateTime, Float> windDirections = new HashMap<>();
         Map<ZonedDateTime, Float> precipitations = new HashMap<>();
+        Map<ZonedDateTime, Float> humidities = new HashMap<>();
 
         for (WeatherFmi.FeatureMember member : weatherFmi.getMembers()) {
             WeatherFmi.PointTimeSeriesObservation observation = member.getPointTimeSeriesObservation();
@@ -138,10 +139,11 @@ public class FmiApi {
                             Double value = measurement.getValue();
                             if (value != null) {
                                 switch (type) {
-                                    case "Temperature" -> temperatures.put(validTime, value.floatValue());
-                                    case "WindSpeedMS" -> windSpeeds.put(validTime, value.floatValue());
-                                    case "WindDirection" -> windDirections.put(validTime, value.floatValue());
-                                    case "Precipitation1h" -> precipitations.put(validTime, value.floatValue());
+                                    case "temperature" -> temperatures.put(validTime, value.floatValue());
+                                    case "windspeedms" -> windSpeeds.put(validTime, value.floatValue());
+                                    case "winddirection" -> windDirections.put(validTime, value.floatValue());
+                                    case "precipitation1h" -> precipitations.put(validTime, value.floatValue());
+                                    case "humidity" -> humidities.put(validTime, value.floatValue());
                                 }
                             }
                         }
@@ -155,8 +157,10 @@ public class FmiApi {
             float windSpeed = sanitizeFloat(windSpeeds.get(validTime));
             float windDirection = sanitizeFloat(windDirections.get(validTime));
             float precipitation = sanitizeFloat(precipitations.get(validTime));
+            float humidity = sanitizeFloat(humidities.get(validTime));
             int weatherCode = -1;
-            weather.addWeatherData(validTime, temperature, weatherCode, windSpeed, windDirection, precipitation);
+            LOG.debug("Adding weather data for FMI: Time: {}, Temp: {}, Humidity: {}, Precipitation: {}", validTime, temperature, humidity, precipitation);
+            weather.addWeatherData(validTime, temperature, weatherCode, windSpeed, windDirection, humidity, precipitation);
         }
     }
 

@@ -58,9 +58,9 @@ public class WeatherTestUtils {
     public static void assertWeatherDataMergedStockholm(Weather weather){
         // SMHI DATA = 20.4, 1, 3.7, 196.0, 0.0
         // YR DATA = 21.4, 1, 3.8, 187.0, 0.0
-        // FMI DATA = 17.2, ,    ,      , 0.0
+        // FMI DATA = 17.2, ,    ,      , 0.0 -- ignored in test due to using old xml file which FMI has changed
         assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-05-15T17:00:00Z")))
-                .isEqualTo(buildWeatherData(19.7f, 1, 3.8f, 191.5f, 0.0f, 33.366665f));
+                .isEqualTo(buildWeatherData(20.9f, 1, 3.8f, 191.5f, 0.0f, 50.0f));
     }
 
     /**
@@ -110,12 +110,12 @@ public class WeatherTestUtils {
     }
 
     public static void assertWeatherDataFmiRagsved(Weather weather){
-        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-05-14T17:00:00Z")))
-                .isEqualTo(buildWeatherDataWithoutWind(15.9f, 0.0f, 0.0f));
+        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-09-18T17:00:00Z")))
+                .isEqualTo(buildWeatherDataWithoutWind(14.5f, 0.0f, 80.6f));
     }
 
     public static void assertWeatherDataFmiStockholm(Weather weather){
-        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-05-15T17:00:00Z")))
-                .isEqualTo(buildWeatherDataWithoutWind(17.2f, 0.0f, 0.0f));
+        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-09-18T17:00:00Z")))
+                .isEqualTo(buildWeatherDataWithoutWind(14.5f, 0.0f, 81.6f));
     }
 }

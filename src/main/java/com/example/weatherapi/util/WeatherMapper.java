@@ -37,6 +37,7 @@ public class WeatherMapper {
                         .windSpeed(entry.getValue().getWindSpeed())
                         .windDirection(entry.getValue().getWindDirection())
                         .precipitation(entry.getValue().getPrecipitation())
+                        .humidity(entry.getValue().getHumidity())
                         .weatherEntity(weatherEntity)
                         .build())
                 .toList();
@@ -66,6 +67,7 @@ public class WeatherMapper {
                                 .windSpeed(entity.getWindSpeed())
                                 .windDirection(entity.getWindDirection())
                                 .precipitation(entity.getPrecipitation())
+                                .humidity(entity.getHumidity())
                                 .build(),
                         (existing, replacement) -> existing,
                         LinkedHashMap::new

@@ -139,6 +139,8 @@ public class SmhiApi {
                             .map(p -> p.values().get(0)).findFirst().orElse(0f),
                     t.parameters().stream().filter(p -> p.name().equals("wd"))
                             .map(p -> p.values().get(0)).findFirst().orElse(0f),
+                    t.parameters().stream().filter(p -> p.name().equals("r"))
+                            .map(p -> p.values().get(0)).findFirst().orElse(0f),
                     (t.parameters().stream().filter(p -> p.name().equals("pmin"))
                             .map(p -> p.values().get(0)).findFirst().orElse(0f)
                             + t.parameters().stream().filter(p -> p.name().equals("pmax"))

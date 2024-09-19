@@ -55,6 +55,7 @@ public class WeatherServiceImpl implements WeatherService {
     private static final String TEMPERATURE = "temperature";
     private static final String WIND_SPEED = "windSpeed";
     private static final String PRECIPITATION = "precipitation";
+    private static final String HUMIDITY = "humidity";
 
     private final AtomicReference<Timestamp> lastApiStatusUpdate;
 
@@ -325,6 +326,12 @@ public class WeatherServiceImpl implements WeatherService {
                         key,
                         WIND_SPEED,
                         updateCountMap);
+                updateDataField(newDataItem.getHumidity(),
+                        mergedWeatherData.get(key)::setHumidity,
+                        mergedWeatherData.get(key).getHumidity(),
+                        key,
+                        HUMIDITY,
+                        updateCountMap);
 
                 if (newDataItem.getWindDirection() != -99f) {
                     mergedWeatherData.get(key).setWindDirection(
@@ -337,6 +344,7 @@ public class WeatherServiceImpl implements WeatherService {
                 updateCount(key, TEMPERATURE, updateCountMap);
                 updateCount(key, WIND_SPEED, updateCountMap);
                 updateCount(key, PRECIPITATION, updateCountMap);
+                updateCount(key, HUMIDITY, updateCountMap);
                 newDataCount.incrementAndGet();
             }
         });
@@ -379,6 +387,7 @@ public class WeatherServiceImpl implements WeatherService {
             data.setTemperature(data.getTemperature() / getUpdateCount(key, TEMPERATURE, updateCountMap));
             data.setWindSpeed(data.getWindSpeed() / getUpdateCount(key, WIND_SPEED, updateCountMap));
             data.setPrecipitation(data.getPrecipitation() / getUpdateCount(key, PRECIPITATION, updateCountMap));
+            data.setHumidity(data.getHumidity() / getUpdateCount(key, HUMIDITY, updateCountMap));
 
         }
     }
@@ -410,6 +419,7 @@ public class WeatherServiceImpl implements WeatherService {
             weatherData.setWindDirection(BigDecimal.valueOf(weatherData.getWindDirection()).setScale(1, RoundingMode.HALF_UP).floatValue());
             weatherData.setWindSpeed(BigDecimal.valueOf(weatherData.getWindSpeed()).setScale(1, RoundingMode.HALF_UP).floatValue());
             weatherData.setPrecipitation(BigDecimal.valueOf(weatherData.getPrecipitation()).setScale(1, RoundingMode.HALF_UP).floatValue());
+            weatherData.setHumidity(BigDecimal.valueOf(weatherData.getHumidity()).setScale(1, RoundingMode.HALF_UP).floatValue());
         }
     }
 

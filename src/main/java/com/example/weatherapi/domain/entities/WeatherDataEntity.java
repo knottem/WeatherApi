@@ -40,6 +40,9 @@ public class WeatherDataEntity {
     @Column
     private float precipitation;
 
+    @Column
+    private float humidity;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "weather_id")
     private WeatherEntity weatherEntity;

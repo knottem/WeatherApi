@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpResponse;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.WeatherCodeMapper.mapToWeatherCodeYR;
@@ -112,14 +113,30 @@ public class YrApi {
     }
 
     private void addWeatherDataYr(Weather weather, WeatherYr weatherYr) {
-        weatherYr.properties().timeseries().forEach(t ->
-                weather.addWeatherData(t.time(),
+        weatherYr.properties().timeseries().forEach(t -> {
+            weather.addWeatherData(t.time(),
                         t.data().instant().details().air_temperature(),
                         mapToWeatherCodeYR(t),
                         t.data().instant().details().wind_speed(),
                         t.data().instant().details().wind_from_direction(),
                         t.data().instant().details().relative_humidity(),
-                        t.data().instant().details().precipitation_amount()));
+                    getPrecipitationAmount(t));
+        });
+    }
+
+    private float getPrecipitationAmount(WeatherYr.TimeSeries t) {
+        if (t.data().next_1_hours() != null && t.data().next_1_hours().details() != null
+                && t.data().next_1_hours().details().precipitation_amount() != null) {
+            return t.data().next_1_hours().details().precipitation_amount();
+        } else if (t.data().next_6_hours() != null && t.data().next_6_hours().details() != null
+                && t.data().next_6_hours().details().precipitation_amount() != null) {
+            return t.data().next_6_hours().details().precipitation_amount();
+        } else if (t.data().next_12_hours() != null && t.data().next_12_hours().details() != null
+                && t.data().next_12_hours().details().precipitation_amount() != null) {
+            return t.data().next_12_hours().details().precipitation_amount();
+        } else {
+            return -99.0f;
+        }
     }
 
 }

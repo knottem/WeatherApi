@@ -40,6 +40,24 @@ class YrApiTests {
         assertWeatherDataYrGothenburg(yrApi.getWeatherYr(city.getLon(), city.getLat(), city));
     }
 
+    // Test Case 3: Check that the getWeatherYr method returns the correct Weather when raining
+    @Test
+    void getWeatherYrTestRain_Valid() {
+        // Arrange
+        City city = new City("Rågsved", 59.3294, 18.0686, null, null);
+        // Assert
+        assertWeatherDataYrRain(yrApi.getWeatherYr(city.getLon(), city.getLat(), city));
+    }
+
+    // Test Case 4: Check that the getWeatherYr method returns the correct Weather when raining, later time
+    @Test
+    void getWeatherYrTestRain_Valid2() {
+        // Arrange
+        City city = new City("Rågsved", 59.3294, 18.0686, null, null);
+        // Assert
+        assertWeatherDataYrRainLater(yrApi.getWeatherYr(city.getLon(), city.getLat(), city));
+    }
+
 
 
 }

@@ -83,6 +83,24 @@ public class WeatherTestUtils {
     }
 
     /**
+     * Asserts that the weather data for raining is always the same.
+     * @param weather the Weather object to be tested
+     */
+    public static void assertWeatherDataYrRain(Weather weather){
+        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-09-27T13:00:00Z")))
+                .isEqualTo(buildWeatherData(12.3f, 18, 3.4f, 332.7f, 0.1f, 92.0f));
+    }
+
+    /**
+     * Asserts that the weather data for raining is always the same at a later time.
+     * @param weather the Weather object to be tested
+     */
+    public static void assertWeatherDataYrRainLater(Weather weather){
+        assertThat(weather.getWeatherData().get(ZonedDateTime.parse("2024-10-06T18:00:00Z")))
+                .isEqualTo(buildWeatherData(9.6f, 19, 2.8f, 195.0f, 1.8f, 90.1f));
+    }
+
+    /**
      * Asserts that the merged weather data for Gothenburg is always the same.
      * @param weather the Weather object to be tested
      */

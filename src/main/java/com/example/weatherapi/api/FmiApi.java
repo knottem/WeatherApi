@@ -159,7 +159,6 @@ public class FmiApi {
             float precipitation = sanitizeFloat(precipitations.get(validTime));
             float humidity = sanitizeFloat(humidities.get(validTime));
             int weatherCode = -1;
-            LOG.debug("Adding weather data for FMI: Time: {}, Temp: {}, Humidity: {}, Precipitation: {}", validTime, temperature, humidity, precipitation);
             weather.addWeatherData(validTime, temperature, weatherCode, windSpeed, windDirection, humidity, precipitation);
         }
     }

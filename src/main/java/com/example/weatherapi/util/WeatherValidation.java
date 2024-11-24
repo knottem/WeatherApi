@@ -15,8 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class WeatherValidation {
 
@@ -27,7 +25,7 @@ public class WeatherValidation {
     private static final Logger log = LoggerFactory.getLogger(WeatherValidation.class);
 
     private static final Cache<String, List<ApiStatus>> apiStatusCache = Caffeine.newBuilder()
-            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .expireAfterWrite(1, TimeUnit.MINUTES)
             .build();
 
     public static boolean isWeatherValid(ZonedDateTime timeStamp, int minutes, Clock clock) {
@@ -38,48 +36,84 @@ public class WeatherValidation {
         return isWeatherValid(timeStamp, minutes, Clock.systemUTC());
     }
 
+    /**
+     * Validates the provided APIs and returns the list of active APIs.
+     *
+     * @param enabledApis         the APIs enabled by the user
+     * @param apiStatusRepository the repository to fetch API statuses
+     * @return a list of active API names
+     */
     public static List<String> validateApis(List<String> enabledApis, ApiStatusRepository apiStatusRepository) {
 
         List<ApiStatus> apis = apiStatusCache.get("apiStatus", key -> {
-            log.debug("Fetching API status from the database");
+            log.info("Fetching API status from the database");
             return apiStatusRepository.findAll();
         });
 
-        // Get all valid API names and inactive API names from the database
-        Set<String> validApiNames = new HashSet<>();
         Set<String> inactiveApiNames = new HashSet<>();
-
+        Set<String> allValidApis = new HashSet<>();
         for (ApiStatus apiStatus : apis) {
-            validApiNames.add(apiStatus.getApiName());
+            allValidApis.add(apiStatus.getApiName());
             if (!apiStatus.isActive()) {
                 inactiveApiNames.add(apiStatus.getApiName());
             }
         }
 
-        List<String> invalidApis = enabledApis.stream()
-                .filter(api -> !validApiNames.contains(api))
-                .toList();
-
-        if (!invalidApis.isEmpty()) {
-            throw new InvalidApiUsageException("Invalid API(s): " + String.join(", ", invalidApis));
-        }
-
-        List<String> turnedOffApis = enabledApis.stream()
-                .filter(inactiveApiNames::contains)
-                .toList();
-
-        if (!turnedOffApis.isEmpty()) {
-            throw new ApiDisabledException("API(s) currently turned off: " + String.join(", ", turnedOffApis));
-        }
-
-        // Check if FMI API is used alone, which is not allowed currently
-        if (enabledApis.size() == 1 && enabledApis.contains("FMI")) {
-            throw new InvalidApiUsageException("FMI API cannot be used alone");
-        }
+        validateInvalidApis(enabledApis, allValidApis);
+        validateTurnedOffApis(enabledApis, inactiveApiNames);
+        validateFmiApi(enabledApis);
 
         return apis.stream()
                 .filter(ApiStatus::isActive)
                 .map(ApiStatus::getApiName)
                 .toList();
+    }
+
+
+    /**
+     * Validates that all enabled APIs are valid.
+     *
+     * @param enabledApis   the APIs enabled by the user
+     * @param validApiNames the set of all valid API names
+     * @throws InvalidApiUsageException if any invalid APIs are found
+     */
+    private static void validateInvalidApis(List<String> enabledApis, Set<String> validApiNames) {
+        List<String> invalidApis = enabledApis.stream()
+                .filter(api -> !validApiNames.contains(api))
+                .toList();
+
+        if (!invalidApis.isEmpty()) {
+            throw new InvalidApiUsageException(
+                    "Invalid API(s) detected (" + invalidApis.size() + "): " + String.join(", ", invalidApis));
+        }
+    }
+
+    /**
+     * Validates that no inactive APIs are enabled.
+     *
+     * @param enabledApis      the APIs enabled by the user
+     * @param inactiveApiNames the set of inactive API names
+     * @throws ApiDisabledException if any inactive APIs are found
+     */
+    private static void validateTurnedOffApis(List<String> enabledApis, Set<String> inactiveApiNames) {
+        List<String> turnedOffApis = enabledApis.stream()
+                .filter(inactiveApiNames    ::contains)
+                .toList();
+
+        if (!turnedOffApis.isEmpty()) {
+            throw new ApiDisabledException("API(s) currently turned off: " + String.join(", ", turnedOffApis));
+        }
+    }
+
+    /**
+     * Validates that the FMI API is not used alone.
+     *
+     * @param enabledApis the APIs enabled by the user
+     * @throws InvalidApiUsageException if FMI is the only enabled API
+     */
+    private static void validateFmiApi(List<String> enabledApis) {
+        if (enabledApis.size() == 1 && enabledApis.contains("FMI")) {
+            throw new InvalidApiUsageException("FMI API cannot be used alone");
+        }
     }
 }

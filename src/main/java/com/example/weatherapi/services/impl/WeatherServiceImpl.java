@@ -11,6 +11,7 @@ import com.example.weatherapi.exceptions.WeatherNotFilledException;
 import com.example.weatherapi.repositories.ApiStatusRepository;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
+import com.example.weatherapi.util.DataStructures;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.slf4j.Logger;
@@ -141,35 +142,18 @@ public class WeatherServiceImpl implements WeatherService {
                 return optionalWeather.get();
             }
 
-            Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData = new TreeMap<>();
-            Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap = new ConcurrentHashMap<>();
-            List<String> successfulApis = Collections.synchronizedList(new ArrayList<>());
+            // Initialize shared data structures outside fetchWeatherData to ensure thread-safe concurrent updates
+            DataStructures dataStructures = new DataStructures();
 
             List<String> enabledApis = new ArrayList<>();
             if (apiStatusRepository.findByApiName("SMHI").isActive()) enabledApis.add("SMHI");
             if (apiStatusRepository.findByApiName("YR").isActive()) enabledApis.add("YR");
             if (apiStatusRepository.findByApiName("FMI").isActive()) enabledApis.add("FMI");
 
-            Weather mergedWeather = fetchWeatherData(city, enabledApis, mergedWeatherData, updateCountMap, successfulApis);
-
-            mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
-            if (enabledApis.size() != 1) {
-                saveDB(mergedWeather, successfulApis);
-            }
-            getSunriseSunset(mergedWeather);
-            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, mergedWeather);
-            return mergedWeather;
+            return processAndCacheWeather(enabledApis, key, city, dataStructures);
         } finally {
             lock.unlock();
             locks.remove(key, lock);
-        }
-    }
-
-    private void evictCacheIfPresent(String key, String cityName) {
-        CaffeineCache cache = (CaffeineCache) Objects.requireNonNull(cacheManager.getCache(cacheName));
-        if (cache.getNativeCache().asMap().containsKey(key)) {
-            log.info("API statuses have changed, invalidating in-memory cache for {}", cityName);
-            cache.evict(key);
         }
     }
 
@@ -219,23 +203,45 @@ public class WeatherServiceImpl implements WeatherService {
 
 
             City city = toModel(cityService.getCityByName(cityName));
-            Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData = new TreeMap<>();
-            Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap = new ConcurrentHashMap<>();
-            List<String> successfulApis = Collections.synchronizedList(new ArrayList<>());
 
-            Weather mergedWeather = fetchWeatherData(city, enabledApis, mergedWeatherData, updateCountMap, successfulApis);
+            // Initialize shared data structures outside fetchWeatherData to ensure thread-safe concurrent updates
+            DataStructures dataStructures = new DataStructures();
 
-            mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
-
-            getSunriseSunset(mergedWeather);
-
-            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, mergedWeather);
-
-            return mergedWeather;
+            return processAndCacheWeather(enabledApis, key, city, dataStructures);
         } finally {
             lock.unlock();
             locks.remove(key, lock);
             log.debug("Thread released lock for City: {} with Custom APIs: {}", cityName, enabledApis);
+        }
+    }
+
+    private Weather processAndCacheWeather(List<String> enabledApis, String key, City city, DataStructures dataStructures) {
+        Weather mergedWeather = fetchWeatherData(
+                city,
+                enabledApis,
+                dataStructures.mergedWeatherData(),
+                dataStructures.updateCountMap(),
+                dataStructures.successfulApis()
+        );
+
+        mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
+
+        if (!dataStructures.successfulApis().isEmpty()) {
+            saveDB(mergedWeather, dataStructures.successfulApis());
+        }
+
+        getSunriseSunset(mergedWeather);
+
+        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, mergedWeather);
+
+        return mergedWeather;
+    }
+
+    private void evictCacheIfPresent(String key, String cityName) {
+        CaffeineCache cache = (CaffeineCache) Objects.requireNonNull(cacheManager.getCache(cacheName));
+        if (cache.getNativeCache().asMap().containsKey(key)) {
+            log.info("API statuses have changed, invalidating in-memory cache for {}", cityName);
+            cache.evict(key);
         }
     }
 

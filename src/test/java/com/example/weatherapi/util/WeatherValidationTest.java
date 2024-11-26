@@ -1,5 +1,4 @@
 package com.example.weatherapi.util;
-;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.exceptions.ApiDisabledException;
 import com.example.weatherapi.exceptions.InvalidApiUsageException;
@@ -30,6 +29,7 @@ class WeatherValidationTest {
     void setUp() {
         fixedClock = Clock.fixed(Instant.parse("2024-04-24T10:00:00Z"), ZoneOffset.UTC);
         apiStatusRepository = mock(ApiStatusRepository.class);
+        WeatherValidation.invalidCache();
     }
 
     @Test
@@ -58,7 +58,23 @@ class WeatherValidationTest {
         InvalidApiUsageException exception = assertThrows(InvalidApiUsageException.class, () ->
                 WeatherValidation.validateApis(enabledApis, apiStatusRepository));
 
-        assertEquals("Invalid API(s): INVALID_API", exception.getMessage());
+        assertEquals("Invalid API(s) detected (1): INVALID_API", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionForInvalidApisMultipleTimes() {
+        when(apiStatusRepository.findAll()).thenReturn(Arrays.asList(
+                new ApiStatus(UUID.randomUUID(), "SMHI", true, null),
+                new ApiStatus(UUID.randomUUID(), "YR", true, null),
+                new ApiStatus(UUID.randomUUID(), "FMI", true, null)
+        ));
+
+        List<String> enabledApis = List.of("INVALID_API", "INVALID_API2", "INVALID_API3");
+
+        InvalidApiUsageException exception = assertThrows(InvalidApiUsageException.class, () ->
+                WeatherValidation.validateApis(enabledApis, apiStatusRepository));
+
+        assertEquals("Invalid API(s) detected (3): INVALID_API, INVALID_API2, INVALID_API3", exception.getMessage());
     }
 
     @Test

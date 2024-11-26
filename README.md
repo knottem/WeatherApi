@@ -11,24 +11,30 @@
       - [.env file](#env-file)
   - [Troubleshooting](#troubleshooting)
     - [Docker-compose](#docker-compose-1)
-  - [DONE](#done)
+  - [Done](#done)
   - [TODO](#todo)
+  - [STATUS](#status)
   - [Made by](#made-by)
 
 ## Description
-This is a weather restapi that returns the weather of a city. For now, it only returns the temperature for the next few days. The api is built using spring boot and fetches from smhi's open api.
+his is a weather REST API that provides weather information for cities, including temperature, precipitation, and wind data. The API intelligently merges data from multiple sources like SMHI, YR, and FMI to provide reliable and comprehensive weather forecasts.
 
-This project is just a side hobby project that I use to learn more about spring boot and rest APIs.
+This project is a side hobby to learn more about Spring Boot, REST APIs, and Dockerized deployments.
 
 ## How to run
 
 ### Requirements
-- Docker
-- Docker-compose
+1. **Docker**: Install Docker from [Docker's official site](https://www.docker.com/).
+2. **Docker Compose**: Install Docker Compose (usually bundled with Docker Desktop).
 
-### Running the program
+### Running the Program
+To run the WeatherAPI, you need:
+1. A `docker-compose` file (defines how to build and run the services).
+2. A `.env` file (holds your environment variables).
 
-You'll need an docker-compose file and a .env file to run the program. The docker-compose file is used to run the program in docker and the .env file is used to set the environment variables that the program needs to run.
+The following instructions will guide you step-by-step.
+
+You'll need a docker-compose file and a .env file to run the program. The docker-compose file is used to run the program in docker and the .env file is used to set the environment variables that the program needs to run.
 
 #### Docker-compose
 
@@ -131,20 +137,26 @@ this will stop the program, pull the latest version from docker hub and then sta
 
 ### Docker-compose
 
-If you get an error when running docker-compose that complains about ports already being used, you can change the following part in the docker-compose file:
+#### 1. Port Conflicts
+If you encounter an error like "port already in use," modify the following in `docker-compose.yml`:
 ```yaml
 ports:
   - "8080:8080"
-```
-to something like this:
+  ```
+Change the first port to an unused one, such as:
 ```yaml
 ports:
-  - "8081:8080"
+- "8081:8080"
 ```
+
 This will make the program run on port 8081 instead of 8080, change it to whatever port you want but make sure to keep the port after the colon as 8080 since that's the port the program is running on inside the container.
 
+#### 2. Missing .env File
 
-## DONE
+If Docker Compose complains about missing variables, ensure your .env file exists in the same directory as the docker-compose.yml. 
+You can create one using the template provided in the README.
+
+## Done
 
 - [X] Fetch from multiple weather APIs
 - [X] Add spring security
@@ -154,13 +166,27 @@ This will make the program run on port 8081 instead of 8080, change it to whatev
 - [X] Use custom properties with h2 for tests
 - [X] Add GitHub actions for testing.
 - [X] Change my basic caching to use spring boot caching (https://spring.io/guides/gs/caching/)
+- [X] Add more weather APIs(Finnish - FMI)
 
 ## TODO
 
-- [ ] Add 0auth2 for city management using Firebase(https://firebase.google.com/docs/auth)
-- [ ] Add more tests.
-- [ ] Add more weather APIs(Danish - DMI, Finnish - FMI)
-- [ ] Add more endpoints
+- [ ] Add 0auth2 for city management using perhaps Firebase(https://firebase.google.com/docs/auth)
+
+## Status
+
+### Main Workflow
+Builds, releases, and deploys the production environment from the main branch.<br>
+![Build Status](https://github.com/knottem/weatherapi/actions/workflows/main.yml/badge.svg)
+
+### Test Workflow
+Builds, tests, releases, and deploys the development environment from the dev branch.<br>
+![Build Status](https://github.com/knottem/weatherapi/actions/workflows/dev.yml/badge.svg)
+
+
+Main Workflow: 
+
+
+Test Workflow: 
 
 ## Made by
 

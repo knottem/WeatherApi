@@ -28,6 +28,11 @@ public class WeatherValidation {
             .expireAfterWrite(1, TimeUnit.MINUTES)
             .build();
 
+
+    public static void invalidCache() {
+        apiStatusCache.invalidateAll();
+    }
+
     public static boolean isWeatherValid(ZonedDateTime timeStamp, int minutes, Clock clock) {
         return ZonedDateTime.now(clock).minusMinutes(minutes).isBefore(timeStamp);
     }

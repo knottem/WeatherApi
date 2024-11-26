@@ -1,5 +1,4 @@
 package com.example.weatherapi.util;
-;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.exceptions.ApiDisabledException;
 import com.example.weatherapi.exceptions.InvalidApiUsageException;

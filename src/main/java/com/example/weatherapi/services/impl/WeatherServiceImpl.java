@@ -69,11 +69,6 @@ public class WeatherServiceImpl implements WeatherService {
     private volatile long lastCheckedTime = 0;
     private static final long LOCKOUT_PERIOD_MS = 60 * 1000; // 1 minute lockout
 
-    private static final Cache<String, Boolean> apiStatusChangedCache = Caffeine.newBuilder()
-            .expireAfterWrite(5, TimeUnit.SECONDS)
-            .build();
-
-
     @Value("${cache.time.in.minutes}")
     private int cacheTimeInMinutes;
 

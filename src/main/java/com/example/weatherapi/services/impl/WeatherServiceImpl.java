@@ -218,7 +218,7 @@ public class WeatherServiceImpl implements WeatherService {
 
         mergedWeather.getWeatherData().entrySet().removeIf(entry -> entry.getValue().getWeatherCode() == -1);
 
-        if (!dataStructures.successfulApis().isEmpty()) {
+        if (dataStructures.successfulApis().size() > 1) {
             saveDB(mergedWeather, dataStructures.successfulApis());
         }
 

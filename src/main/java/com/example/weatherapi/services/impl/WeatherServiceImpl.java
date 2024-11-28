@@ -150,7 +150,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     public Weather getWeatherMergedCustomApis(String cityName, List<String> enabledApis) {
-        enabledApis = enabledApis.stream().map(String::toUpperCase).toList();
+        enabledApis = enabledApis.stream().map(String::toUpperCase).sorted().toList();
         String key = cityName.toLowerCase() + "custom_" + String.join("_", enabledApis);
 
         Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName)).get(key, Weather.class);

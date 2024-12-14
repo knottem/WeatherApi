@@ -23,6 +23,7 @@ public class CityEntity {
     private UUID id;
 
     private String name;
+    private String name_en;
     private Double lon;
     private Double lat;
 

@@ -3,7 +3,8 @@ CREATE TABLE city (
     id varchar(36) NOT NULL,
     lat double NOT NULL,
     lon double NOT NULL,
-    name varchar(255) DEFAULT NULL,
+    name varchar(255) DEFAULT NOT NULL,
+    name_en varchar(255) DEFAULT NULL,
     PRIMARY KEY (id)
 );
 

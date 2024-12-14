@@ -10,9 +10,10 @@ import java.util.Optional;
 
 @Repository
 public interface CityRepository extends JpaRepository<CityEntity, String> {
+
     Optional<CityEntity> findByNameIgnoreCase(String name);
     void deleteByNameIgnoreCase(String name);
 
-    @Query("SELECT c.name FROM CityEntity c")
-    List<String> findAllCityNames();
+    @Query("SELECT c.name, c.name_en FROM CityEntity c")
+    List<Object[]> findAllCityNames();
 }

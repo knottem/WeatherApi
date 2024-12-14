@@ -16,6 +16,9 @@ INSERT INTO `city` (`id`,`lat`, `lon`, `name`)VALUES
     ('a8068ada-ccd8-4260-905c-b0bf5bd60ed9',64.75,20.95,'Skellefteå'), -- 15
     ('26654284-92ca-4c60-b95f-3e1160701cb0',59.2572,18.0319,'Rågsved'); -- 16
 
+UPDATE city SET name_en = 'Gothenburg' WHERE id = '82f45775-ed0a-44e4-afe6-a07d97e9663c';
+UPDATE city SET name_en = 'Gavle' WHERE id = '55cc986f-4d7c-44e2-9e6f-d2160942e0e7';
+
 INSERT INTO `auth` (`id`, `username`, `password`, `role`)VALUES
     ('232d5741-f551-443a-a1b0-b7b1eb26ba9f','admin','$2a$10$Eq3yxcRlqmIaxBv7w9qkDuZCfw7lhgYS12ndADouoUogkNMWGmELK', 'ADMIN' ), -- pass123 for testing
     ('2f42da30-7b17-4718-8782-563b4cc6c4c7','user','$2a$10$OMsvTvB3K5kHX6cTrSDEIuMFfKj2XASnIUPe/jPw.Fk6Vk9zQNK5W', 'USER'); -- pass123 for testing

@@ -1,6 +1,7 @@
 package com.example.weatherapi.services;
 
 import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.dto.CityDto;
 import com.example.weatherapi.domain.entities.CityEntity;
 
 import java.util.List;
@@ -10,5 +11,5 @@ public interface CityService {
     CityEntity addCity(City city);
     List<CityEntity> getAllCities();
     String deleteCity(String name);
-    List<String> getAllCityNames();
+    List<CityDto> getAllCityNames();
 }

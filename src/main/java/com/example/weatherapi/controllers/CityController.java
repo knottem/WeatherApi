@@ -1,6 +1,7 @@
 package com.example.weatherapi.controllers;
 
 import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.dto.CityDto;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.services.CityService;
 import jakarta.validation.Valid;
@@ -40,8 +41,9 @@ public class CityController {
     }
 
     @GetMapping(path = "/city/names")
-    public List<String> retrieveAllCityNames() {
+    public List<CityDto> retrieveAllCityNames() {
         return cityService.getAllCityNames();
     }
+
 
 }

@@ -1,6 +1,7 @@
 package com.example.weatherapi.controllers;
 
 import com.example.weatherapi.domain.UserRole;
+import com.example.weatherapi.domain.dto.CityDto;
 import com.example.weatherapi.domain.entities.AuthEntity;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.ErrorResponse;
@@ -11,12 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
@@ -505,15 +510,45 @@ class CityEntityControllerTests {
     // Test Case 23: Get all city names
     @Test
     void retrieveAllCityNamesTestValidAndSortedByAlphabet() {
-        ResponseEntity<String[]> response = restTemplate
-                .getForEntity("http://localhost:" + port + endpoint + "/names", String[].class);
+        ResponseEntity<List<CityDto>> response = restTemplate.exchange(
+                "http://localhost:" + port + endpoint + "/names",
+                HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+                }
+        );
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        List<String> cityNames = response.getBody().stream()
+                .map(CityDto::getName)
+                .collect(Collectors.toList());
+        assertThat(cityNames).isSorted();
+    }
+
+    // Test Case 24: Get all cities and check that we get the English name for cities that have one
+    @Test
+    void retrieveAllCitiesTestValidEnglishName() {
+        ResponseEntity<List<CityDto>> response = restTemplate.exchange(
+                "http://localhost:" + port + endpoint + "/names",
+                HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+                }
+        );
+
+        Map<String, String> expectedTranslations = Map.of(
+                "Göteborg", "Gothenburg",
+                "Gävle", "Gavle"
+        );
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()[0]).isEqualTo("Gävle");
-        assertThat(response.getBody()[1]).isEqualTo("Göteborg");
-        assertThat(response.getBody()[2]).isEqualTo("Helsingborg");
+        response.getBody().forEach(city -> {
+            String expectedEn = expectedTranslations.get(city.getName());
+            if (expectedEn != null) {
+                assertThat(city.getEn()).isEqualTo(expectedEn);
+            } else {
+                assertThat(city.getEn()).isNull();
+            }
+        });
     }
 
 

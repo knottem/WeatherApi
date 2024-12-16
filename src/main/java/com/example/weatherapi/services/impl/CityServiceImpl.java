@@ -1,5 +1,6 @@
 package com.example.weatherapi.services.impl;
 
+import com.example.weatherapi.domain.dto.CityDto;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.exceptions.CityNotFoundException;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,10 +70,15 @@ public class CityServiceImpl implements CityService {
 
     @Override
     @Cacheable("cache")
-    public List<String> getAllCityNames() {
-        List<String> allCityNames = cityRepository.findAllCityNames();
-        Collections.sort(allCityNames);
-        return allCityNames;
+    public List<CityDto> getAllCityNames() {
+        return cityRepository.findAllCityNames().stream()
+                .filter(result -> result[0] != null) // Filter out null values (Should not happen since city names are mandatory)
+                .map(result -> CityDto.builder()
+                        .name((String) result[0])
+                        .en(result[1] != null ? (String) result[1] : null) // English name
+                        .build())
+                .sorted(Comparator.comparing(CityDto::getName)) // Sort names alphabetically
+                .toList();
     }
 
 }

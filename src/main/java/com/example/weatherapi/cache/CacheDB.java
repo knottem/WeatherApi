@@ -67,19 +67,29 @@ public class CacheDB {
 
         String apisUsed = formatApisUsed(smhi, yr, fmi);
 
-        if (latestApiOptional.isPresent()) {
-            WeatherEntity cachedWeather = latestApiOptional.get().getLatestWeather();
-            if (cachedWeather != null && isWeatherValid(cachedWeather.getTimeStamp(), cacheTimeInMinutes)) {
-                logger.info("Database cache hit for city: {} with APIs: {} in the database. Returning cached data.", cityName, apisUsed);
-                return convertToWeather(cachedWeather);
-            } else {
-                logger.debug("Database cache expired for city: {} with APIs: {} in the database", cityName, apisUsed);
-                return null;
-            }
-        } else {
+        if (latestApiOptional.isEmpty()) {
             logger.debug("Database cache doesn't exist for city: {} with APIs: {} in the database", cityName, apisUsed);
+            return null;
         }
-        return null;
+
+        WeatherEntity cachedWeather = latestApiOptional.get().getLatestWeather();
+
+        if (cachedWeather == null) {
+            logger.debug("Database cache found for city: {} with APIs: {}, but no associated weather data.",
+                    cityName,
+                    apisUsed
+            );
+            return null;
+        }
+
+        if (!isWeatherValid(cachedWeather.getTimeStamp(), cacheTimeInMinutes)) {
+            logger.info("Database cache expired for city: {} with APIs: {} in the database", cityName, apisUsed);
+            return null;
+        }
+
+        logger.info("Database cache hit for city: {} with APIs: {} in the database", cityName, apisUsed);
+        return convertToWeather(cachedWeather);
+
     }
 
     @Transactional
@@ -114,5 +124,14 @@ public class CacheDB {
         if (yr) apis.add("YR");
         if (fmi) apis.add("FMI");
         return String.join(", ", apis);
+    }
+
+    @Transactional
+    public void saveDB(Weather weather, List<String> successfulApis) {
+        save(   weather,
+                successfulApis.contains("SMHI"),
+                successfulApis.contains("YR"),
+                successfulApis.contains("FMI")
+        );
     }
 }

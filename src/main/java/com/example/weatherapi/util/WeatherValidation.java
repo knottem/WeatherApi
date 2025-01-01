@@ -51,7 +51,7 @@ public class WeatherValidation {
     public static List<String> validateApis(List<String> enabledApis, ApiStatusRepository apiStatusRepository) {
 
         List<ApiStatus> apis = apiStatusCache.get("apiStatus", key -> {
-            log.info("Fetching API status from the database");
+            log.debug("Fetching API status from the database");
             return apiStatusRepository.findAll();
         });
 
@@ -94,7 +94,7 @@ public class WeatherValidation {
     }
 
     /**
-     * Validates that no inactive APIs are enabled.
+     * Validates that no inactive APIs are used.
      *
      * @param enabledApis      the APIs enabled by the user
      * @param inactiveApiNames the set of inactive API names

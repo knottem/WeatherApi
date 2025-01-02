@@ -1,6 +1,7 @@
 package com.example.weatherapi.services;
 
 import com.example.weatherapi.cache.CacheDB;
+import com.example.weatherapi.cache.MemoryCacheUtils;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.exceptions.ApiDisabledException;
@@ -11,10 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
-
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,7 +31,7 @@ class WeatherApiServiceTest {
     private CacheDB cacheDB;
 
     @Mock
-    private CacheManager cacheManager;
+    private MemoryCacheUtils memoryCacheUtils;
 
     private City testCity;
     private Weather testWeather;
@@ -51,15 +48,12 @@ class WeatherApiServiceTest {
                 .city(testCity)
                 .build();
 
-        // Set up cacheManager mock to return a mock cache
-        ConcurrentMapCache mockCache = new ConcurrentMapCache("cache");
-        when(cacheManager.getCache("cache")).thenReturn(mockCache);
     }
 
     @Test
     void fetchWeatherDataFromCache() {
-        // Put weather data into cache
-        Objects.requireNonNull(cacheManager.getCache("cache")).put("testcitysmhi", testWeather);
+        when(memoryCacheUtils.getWeatherFromCache(anyString(), anyString(), anyBoolean(), anyBoolean(), anyBoolean()))
+                .thenReturn(testWeather);
 
         Weather weather = weatherApiService.fetchWeatherData("SMHI", testCity, true, false, false);
 
@@ -78,7 +72,6 @@ class WeatherApiServiceTest {
         assertThat(weather).isNotNull();
         assertThat(weather.getCity()).isEqualTo(testWeather.getCity());
         verify(cacheDB, times(1)).getWeatherFromCache("TestCity", true, false, false);
-        assertThat(cacheManager.getCache("cache").get("testcitysmhi", Weather.class)).isEqualTo(testWeather);
     }
 
     @Test
@@ -95,10 +88,12 @@ class WeatherApiServiceTest {
 
     @Test
     void saveWeatherData() {
-        weatherApiService.saveWeatherData("SMHI", testWeather, true, false, false);
+        when(memoryCacheUtils.getWeatherFromCache(anyString(), anyString(), anyBoolean(), anyBoolean(), anyBoolean()))
+                .thenReturn(testWeather);
 
+        weatherApiService.saveWeatherData("SMHI", testWeather, true, false, false);
         verify(cacheDB, times(1)).save(testWeather, true, false, false);
-        assertThat(cacheManager.getCache("cache").get("testcitysmhi", Weather.class)).isEqualTo(testWeather);
+        assertThat(memoryCacheUtils.getWeatherFromCache("TestcitySMHI", "TestCity", true, false, false)).isEqualTo(testWeather);
     }
 
 

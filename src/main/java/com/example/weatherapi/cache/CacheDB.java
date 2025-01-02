@@ -83,7 +83,7 @@ public class CacheDB {
         }
 
         if (!isWeatherValid(cachedWeather.getTimeStamp(), cacheTimeInMinutes)) {
-            logger.info("Database cache expired for city: {} with APIs: {} in the database", cityName, apisUsed);
+            logger.debug("Database cache expired for city: {} with APIs: {} in the database", cityName, apisUsed);
             return null;
         }
 

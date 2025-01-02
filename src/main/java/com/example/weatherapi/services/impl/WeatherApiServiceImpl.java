@@ -44,7 +44,7 @@ public class WeatherApiServiceImpl implements WeatherApiService {
     @Transactional
     public Weather fetchWeatherData(String apiName, City city, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
         String apiUpper = apiName.toUpperCase();
-        String key = city.getName().toLowerCase() + apiUpper;
+        String key = getKey(city, apiUpper);
 
         Weather weatherFromCache = memoryCacheUtils.getWeatherFromCache(key, city.getName(), smhiFlag, yrFlag, fmiFlag);
         if (weatherFromCache != null) {
@@ -53,7 +53,7 @@ public class WeatherApiServiceImpl implements WeatherApiService {
 
         Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), smhiFlag, yrFlag, fmiFlag);
         if (weatherFromCacheDB != null) {
-            LOG.info("Test log: we got here DB");
+            LOG.debug("Weather data for {} fetched from cacheDB", city.getName());
             memoryCacheUtils.putWeatherInCache(key, weatherFromCacheDB);
             return weatherFromCacheDB;
         }
@@ -71,19 +71,23 @@ public class WeatherApiServiceImpl implements WeatherApiService {
     @Transactional
     public Weather fetchWeatherDataCached(String apiName, City city) {
         String apiUpper = apiName.toUpperCase();
+        String key = getKey(city, apiUpper);
         List<String> enabledApis = Collections.singletonList(apiUpper);
-        String key = city.getName().toLowerCase() + apiUpper;
         return memoryCacheUtils.getWeatherFromCache(key, city.getName(), enabledApis);
     }
 
     @Override
     @Transactional
     public void saveWeatherData(String apiName, Weather weather, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
-        String key = weather.getCity().getName().toLowerCase() + apiName.toUpperCase();
+        String key = getKey(weather.getCity(), apiName);
         cacheDB.save(weather, smhiFlag, yrFlag, fmiFlag);
         Weather weatherCopy;
         weatherCopy = objectMapper.convertValue(weather, Weather.class);
         memoryCacheUtils.putWeatherInCache(key, weatherCopy);
+    }
+
+    private String getKey(City city, String apiName) {
+        return city.getName().toLowerCase() + apiName.toUpperCase();
     }
 
 }

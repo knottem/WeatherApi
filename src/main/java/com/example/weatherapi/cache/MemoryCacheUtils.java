@@ -1,15 +1,15 @@
 package com.example.weatherapi.cache;
 
 import com.example.weatherapi.domain.weather.Weather;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -22,14 +22,12 @@ public class MemoryCacheUtils {
     private final Logger log;
     CaffeineCache cache;
 
-    @Value("${cache.time.in.minutes}")
-    private int cacheTimeInMinutes;
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @Autowired
     public MemoryCacheUtils(CacheManager cacheManager) {
-        String cacheName = "cache";
         this.log = LoggerFactory.getLogger(MemoryCacheUtils.class);
-        this.cache = (CaffeineCache) Objects.requireNonNull(cacheManager.getCache(cacheName));
+        this.cache = (CaffeineCache) Objects.requireNonNull(cacheManager.getCache("cache"));
     }
 
     public Weather getWeatherFromCache(String key, String cityName, boolean smhi, boolean yr, boolean fmi){
@@ -47,34 +45,22 @@ public class MemoryCacheUtils {
             return null;
         }
 
-        ZonedDateTime cacheExpiryTime = ZonedDateTime.now(ZoneId.of("UTC")).minusMinutes(cacheTimeInMinutes);
-        ZonedDateTime timestamp = weatherFromCache.getTimestamp();
-
-        if(timestamp.isBefore(cacheExpiryTime)){
-            logCacheMessage(cityName, enabledApis, timestamp.truncatedTo(ChronoUnit.SECONDS));
-            return null;
-        }
-
-        logCacheMessage(cityName, enabledApis, timestamp.truncatedTo(ChronoUnit.SECONDS));
-        return weatherFromCache;
-
-    }
-
-    public void logCacheMessage(String cityName, List<String> enabledApis, ZonedDateTime timestamp) {
         if (enabledApis != null && !enabledApis.isEmpty()) {
-            log.info("Cache hit for City: {} with Custom APIs: {} Timestamp: {}", cityName, enabledApis, timestamp);
+            log.info("Cache hit for City: {} with Custom APIs: {} Timestamp: {}", cityName, enabledApis, weatherFromCache.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
         } else {
-            log.info("Cache hit for City: {} Timestamp: {}", cityName, timestamp);
+            log.info("Cache hit for City: {} Timestamp: {}", cityName, weatherFromCache.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
         }
+
+        return weatherFromCache;
     }
 
     public void putWeatherInCache(String key, Weather weather) {
-        cache.put(key, weather);
+        cache.put(key, objectMapper.convertValue(weather, Weather.class));
     }
 
     public void evictCacheIfPresent(String key, String cityName) {
         if (cache.getNativeCache().asMap().containsKey(key)) {
-            log.info("API statuses have changed, invalidating in-memory cache for {}", cityName);
+            log.info("Evicting cache for city: {}, key: {}", cityName, key);
             cache.evict(key);
         }
     }

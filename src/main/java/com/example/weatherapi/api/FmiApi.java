@@ -64,21 +64,23 @@ public class FmiApi {
     }
 
     public Weather getWeatherFMI(double lon, double lat, City city) {
-        Weather weather = weatherApiService.fetchWeatherData("FMI", city, false, false, true);
+        Weather weather = weatherApiService.fetchWeatherData("FMI", city, false, false, true, true);
         if(weather != null) {
             return weather;
         }
         synchronized (lock) {
-            // Check again in case another thread has already fetched the data
-            weather = weatherApiService.fetchWeatherDataCached("FMI", city);
+            weather = weatherApiService.fetchWeatherData("FMI", city, false, false, true, false);
             if(weather != null) {
                 return weather;
             }
             LOG.info("Fetching weather data from the FMI API...");
+            long startTime = System.nanoTime();
             WeatherFmi weatherFmi = fetchWeatherFMI(lon, lat, city);
             weather = createBaseWeather(lon, lat, city, "FMI");
             addWeatherDataFmi(weather, weatherFmi);
             weatherApiService.saveWeatherData("FMI", weather, false, false, true);
+            long endTime = System.nanoTime();
+            LOG.debug("FMI API call took {} ms", (endTime - startTime) / 1000000);
             return weather;
         }
     }

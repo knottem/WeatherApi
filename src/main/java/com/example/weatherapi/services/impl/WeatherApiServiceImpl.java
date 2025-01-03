@@ -16,19 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-
-
 @Service
 public class WeatherApiServiceImpl implements WeatherApiService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(WeatherApiServiceImpl.class);
 
     private final ApiStatusRepository apiStatusRepository;
     private final MemoryCacheUtils memoryCacheUtils;
     private final CacheDB cacheDB;
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final ObjectMapper objectMapper;
+    private final Logger LOG;
 
     @Autowired
     public WeatherApiServiceImpl(
@@ -38,11 +33,13 @@ public class WeatherApiServiceImpl implements WeatherApiService {
         this.apiStatusRepository = apiStatusRepository;
         this.memoryCacheUtils = memoryCacheUtils;
         this.cacheDB = cacheDB;
+        this.LOG = LoggerFactory.getLogger(WeatherApiServiceImpl.class);
+        this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     }
 
     @Override
     @Transactional
-    public Weather fetchWeatherData(String apiName, City city, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
+    public Weather fetchWeatherData(String apiName, City city, boolean smhiFlag, boolean yrFlag, boolean fmiFlag, boolean validateApiStatus) {
         String apiUpper = apiName.toUpperCase();
         String key = getKey(city, apiUpper);
 
@@ -51,17 +48,12 @@ public class WeatherApiServiceImpl implements WeatherApiService {
             return weatherFromCache;
         }
 
-        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), smhiFlag, yrFlag, fmiFlag);
-        if (weatherFromCacheDB != null) {
-            LOG.debug("Weather data for {} fetched from cacheDB", city.getName());
-            memoryCacheUtils.putWeatherInCache(key, weatherFromCacheDB);
-            return weatherFromCacheDB;
-        }
-
-        ApiStatus apiStatus = apiStatusRepository.findByApiName(apiUpper);
-        if (apiStatus == null || !apiStatus.isActive()) {
-            LOG.warn("{} API is currently inactive", apiUpper);
-            throw new ApiDisabledException(apiUpper + " API is currently inactive");
+        if (validateApiStatus) {
+            ApiStatus apiStatus = apiStatusRepository.findByApiName(apiUpper);
+            if (apiStatus == null || !apiStatus.isActive()) {
+                LOG.warn("{} API is currently inactive", apiUpper);
+                throw new ApiDisabledException(apiUpper + " API is currently inactive");
+            }
         }
 
         return null;
@@ -69,21 +61,10 @@ public class WeatherApiServiceImpl implements WeatherApiService {
 
     @Override
     @Transactional
-    public Weather fetchWeatherDataCached(String apiName, City city) {
-        String apiUpper = apiName.toUpperCase();
-        String key = getKey(city, apiUpper);
-        List<String> enabledApis = Collections.singletonList(apiUpper);
-        return memoryCacheUtils.getWeatherFromCache(key, city.getName(), enabledApis);
-    }
-
-    @Override
-    @Transactional
     public void saveWeatherData(String apiName, Weather weather, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
         String key = getKey(weather.getCity(), apiName);
         cacheDB.save(weather, smhiFlag, yrFlag, fmiFlag);
-        Weather weatherCopy;
-        weatherCopy = objectMapper.convertValue(weather, Weather.class);
-        memoryCacheUtils.putWeatherInCache(key, weatherCopy);
+        memoryCacheUtils.putWeatherInCache(key, objectMapper.convertValue(weather, Weather.class));
     }
 
     private String getKey(City city, String apiName) {

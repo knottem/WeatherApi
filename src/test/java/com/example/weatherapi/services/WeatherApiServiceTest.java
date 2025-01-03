@@ -55,23 +55,11 @@ class WeatherApiServiceTest {
         when(memoryCacheUtils.getWeatherFromCache(anyString(), anyString(), anyBoolean(), anyBoolean(), anyBoolean()))
                 .thenReturn(testWeather);
 
-        Weather weather = weatherApiService.fetchWeatherData("SMHI", testCity, true, false, false);
+        Weather weather = weatherApiService.fetchWeatherData("SMHI", testCity, true, false, false, false);
 
         assertThat(weather).isNotNull();
         assertThat(weather.getCity()).isEqualTo(testWeather.getCity());
         verify(cacheDB, never()).getWeatherFromCache(anyString(), anyBoolean(), anyBoolean(), anyBoolean());
-    }
-
-    @Test
-    void fetchWeatherDataFromDatabase() {
-        // Mock database response
-        when(cacheDB.getWeatherFromCache("TestCity", true, false, false)).thenReturn(testWeather);
-
-        Weather weather = weatherApiService.fetchWeatherData("SMHI", testCity, true, false, false);
-
-        assertThat(weather).isNotNull();
-        assertThat(weather.getCity()).isEqualTo(testWeather.getCity());
-        verify(cacheDB, times(1)).getWeatherFromCache("TestCity", true, false, false);
     }
 
     @Test
@@ -81,7 +69,7 @@ class WeatherApiServiceTest {
                 new ApiDisabledException("SMHI API is currently inactive"));
 
         ApiDisabledException exception = assertThrows(ApiDisabledException.class, () ->
-                weatherApiService.fetchWeatherData("SMHI", testCity, true, false, false));
+                weatherApiService.fetchWeatherData("SMHI", testCity, true, false, false, true));
 
         assertThat(exception.getMessage()).isEqualTo("SMHI API is currently inactive");
     }

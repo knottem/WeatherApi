@@ -20,7 +20,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpResponse;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.WeatherCodeMapper.mapToWeatherCodeYR;
@@ -61,21 +60,24 @@ public class YrApi {
     }
 
     public Weather getWeatherYr(double lon, double lat, City city) {
-        Weather weather = weatherApiService.fetchWeatherData("YR", city, false, true, false);
+        Weather weather = weatherApiService.fetchWeatherData("YR", city, false, true, false, true);
         if(weather != null) {
             return weather;
         }
         synchronized (lock) {
             // Check again in case another thread has already fetched the data
-            weather = weatherApiService.fetchWeatherDataCached("YR", city);
+            weather = weatherApiService.fetchWeatherData("YR", city, false, true, false, false);
             if (weather != null) {
                 return weather;
             }
             LOG.info("Fetching weather data from the YR API...");
+            long startTime = System.nanoTime();
             WeatherYr weatherYr = fetchWeatherYr(lon, lat, city);
             weather = createBaseWeather(lon, lat, city, "YR");
             addWeatherDataYr(weather, weatherYr);
             weatherApiService.saveWeatherData("YR", weather, false, true, false);
+            long endTime = System.nanoTime();
+            LOG.debug("YR API call took {} ms", (endTime - startTime) / 1000000);
             return weather;
         }
     }
@@ -113,15 +115,13 @@ public class YrApi {
     }
 
     private void addWeatherDataYr(Weather weather, WeatherYr weatherYr) {
-        weatherYr.properties().timeseries().forEach(t -> {
-            weather.addWeatherData(t.time(),
-                        t.data().instant().details().air_temperature(),
-                        mapToWeatherCodeYR(t),
-                        t.data().instant().details().wind_speed(),
-                        t.data().instant().details().wind_from_direction(),
-                        t.data().instant().details().relative_humidity(),
-                    getPrecipitationAmount(t));
-        });
+        weatherYr.properties().timeseries().forEach(t -> weather.addWeatherData(t.time(),
+                    t.data().instant().details().air_temperature(),
+                    mapToWeatherCodeYR(t),
+                    t.data().instant().details().wind_speed(),
+                    t.data().instant().details().wind_from_direction(),
+                    t.data().instant().details().relative_humidity(),
+                getPrecipitationAmount(t)));
     }
 
     private float getPrecipitationAmount(WeatherYr.TimeSeries t) {

@@ -45,7 +45,6 @@ public class CacheDB {
     }
 
     public CacheDB() {
-        // Default, no-argument constructor
         logger = LoggerFactory.getLogger(CacheDB.class);
         this.weatherEntityRepository = null;
         this.cityRepository = null;
@@ -94,6 +93,7 @@ public class CacheDB {
 
     @Transactional
     public void save(Weather weather, boolean smhi, boolean yr, boolean fmi) {
+        long start = System.nanoTime();
         CityEntity cityEntity = cityRepository.findByNameIgnoreCase(weather.getCity().getName())
                 .orElseThrow(() -> new CityNotFoundException("City not found: " + weather.getCity().getName()));
 
@@ -114,8 +114,8 @@ public class CacheDB {
         latestWeatherApi.setLatestWeather(weatherEntity);
         latestWeatherApiRepository.save(latestWeatherApi);
 
-        String apisUsed = formatApisUsed(smhi, yr, fmi);
-        logger.info("Saved weather data to cache with city: {}, and APIs: {} ", cityEntity.getName(), apisUsed);
+        logger.info("Saved weather data to database with city: {}, and APIs: {} ", cityEntity.getName(), formatApisUsed(smhi, yr, fmi));
+        logger.debug("Time taken to save weather data to database: {} ms", (System.nanoTime() - start) / 1000000);
     }
 
     private String formatApisUsed(boolean smhi, boolean yr, boolean fmi) {

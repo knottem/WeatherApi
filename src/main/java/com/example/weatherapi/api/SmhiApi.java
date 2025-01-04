@@ -74,22 +74,25 @@ public class SmhiApi {
      */
 
     public Weather getWeatherSmhi(double lon, double lat, City city) {
-        Weather weather = weatherApiService.fetchWeatherData("SMHI", city, true, false, false);
+        Weather weather = weatherApiService.fetchWeatherData("SMHI", city, true, false, false, true);
         if(weather != null) {
             return weather;
         }
         synchronized (lock) {
             // Check again in case another thread has already fetched the data
-            weather = weatherApiService.fetchWeatherDataCached("SMHI", city);
+            weather = weatherApiService.fetchWeatherData("SMHI", city, true, false, false, false);
             if (weather != null) {
                 return weather;
             }
 
             LOG.info("Fetching weather data from the SMHI API...");
+            long startTime = System.nanoTime();
             WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
             weather = createBaseWeather(lon, lat, city, "SMHI");
             addWeatherDataSmhi(weather, weatherSmhi);
             weatherApiService.saveWeatherData("SMHI", weather, true, false, false);
+            long endTime = System.nanoTime();
+            LOG.debug("SMHI API call took {} ms", (endTime - startTime) / 1000000);
             return weather;
         }
     }

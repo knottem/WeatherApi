@@ -5,7 +5,6 @@ import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.cache.MemoryCacheUtils;
-import com.example.weatherapi.cache.WeatherCacheCoordinator;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.domain.weather.Weather;
@@ -25,15 +24,12 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -52,7 +48,6 @@ public class WeatherServiceImpl implements WeatherService {
     private final CacheDB cacheDB;
     private final Logger log;
     private final MemoryCacheUtils memoryCacheUtils;
-    private final WeatherCacheCoordinator weatherCacheCoordinator;
     private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
     private final ApiStatusRepository apiStatusRepository;
     private static final String TEMPERATURE = "temperature";
@@ -60,10 +55,6 @@ public class WeatherServiceImpl implements WeatherService {
     private static final String PRECIPITATION = "precipitation";
     private static final String HUMIDITY = "humidity";
 
-    private final AtomicReference<Timestamp> lastApiStatusUpdate;
-    private final AtomicBoolean isCheckingStatus = new AtomicBoolean(false);
-    private volatile long lastCheckedTime = 0;
-    private static final long LOCKOUT_PERIOD_MS = 60 * 1000; // 1 minute lockout
 
     private static final float INVALID_VALUE = -99f;
 
@@ -74,8 +65,7 @@ public class WeatherServiceImpl implements WeatherService {
                               FmiApi fmiApi,
                               CacheDB cacheDB,
                               MemoryCacheUtils memoryCacheUtils,
-                              ApiStatusRepository apiStatusRepository,
-                              WeatherCacheCoordinator weatherCacheCoordinator
+                              ApiStatusRepository apiStatusRepository
     ) {
         this.cityService = cityService;
         this.fmiApi = fmiApi;
@@ -85,8 +75,6 @@ public class WeatherServiceImpl implements WeatherService {
         this.memoryCacheUtils = memoryCacheUtils;
         this.apiStatusRepository = apiStatusRepository;
         this.log = LoggerFactory.getLogger(WeatherServiceImpl.class);
-        this.weatherCacheCoordinator = weatherCacheCoordinator;
-        this.lastApiStatusUpdate = new AtomicReference<>(new Timestamp(0));
     }
 
     @Override
@@ -106,10 +94,6 @@ public class WeatherServiceImpl implements WeatherService {
     public Weather getWeatherMerged(String cityName) {
         String key = cityName.toLowerCase() + "merged";
 
-        if (isApiStatusChanged()) {
-            memoryCacheUtils.evictCacheIfPresent(key,cityName);
-        }
-
         Weather weatherFromCache = memoryCacheUtils.getWeatherFromCache(key, cityName, null);
         if(weatherFromCache != null) {
             return weatherFromCache;
@@ -121,18 +105,13 @@ public class WeatherServiceImpl implements WeatherService {
         lock.lock();
 
         try {
-            log.debug("Thread acquired lock for City: {}", cityName);
+            log.debug("Thread acquired lock for City: {} with Merged APIs", cityName);
             weatherFromCache = memoryCacheUtils.getWeatherFromCache(key, cityName, null);
             if(weatherFromCache != null) {
                 return weatherFromCache;
             }
 
             City city = toModel(cityService.getCityByName(cityName));
-
-            Optional<Weather> optionalWeather = weatherCacheCoordinator.checkForMergedWeatherData(city, key);
-            if (optionalWeather.isPresent()) {
-                return optionalWeather.get();
-            }
 
             List<String> enabledApis = new ArrayList<>();
             if (apiStatusRepository.findByApiName("SMHI").isActive()) enabledApis.add("SMHI");
@@ -147,17 +126,20 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     public Weather getWeatherMergedCustomApis(String cityName, List<String> enabledApis) {
+        if(enabledApis == null || enabledApis.isEmpty()) {
+            return getWeatherMerged(cityName);
+        }
+
         enabledApis = enabledApis.stream().map(String::toUpperCase).sorted().toList();
-        String key = cityName.toLowerCase() + "custom_" + String.join("_", enabledApis);
+        String key = cityName.toLowerCase() + String.join("_", enabledApis);
+
+        List<String> allActiveApis = validateApis(enabledApis, apiStatusRepository);
 
         Weather weatherFromCache = memoryCacheUtils.getWeatherFromCache(key, cityName, enabledApis);
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
 
-        List<String> allActiveApis = validateApis(enabledApis, apiStatusRepository);
-
-        // If all enabled APIs are used, return the merged weather data
         if (new HashSet<>(allActiveApis).equals(new HashSet<>(enabledApis))){
             return getWeatherMerged(cityName);
         }
@@ -254,7 +236,7 @@ public class WeatherServiceImpl implements WeatherService {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
         if (dataStructures.mergedWeatherData().isEmpty()) {
-            Map<String, Boolean> apiStatus = weatherCacheCoordinator.getApiStatus();
+            Map<String, Boolean> apiStatus = getApiStatus();
             throw new WeatherNotFilledException("Could not connect to any weather API. API Status: "
                     + apiStatus);
         }
@@ -272,30 +254,6 @@ public class WeatherServiceImpl implements WeatherService {
                 .timestamp(oldestTimestamp)
                 .city(city)
                 .build();
-    }
-
-    private boolean isApiStatusChanged() {
-        long now = System.currentTimeMillis();
-
-        if (now - lastCheckedTime < LOCKOUT_PERIOD_MS) {
-            return false;
-        }
-
-        if (isCheckingStatus.compareAndSet(false, true)) {
-            try {
-                Timestamp currentApiStatusUpdate = apiStatusRepository.getLastUpdateTime();
-                lastCheckedTime = now;
-                if (currentApiStatusUpdate != null && currentApiStatusUpdate.after(lastApiStatusUpdate.get())) {
-                    lastApiStatusUpdate.set(currentApiStatusUpdate);
-                    return true;
-                }
-                return false;
-            } finally {
-                isCheckingStatus.set(false);
-            }
-        } else {
-            return false;
-        }
     }
 
     private CompletableFuture<Void> fetchAndProcessWeatherData(
@@ -489,5 +447,14 @@ public class WeatherServiceImpl implements WeatherService {
         }
 
         return messageBuilder.toString();
+    }
+
+    public Map<String, Boolean> getApiStatus() {
+        Map<String, Boolean> apiStatusMap = new HashMap<>();
+        List<ApiStatus> apiStatusList = apiStatusRepository.findAll();
+        for (ApiStatus apiStatus : apiStatusList) {
+            apiStatusMap.put(apiStatus.getApiName(), apiStatus.isActive());
+        }
+        return apiStatusMap;
     }
 }

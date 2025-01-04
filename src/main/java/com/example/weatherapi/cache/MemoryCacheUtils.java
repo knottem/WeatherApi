@@ -45,9 +45,9 @@ public class MemoryCacheUtils {
         }
 
         if (enabledApis != null && !enabledApis.isEmpty()) {
-            log.info("Cache hit for City: {} with Custom APIs: {} Timestamp: {}", cityName, enabledApis, weatherFromCache.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
+            log.info("Cache hit for City: {} with APIs: {} Timestamp: {}", cityName, enabledApis, weatherFromCache.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
         } else {
-            log.info("Cache hit for City: {} Timestamp: {}", cityName, weatherFromCache.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
+            log.info("Cache hit for City: {} with All APIs Timestamp: {}", cityName, weatherFromCache.getTimestamp().truncatedTo(ChronoUnit.SECONDS));
         }
 
         return weatherFromCache;

@@ -63,7 +63,7 @@ public class WeatherApiServiceImpl implements WeatherApiService {
     @Transactional
     public void saveWeatherData(String apiName, Weather weather, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
         String key = getKey(weather.getCity(), apiName);
-        cacheDB.save(weather, smhiFlag, yrFlag, fmiFlag);
+        cacheDB.saveDB(weather, smhiFlag, yrFlag, fmiFlag);
         memoryCacheUtils.putWeatherInCache(key, objectMapper.convertValue(weather, Weather.class));
     }
 

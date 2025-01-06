@@ -80,7 +80,7 @@ class WeatherApiServiceTest {
                 .thenReturn(testWeather);
 
         weatherApiService.saveWeatherData("SMHI", testWeather, true, false, false);
-        verify(cacheDB, times(1)).save(testWeather, true, false, false);
+        verify(cacheDB, times(1)).saveDB(testWeather, true, false, false);
         assertThat(memoryCacheUtils.getWeatherFromCache("TestcitySMHI", "TestCity", true, false, false)).isEqualTo(testWeather);
     }
 

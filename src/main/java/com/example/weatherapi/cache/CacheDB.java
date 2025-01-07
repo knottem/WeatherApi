@@ -5,6 +5,7 @@ import com.example.weatherapi.domain.entities.LatestWeatherApiEntity;
 import com.example.weatherapi.domain.entities.WeatherEntity;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.exceptions.CityNotFoundException;
+import com.example.weatherapi.queue.WeatherSaveQueue;
 import com.example.weatherapi.repositories.CityRepository;
 import com.example.weatherapi.repositories.LatestWeatherApiRepository;
 import com.example.weatherapi.repositories.WeatherEntityRepository;
@@ -29,6 +30,7 @@ public class CacheDB {
     private final WeatherEntityRepository weatherEntityRepository;
     private final LatestWeatherApiRepository latestWeatherApiRepository;
     private final CityRepository cityRepository;
+    private final WeatherSaveQueue weatherSaveQueue;
 
     @Value("${cache.time.in.minutes}")
     private int cacheTimeInMinutes;
@@ -36,11 +38,13 @@ public class CacheDB {
     @Autowired
     private CacheDB(WeatherEntityRepository weatherEntityRepository,
                     LatestWeatherApiRepository latestWeatherApiRepository,
-                    CityRepository cityRepository) {
+                    CityRepository cityRepository,
+                    WeatherSaveQueue weatherSaveQueue) {
         logger = LoggerFactory.getLogger(CacheDB.class);
         this.weatherEntityRepository = weatherEntityRepository;
         this.cityRepository = cityRepository;
         this.latestWeatherApiRepository = latestWeatherApiRepository;
+        this.weatherSaveQueue = weatherSaveQueue;
 
     }
 
@@ -49,6 +53,7 @@ public class CacheDB {
         this.weatherEntityRepository = null;
         this.cityRepository = null;
         this.latestWeatherApiRepository = null;
+        this.weatherSaveQueue = null;
     }
 
     @Transactional
@@ -91,8 +96,18 @@ public class CacheDB {
 
     }
 
-    @Transactional
-    public void save(Weather weather, boolean smhi, boolean yr, boolean fmi) {
+    public void saveDB(Weather weather, List<String> successfulApis) {
+        boolean smhi = successfulApis.contains("SMHI");
+        boolean yr = successfulApis.contains("YR");
+        boolean fmi = successfulApis.contains("FMI");
+        weatherSaveQueue.addTask(() -> save(weather, smhi, yr, fmi));
+    }
+
+    public void saveDB(Weather weather, boolean smhi, boolean yr, boolean fmi) {
+        weatherSaveQueue.addTask(() -> save(weather, smhi, yr, fmi));
+    }
+
+    private void save(Weather weather, boolean smhi, boolean yr, boolean fmi) {
         long start = System.nanoTime();
         CityEntity cityEntity = cityRepository.findByNameIgnoreCase(weather.getCity().getName())
                 .orElseThrow(() -> new CityNotFoundException("City not found: " + weather.getCity().getName()));
@@ -126,12 +141,4 @@ public class CacheDB {
         return String.join(", ", apis);
     }
 
-    @Transactional
-    public void saveDB(Weather weather, List<String> successfulApis) {
-        save(   weather,
-                successfulApis.contains("SMHI"),
-                successfulApis.contains("YR"),
-                successfulApis.contains("FMI")
-        );
-    }
 }

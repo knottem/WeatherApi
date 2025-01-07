@@ -1,11 +1,11 @@
 package com.example.weatherapi.services;
 
+import com.example.weatherapi.cache.ApiStatusCache;
 import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.cache.MemoryCacheUtils;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.exceptions.ApiDisabledException;
-import com.example.weatherapi.repositories.ApiStatusRepository;
 import com.example.weatherapi.services.impl.WeatherApiServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class WeatherApiServiceTest {
     private WeatherApiServiceImpl weatherApiService;
 
     @Mock
-    private ApiStatusRepository apiStatusRepository;
+    private ApiStatusCache apiStatusCache;
 
     @Mock
     private CacheDB cacheDB;
@@ -65,7 +65,7 @@ class WeatherApiServiceTest {
     @Test
     void fetchWeatherDataApiDisabled() {
         // Mock API status as disabled
-        when(apiStatusRepository.findByApiName("SMHI")).thenThrow(
+        when(apiStatusCache.getApiStatus("SMHI")).thenThrow(
                 new ApiDisabledException("SMHI API is currently inactive"));
 
         ApiDisabledException exception = assertThrows(ApiDisabledException.class, () ->
@@ -80,7 +80,7 @@ class WeatherApiServiceTest {
                 .thenReturn(testWeather);
 
         weatherApiService.saveWeatherData("SMHI", testWeather, true, false, false);
-        verify(cacheDB, times(1)).save(testWeather, true, false, false);
+        verify(cacheDB, times(1)).saveDB(testWeather, true, false, false);
         assertThat(memoryCacheUtils.getWeatherFromCache("TestcitySMHI", "TestCity", true, false, false)).isEqualTo(testWeather);
     }
 

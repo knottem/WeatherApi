@@ -1,4 +1,5 @@
 package com.example.weatherapi.util;
+import com.example.weatherapi.cache.ApiStatusCache;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.exceptions.ApiDisabledException;
 import com.example.weatherapi.exceptions.InvalidApiUsageException;
@@ -24,12 +25,13 @@ class WeatherValidationTest {
 
     private Clock fixedClock;
     private ApiStatusRepository apiStatusRepository;
+    private ApiStatusCache apiStatusCache;
 
     @BeforeEach
     void setUp() {
         fixedClock = Clock.fixed(Instant.parse("2024-04-24T10:00:00Z"), ZoneOffset.UTC);
         apiStatusRepository = mock(ApiStatusRepository.class);
-        WeatherValidation.invalidCache();
+        apiStatusCache = new ApiStatusCache(apiStatusRepository);
     }
 
     @Test
@@ -56,7 +58,7 @@ class WeatherValidationTest {
         List<String> enabledApis = List.of("INVALID_API");
 
         InvalidApiUsageException exception = assertThrows(InvalidApiUsageException.class, () ->
-                WeatherValidation.validateApis(enabledApis, apiStatusRepository));
+                WeatherValidation.validateApis(enabledApis, apiStatusCache));
 
         assertEquals("Invalid API(s) detected (1): INVALID_API", exception.getMessage());
     }
@@ -72,7 +74,7 @@ class WeatherValidationTest {
         List<String> enabledApis = List.of("INVALID_API", "INVALID_API2", "INVALID_API3");
 
         InvalidApiUsageException exception = assertThrows(InvalidApiUsageException.class, () ->
-                WeatherValidation.validateApis(enabledApis, apiStatusRepository));
+                WeatherValidation.validateApis(enabledApis, apiStatusCache));
 
         assertEquals("Invalid API(s) detected (3): INVALID_API, INVALID_API2, INVALID_API3", exception.getMessage());
     }
@@ -88,7 +90,7 @@ class WeatherValidationTest {
         List<String> enabledApis = List.of("YR");
 
         ApiDisabledException exception = assertThrows(ApiDisabledException.class, () ->
-                WeatherValidation.validateApis(enabledApis, apiStatusRepository));
+                WeatherValidation.validateApis(enabledApis, apiStatusCache));
 
         assertEquals("API(s) currently turned off: YR", exception.getMessage());
     }
@@ -104,7 +106,7 @@ class WeatherValidationTest {
         List<String> enabledApis = List.of("FMI");
 
         InvalidApiUsageException exception = assertThrows(InvalidApiUsageException.class, () ->
-                WeatherValidation.validateApis(enabledApis, apiStatusRepository));
+                WeatherValidation.validateApis(enabledApis, apiStatusCache));
 
         assertEquals("FMI API cannot be used alone", exception.getMessage());
     }
@@ -119,6 +121,6 @@ class WeatherValidationTest {
 
         List<String> enabledApis = Arrays.asList("SMHI", "YR");
 
-        assertDoesNotThrow(() -> WeatherValidation.validateApis(enabledApis, apiStatusRepository));
+        assertDoesNotThrow(() -> WeatherValidation.validateApis(enabledApis, apiStatusCache));
     }
 }

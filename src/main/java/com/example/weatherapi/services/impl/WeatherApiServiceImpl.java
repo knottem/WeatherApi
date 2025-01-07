@@ -1,12 +1,12 @@
 package com.example.weatherapi.services.impl;
 
+import com.example.weatherapi.cache.ApiStatusCache;
 import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.cache.MemoryCacheUtils;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.exceptions.ApiDisabledException;
-import com.example.weatherapi.repositories.ApiStatusRepository;
 import com.example.weatherapi.services.WeatherApiService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class WeatherApiServiceImpl implements WeatherApiService {
 
-    private final ApiStatusRepository apiStatusRepository;
+    private final ApiStatusCache apiStatusCache;
     private final MemoryCacheUtils memoryCacheUtils;
     private final CacheDB cacheDB;
     private final ObjectMapper objectMapper;
@@ -27,10 +27,10 @@ public class WeatherApiServiceImpl implements WeatherApiService {
 
     @Autowired
     public WeatherApiServiceImpl(
-            ApiStatusRepository apiStatusRepository,
+            ApiStatusCache apiStatusCache,
             MemoryCacheUtils memoryCacheUtils,
             CacheDB cacheDB) {
-        this.apiStatusRepository = apiStatusRepository;
+        this.apiStatusCache = apiStatusCache;
         this.memoryCacheUtils = memoryCacheUtils;
         this.cacheDB = cacheDB;
         this.LOG = LoggerFactory.getLogger(WeatherApiServiceImpl.class);
@@ -49,7 +49,7 @@ public class WeatherApiServiceImpl implements WeatherApiService {
         }
 
         if (validateApiStatus) {
-            ApiStatus apiStatus = apiStatusRepository.findByApiName(apiUpper);
+            ApiStatus apiStatus = apiStatusCache.getApiStatus(apiUpper);
             if (apiStatus == null || !apiStatus.isActive()) {
                 LOG.warn("{} API is currently inactive", apiUpper);
                 throw new ApiDisabledException(apiUpper + " API is currently inactive");

@@ -3,13 +3,13 @@ package com.example.weatherapi.services.impl;
 import com.example.weatherapi.api.FmiApi;
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
+import com.example.weatherapi.cache.ApiStatusCache;
 import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.cache.MemoryCacheUtils;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.exceptions.WeatherNotFilledException;
-import com.example.weatherapi.repositories.ApiStatusRepository;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
 import com.example.weatherapi.util.DataStructures;
@@ -49,7 +49,7 @@ public class WeatherServiceImpl implements WeatherService {
     private final Logger log;
     private final MemoryCacheUtils memoryCacheUtils;
     private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
-    private final ApiStatusRepository apiStatusRepository;
+    private final ApiStatusCache apiStatusCache;
 
     private static final String TEMPERATURE = "temperature";
     private static final String WIND_SPEED = "windSpeed";
@@ -59,6 +59,7 @@ public class WeatherServiceImpl implements WeatherService {
     public static final String API_SMHI = "SMHI";
     public static final String API_YR = "YR";
     public static final String API_FMI = "FMI";
+    List<String> allAvailableApis = List.of(API_SMHI, API_YR, API_FMI);
 
     private static final float INVALID_VALUE = -99f;
 
@@ -69,7 +70,7 @@ public class WeatherServiceImpl implements WeatherService {
                               FmiApi fmiApi,
                               CacheDB cacheDB,
                               MemoryCacheUtils memoryCacheUtils,
-                              ApiStatusRepository apiStatusRepository
+                              ApiStatusCache apiStatusCache
     ) {
         this.cityService = cityService;
         this.fmiApi = fmiApi;
@@ -77,7 +78,7 @@ public class WeatherServiceImpl implements WeatherService {
         this.yrApi = yrApi;
         this.cacheDB = cacheDB;
         this.memoryCacheUtils = memoryCacheUtils;
-        this.apiStatusRepository = apiStatusRepository;
+        this.apiStatusCache = apiStatusCache;
         this.log = LoggerFactory.getLogger(WeatherServiceImpl.class);
     }
 
@@ -96,9 +97,21 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     public Weather getWeatherMerged(String cityName) {
-        String key = cityName.toLowerCase() + "merged";
 
-        Weather weatherFromCache = memoryCacheUtils.getWeatherFromCache(key, cityName, null);
+        List<String> enabledApis = apiStatusCache.getAllApiStatuses().stream()
+                .filter(ApiStatus::isActive)
+                .map(ApiStatus::getApiName)
+                .sorted()
+                .toList();
+
+        String key;
+        if (isAllApisEnabled(enabledApis)) {
+            key = cityName.toLowerCase() + "merged";
+        } else {
+            key = getKey(cityName, enabledApis);
+        }
+
+        Weather weatherFromCache = memoryCacheUtils.getWeatherFromCache(key, cityName, enabledApis);
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
@@ -109,23 +122,18 @@ public class WeatherServiceImpl implements WeatherService {
         lock.lock();
 
         try {
-            log.debug("Thread acquired lock for City: {} with Merged APIs", cityName);
-            weatherFromCache = memoryCacheUtils.getWeatherFromCache(key, cityName, null);
+            log.debug("Thread acquired lock for City: {} with Merged APIs: {}", cityName, enabledApis);
+            weatherFromCache = memoryCacheUtils.getWeatherFromCache(key, cityName, enabledApis);
             if(weatherFromCache != null) {
                 return weatherFromCache;
             }
 
             City city = toModel(cityService.getCityByName(cityName));
 
-            List<String> enabledApis = getApiStatus().entrySet().stream()
-                    .filter(Map.Entry::getValue)
-                    .map(Map.Entry::getKey)
-                    .toList();
-
             return processAndCacheWeather(enabledApis, key, city);
         } finally {
             lock.unlock();
-            log.debug("Thread released lock for City: {} with Merged APIs", cityName);
+            log.debug("Thread released lock for City: {} with Merged APIs: {}", cityName, enabledApis);
         }
     }
 
@@ -135,14 +143,14 @@ public class WeatherServiceImpl implements WeatherService {
         }
 
         enabledApis = enabledApis.stream().map(String::toUpperCase).sorted().toList();
-        String key = cityName.toLowerCase() + String.join("_", enabledApis);
+        String key = getKey(cityName, enabledApis);
 
         Weather weatherFromCache = memoryCacheUtils.getWeatherFromCache(key, cityName, enabledApis);
         if(weatherFromCache != null) {
             return weatherFromCache;
         }
 
-        List<String> allActiveApis = validateApis(enabledApis, apiStatusRepository);
+        List<String> allActiveApis = validateApis(enabledApis, apiStatusCache);
 
         if (new HashSet<>(allActiveApis).equals(new HashSet<>(enabledApis))){
             return getWeatherMerged(cityName);
@@ -239,7 +247,7 @@ public class WeatherServiceImpl implements WeatherService {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
         if (dataStructures.mergedWeatherData().isEmpty()) {
-            throw new WeatherNotFilledException("Could not connect to any weather API. API Status: " + getApiStatus());
+            throw new WeatherNotFilledException("Could not connect to any weather API. API Status: " + apiStatusCache.getApiStatus());
         }
 
         calculateAverages(dataStructures.mergedWeatherData(), dataStructures.updateCountMap());
@@ -264,24 +272,22 @@ public class WeatherServiceImpl implements WeatherService {
             Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap,
             List<String> successfulApis) {
 
-        return CompletableFuture.runAsync(() -> {
-            weatherFuture
-                    .exceptionally(e -> {
-                        log.error("Failed to fetch weather data from {}", apiName, e);
-                        return null;
-                    })
-                    .thenAccept(weather -> {
-                        if (weather != null) {
-                            mergeWeatherDataIntoMergedData(
-                                    weather.getWeatherData(),
-                                    apiName,
-                                    mergedWeatherData,
-                                    updateCountMap
-                            );
-                            successfulApis.add(apiName);
-                        }
-                    }).join();
-        });
+        return CompletableFuture.runAsync(() -> weatherFuture
+                .exceptionally(e -> {
+                    log.error("Failed to fetch weather data from {}", apiName, e);
+                    return null;
+                })
+                .thenAccept(weather -> {
+                    if (weather != null) {
+                        mergeWeatherDataIntoMergedData(
+                                weather.getWeatherData(),
+                                apiName,
+                                mergedWeatherData,
+                                updateCountMap
+                        );
+                        successfulApis.add(apiName);
+                    }
+                }).join());
     }
 
     private synchronized void mergeWeatherDataIntoMergedData(
@@ -360,7 +366,7 @@ public class WeatherServiceImpl implements WeatherService {
 
     private int determineWeatherCode(
             String api, Weather.WeatherData existingData, Weather.WeatherData newDataItem) {
-        if (api.equals("SMHI")) {
+        if (api.equals(API_SMHI)) {
             return newDataItem.getWeatherCode();
         } else {
             return existingData.getWeatherCode() > -1 ? existingData.getWeatherCode() : newDataItem.getWeatherCode();
@@ -442,13 +448,12 @@ public class WeatherServiceImpl implements WeatherService {
         return messageBuilder.toString();
     }
 
-    public Map<String, Boolean> getApiStatus() {
-        Map<String, Boolean> apiStatusMap = new HashMap<>();
-        List<ApiStatus> apiStatusList = apiStatusRepository.findAll();
-        for (ApiStatus apiStatus : apiStatusList) {
-            apiStatusMap.put(apiStatus.getApiName(), apiStatus.isActive());
-        }
-        return apiStatusMap;
+    private boolean isAllApisEnabled(List<String> allActiveApis) {
+        return new HashSet<>(allActiveApis).equals(new HashSet<>(allAvailableApis));
+    }
+
+    private String getKey(String cityName, List<String> enabledApis){
+        return cityName.toLowerCase() + String.join("_", enabledApis);
     }
 
 }

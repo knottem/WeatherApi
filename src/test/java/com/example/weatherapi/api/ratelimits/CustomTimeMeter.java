@@ -4,11 +4,9 @@ import io.github.bucket4j.TimeMeter;
 
 public class CustomTimeMeter implements TimeMeter {
 
-    private long currentTime;
+    private long currentTime = 0;
 
-    public CustomTimeMeter(long startTime) {
-        this.currentTime = startTime;
-    }
+    public CustomTimeMeter() {}
 
     @Override
     public long currentTimeNanos() {
@@ -21,6 +19,14 @@ public class CustomTimeMeter implements TimeMeter {
     }
 
     public void addMinutes(long minutes) {
-        currentTime += minutes * 60 * 1_000_000_000; // Convert minutes to nanoseconds
+        currentTime += minutes * 60 * 1_000_000_000;
+    }
+
+    public void addMillis(long millis) {
+        currentTime += millis * 1_000_000;
+    }
+
+    public long getCurrentTimeInMilliSeconds() {
+        return currentTime / 1_000_000;
     }
 }

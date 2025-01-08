@@ -1,10 +1,15 @@
 package com.example.weatherapi.api.ratelimits;
 
+import com.example.weatherapi.exceptions.RateLimitExceededException;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.TimeMeter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class RateLimiter {
+
+    private final Logger LOG = LoggerFactory.getLogger(RateLimiter.class);
 
     private final Bucket perRequestBucket;
     private final Bucket shortTermBucket;
@@ -31,17 +36,20 @@ public abstract class RateLimiter {
     }
 
     public void acquire() throws InterruptedException {
-        // Enforce per-request delay
+        long startTime = System.currentTimeMillis();
+
         perRequestBucket.asBlocking().consume(1);
 
         // Check short-term limit
         if (!shortTermBucket.tryConsume(1)) {
-            throw new RuntimeException("Short-term rate limit exceeded for " + api + " (" + shortTermLimit + " requests per 5 minutes)");
+            throw new RateLimitExceededException("Short-term rate limit exceeded for " + api + " (" + shortTermLimit + " requests per 5 minutes)");
         }
 
         // Check daily limit
         if (!dailyBucket.tryConsume(1)) {
-            throw new RuntimeException("Daily rate limit exceeded for " + api + " (" + dailyLimit +  " requests per day)");
+            throw new RateLimitExceededException("Daily rate limit exceeded for " + api + " (" + dailyLimit +  " requests per day)");
         }
+
+        LOG.debug("Rate limit check for {} took {} ms", api, System.currentTimeMillis() - startTime);
     }
 }

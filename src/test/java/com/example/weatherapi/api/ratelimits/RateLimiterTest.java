@@ -1,7 +1,7 @@
 package com.example.weatherapi.api.ratelimits;
 
+import com.example.weatherapi.exceptions.RateLimitExceededException;
 import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Refill;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,9 +25,9 @@ class RateLimiterTest {
         RateLimiter rateLimiter = new TestRateLimiter(
                 "Test",
                 customTimeMeter,
-                Bandwidth.classic(1, Refill.intervally(1, Duration.ofMillis(200))).withInitialTokens(1),
-                Bandwidth.classic(100, Refill.intervally(100, Duration.ofMinutes(5))).withInitialTokens(100),
-                Bandwidth.classic(100, Refill.intervally(100, Duration.ofDays(1))).withInitialTokens(100)
+                Bandwidth.builder().capacity(1).refillIntervally(1, Duration.ofMillis(200)).initialTokens(1).build(),
+                Bandwidth.builder().capacity(100).refillIntervally(100, Duration.ofMinutes(5)).initialTokens(100).build(),
+                Bandwidth.builder().capacity(100).refillIntervally(100, Duration.ofDays(1)).initialTokens(100).build()
         );
         long startTime = customTimeMeter.getCurrentTimeInMilliSeconds();
         int requestCount = 10;
@@ -43,16 +43,16 @@ class RateLimiterTest {
         RateLimiter rateLimiter = new TestRateLimiter(
                 "Test",
                 customTimeMeter,
-                Bandwidth.classic(1000, Refill.intervally(1000, Duration.ofMinutes(5))).withInitialTokens(1000),
-                Bandwidth.classic(10, Refill.intervally(10, Duration.ofMinutes(5))).withInitialTokens(10),
-                Bandwidth.classic(1000, Refill.intervally(1000, Duration.ofDays(1))).withInitialTokens(1000)
+                Bandwidth.builder().capacity(1000).refillIntervally(1000, Duration.ofMillis(200)).initialTokens(1000).build(),
+                Bandwidth.builder().capacity(10).refillIntervally(10, Duration.ofMinutes(5)).initialTokens(10).build(),
+                Bandwidth.builder().capacity(1000).refillIntervally(1000, Duration.ofDays(1)).initialTokens(1000).build()
         );
 
         for (int i = 0; i < 10; i++) {
             rateLimiter.acquire();
         }
 
-        RuntimeException exception = assertThrows(RuntimeException.class, rateLimiter::acquire);
+        RateLimitExceededException exception = assertThrows(RateLimitExceededException.class, rateLimiter::acquire);
         assertEquals("Short-term rate limit exceeded for Test (10 requests per 5 minutes)", exception.getMessage());
         customTimeMeter.addMinutes(5);
         assertDoesNotThrow(rateLimiter::acquire);
@@ -63,9 +63,9 @@ class RateLimiterTest {
         RateLimiter rateLimiter = new TestRateLimiter(
                 "Test",
                 customTimeMeter,
-                Bandwidth.classic(1000, Refill.intervally(1000, Duration.ofMinutes(5))).withInitialTokens(1000),
-                Bandwidth.classic(10, Refill.intervally(10, Duration.ofMinutes(5))).withInitialTokens(10),
-                Bandwidth.classic(100, Refill.intervally(100, Duration.ofDays(1))).withInitialTokens(100)
+                Bandwidth.builder().capacity(1000).refillIntervally(1000, Duration.ofMillis(200)).initialTokens(1000).build(),
+                Bandwidth.builder().capacity(10).refillIntervally(10, Duration.ofMinutes(5)).initialTokens(10).build(),
+                Bandwidth.builder().capacity(100).refillIntervally(100, Duration.ofDays(1)).initialTokens(100).build()
         );
 
         // Consume all tokens in the daily view bucket (100 tokens)
@@ -74,11 +74,11 @@ class RateLimiterTest {
                 // Consume 10 tokens from the 5-minute bucket
                 rateLimiter.acquire();
             }
-            assertThrows(RuntimeException.class, rateLimiter::acquire);
+            assertThrows(RateLimitExceededException.class, rateLimiter::acquire);
             customTimeMeter.addMinutes(5);
         }
 
-        RuntimeException exception = assertThrows(RuntimeException.class, rateLimiter::acquire);
+        RuntimeException exception = assertThrows(RateLimitExceededException.class, rateLimiter::acquire);
         assertEquals("Daily rate limit exceeded for Test (100 requests per day)", exception.getMessage());
 
         customTimeMeter.addMinutes(1440);

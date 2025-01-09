@@ -1,4 +1,4 @@
-package com.example.weatherapi.api.ratelimits;
+package com.example.weatherapi.ratelimits;
 
 import io.github.bucket4j.TimeMeter;
 
@@ -24,6 +24,10 @@ public class CustomTimeMeter implements TimeMeter {
 
     public void addMillis(long millis) {
         currentTime += millis * 1_000_000;
+    }
+
+    public void addSeconds(long seconds) {
+        currentTime += seconds * 1_000_000_000;
     }
 
     public long getCurrentTimeInMilliSeconds() {

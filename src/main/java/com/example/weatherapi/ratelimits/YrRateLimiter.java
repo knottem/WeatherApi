@@ -1,7 +1,6 @@
 package com.example.weatherapi.ratelimits;
 
 import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.TimeMeter;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;

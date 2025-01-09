@@ -1,7 +1,6 @@
-package com.example.weatherapi.api.ratelimits;
+package com.example.weatherapi.ratelimits;
 
 import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Refill;
 import io.github.bucket4j.TimeMeter;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +15,9 @@ public class FmiRateLimiter extends RateLimiter {
 
     public FmiRateLimiter() {
         super("Fmi",
-                TimeMeter.SYSTEM_MILLISECONDS,
-                Bandwidth.classic(1, Refill.intervally(1, Duration.ofMillis(200))).withInitialTokens(1),
-                Bandwidth.classic(600, Refill.intervally(600, Duration.ofMinutes(5))).withInitialTokens(600),
-                Bandwidth.classic(10_000, Refill.intervally(10_000, Duration.ofDays(1))).withInitialTokens(10_000)
+                Bandwidth.builder().capacity(1).refillIntervally(1, Duration.ofMillis(200)).initialTokens(1).build(),
+                Bandwidth.builder().capacity(600).refillIntervally(600, Duration.ofMinutes(5)).initialTokens(600).build(),
+                Bandwidth.builder().capacity(10000).refillIntervally(10000, Duration.ofDays(1)).initialTokens(10000).build()
         );
     }
 }

@@ -9,6 +9,7 @@ import com.example.weatherapi.cache.MemoryCacheUtils;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.domain.weather.Weather;
+import com.example.weatherapi.exceptions.InvalidApiUsageException;
 import com.example.weatherapi.exceptions.MultipleRateLimitExceededException;
 import com.example.weatherapi.exceptions.RateLimitExceededException;
 import com.example.weatherapi.exceptions.WeatherNotFilledException;
@@ -172,6 +173,10 @@ public class WeatherServiceImpl implements WeatherService {
 
             City city = toModel(cityService.getCityByName(cityName));
 
+            if(enabledApis.size() == 1){
+                return getWeatherSingleApi(city, enabledApis.get(0));
+            }
+
             return processAndCacheWeather(enabledApis, key, city);
         } finally {
             lock.unlock();
@@ -196,6 +201,16 @@ public class WeatherServiceImpl implements WeatherService {
         memoryCacheUtils.putWeatherInCache(key, mergedWeather);
 
         return mergedWeather;
+    }
+
+    private Weather getWeatherSingleApi(City city, String s) {
+        log.info("Getting single api thru getWeatherSingleApi");
+        if(s.equalsIgnoreCase(API_SMHI)){
+            return smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city);
+        } else if(s.equalsIgnoreCase(API_YR)){
+            return yrApi.getWeatherYr(city.getLon(), city.getLat(), city);
+        }
+        throw new InvalidApiUsageException("Unsupported API:" + s);
     }
 
     private Weather fetchWeatherData(City city, List<String> enabledApis, DataStructures dataStructures) throws WeatherNotFilledException {

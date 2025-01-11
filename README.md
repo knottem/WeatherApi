@@ -87,32 +87,69 @@ networks:
     driver: bridge
 ```
 
-#### .env file
-The .env file is used to set the environment variables that the program needs to run. The file needs to be in the same directory as the docker-compose file. You can set the environment variables in the docker-compose file instead of using a .env file, but I prefer to use a .env file since it's easier to change the values in the file than in the docker-compose file, but for security reasons you shouldn't have sensitive information in the docker-compose file unless you're sure you won't be sharing it with anyone.
+### .env file
+The `.env` file is used to set the environment variables required to run the program. 
+It should be located in the same directory as the `docker-compose` file. 
+For obvious reason (security), avoid including sensitive information in the `docker-compose` file unless you are certain it won't be shared.
 
-The .env file needs to have the following variables:
+#### Required Variables
+
+These variables must be configured for the application to run properly:
 ```
 DB_SCHEMA= # The schema of your database
 DB_USER= # The user of your database
 DB_PASSWORD= # The password of your database
-CACHE_TIME_IN_HOURS= # The time in hours that the cache should be valid
 DOMAIN= # The domain of the api, used for yr api, can be ip address as well, 
         # just needs to be a valid url that the program will be running on
 GITHUB= # Your github username, email or whatever you want to use to identify yourself, 
         # needed for the yr api
+
 ```
+
+#### Optional Variables
+
+```
+CACHE_TIME_IN_MINUTES= # Cache validity time in minutes (default: 60)
+
+# Rate limiter settings (default values are suitable for most cases):
+SMHI_RL_MIN_MS=200 # Minimum interval (ms) between requests
+SMHI_RL_BURST=1000 # Burst capacity
+SMHI_RL_DAILY=10000 # Daily capacity
+
+YR_RL_MIN_MS=200
+YR_RL_BURST=1000
+YR_RL_DAILY=10000
+
+FMI_RL_MIN_MS=200
+FMI_RL_BURST=600
+FMI_RL_DAILY=10000
+```
+
+
+#### Example ```.env``` file
+
 Here's an example of a .env file:
 ```
 DB_SCHEMA=weatherdb
 DB_USER=cityuser
 DB_PASSWORD=password
-CACHE_TIME_IN_HOURS=3
 DOMAIN=https://example.com
 GITHUB=https://github.com/yourusername
+CACHE_TIME_IN_MINUTES=60
+SMHI_RL_MIN_MS=200
+SMHI_RL_BURST=1000
+SMHI_RL_DAILY=10000
+YR_RL_MIN_MS=200
+YR_RL_BURST=600
+YR_RL_DAILY=10000
+FMI_RL_MIN_MS=200
+FMI_RL_BURST=1000
+FMI_RL_DAILY=10000
 ```
 
-Then you just run the docker-compose file, be sure to be in the same directory as the docker-compose file
-- the -d flag is optional, it just makes it run in the background and not lock your terminal
+#### Notes:
+- **Default Values:** If you don't set a variable in `.env`, the application will use the default values provided in `application.properties`.
+- **Rate Limiter Settings:** These values determine how many API requests can be made in a given timeframe. Modify them if your API provider has stricter rate limits.
 
 then you run the following command:
 ```bash
@@ -165,8 +202,9 @@ You can create one using the template provided in the README.
 - [X] Compare the results from the different APIs and return a merged result
 - [X] Use custom properties with h2 for tests
 - [X] Add GitHub actions for testing.
-- [X] Change my basic caching to use spring boot caching (https://spring.io/guides/gs/caching/)
+- [X] Change my basic caching to use Caffeine caching
 - [X] Add more weather APIs(Finnish - FMI)
+- [X] Add rate limiting
 
 ## TODO
 
@@ -181,12 +219,6 @@ Builds, releases, and deploys the production environment from the main branch.<b
 ### Test Workflow
 Builds, tests, releases, and deploys the development environment from the dev branch.<br>
 ![Build Status](https://github.com/knottem/weatherapi/actions/workflows/dev.yml/badge.svg)
-
-
-Main Workflow: 
-
-
-Test Workflow: 
 
 ## Made by
 

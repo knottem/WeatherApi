@@ -43,6 +43,8 @@ class WeatherApiServiceTest {
         // Initialize test data
         testCity = new City();
         testCity.setName("TestCity");
+        testCity.setLat(59.3293);
+        testCity.setLon(18.0686);
 
         testWeather = Weather.builder()
                 .city(testCity)

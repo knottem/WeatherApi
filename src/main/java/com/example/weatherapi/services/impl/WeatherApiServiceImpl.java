@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static com.example.weatherapi.util.SunriseUtil.getSunriseSunset;
+
 @Service
 public class WeatherApiServiceImpl implements WeatherApiService {
 
@@ -61,6 +63,7 @@ public class WeatherApiServiceImpl implements WeatherApiService {
     public void saveWeatherData(String apiName, Weather weather, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
         String key = getKey(weather.getCity(), apiName);
         cacheDB.saveDB(weather, smhiFlag, yrFlag, fmiFlag);
+        getSunriseSunset(weather);
         memoryCacheUtils.putWeatherInCache(key, objectMapper.convertValue(weather, Weather.class));
     }
 

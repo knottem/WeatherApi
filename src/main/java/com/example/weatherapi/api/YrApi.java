@@ -35,7 +35,6 @@ public class YrApi {
     private static final Logger LOG = LoggerFactory.getLogger(YrApi.class);
     private final WeatherApiService weatherApiService;
     private final YrRateLimiter rateLimiter;
-    private final Object lock = new Object();
 
     // Gets the domain and contact info from the application.properties file, contact info is required by the YR API
     @Value("${your.domain}")

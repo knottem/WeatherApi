@@ -3,12 +3,9 @@ package com.example.weatherapi.api;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherFmi;
-import com.example.weatherapi.services.impl.WeatherApiServiceImpl;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -18,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
@@ -30,8 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class FmiApiTests {
-
-    private static final Logger LOG = LoggerFactory.getLogger(FmiApiTests.class);
 
     @Autowired
     private FmiApi fmiApi;
@@ -53,6 +47,13 @@ class FmiApiTests {
         City city = new City("Stockholm", 18.0686, 59.3294, null, null);
         Weather weather = fmiApi.getWeatherFMI(city.getLon(), city.getLat(), city);
         assertWeatherDataFmiStockholm(weather);
+    }
+
+    @Test
+    void testRateLimiterIsRespected(){
+        City city = new City("Stockholm", 18.0686, 59.3294, null, null);
+        fmiApi.getWeatherFMI(city.getLon(), city.getLat(), city);
+
     }
 
     @Test

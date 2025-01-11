@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.example.weatherapi.util.SunriseUtil.getSunriseSunset;
 
@@ -40,7 +39,6 @@ public class WeatherApiServiceImpl implements WeatherApiService {
     }
 
     @Override
-    @Transactional
     public Weather fetchWeatherData(String apiName, City city, boolean smhiFlag, boolean yrFlag, boolean fmiFlag, boolean validateApiStatus) {
         String apiUpper = apiName.toUpperCase();
         String key = getKey(city, apiUpper);
@@ -62,7 +60,6 @@ public class WeatherApiServiceImpl implements WeatherApiService {
     }
 
     @Override
-    @Transactional
     public void saveWeatherData(String apiName, Weather weather, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
         String key = getKey(weather.getCity(), apiName);
         cacheDB.saveDB(weather, smhiFlag, yrFlag, fmiFlag);

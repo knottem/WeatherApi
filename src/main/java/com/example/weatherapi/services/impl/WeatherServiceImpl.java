@@ -9,6 +9,8 @@ import com.example.weatherapi.cache.MemoryCacheUtils;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.domain.weather.Weather;
+import com.example.weatherapi.exceptions.MultipleRateLimitExceededException;
+import com.example.weatherapi.exceptions.RateLimitExceededException;
 import com.example.weatherapi.exceptions.WeatherNotFilledException;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
@@ -201,6 +203,8 @@ public class WeatherServiceImpl implements WeatherService {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         List<ZonedDateTime> apiTimestamps = Collections.synchronizedList(new ArrayList<>());
 
+        Map<String, Throwable> failedApis = new HashMap<>();
+
         if (enabledApis.contains(API_SMHI)) {
             CompletableFuture<Void> smhi = fetchAndProcessWeatherData(
                     API_SMHI,
@@ -210,7 +214,9 @@ public class WeatherServiceImpl implements WeatherService {
                     }),
                     dataStructures.mergedWeatherData(),
                     dataStructures.updateCountMap(),
-                    dataStructures.successfulApis());
+                    dataStructures.successfulApis(),
+                    failedApis
+            );
             futures.add(smhi);
         }
 
@@ -223,7 +229,9 @@ public class WeatherServiceImpl implements WeatherService {
                     }),
                     dataStructures.mergedWeatherData(),
                     dataStructures.updateCountMap(),
-                    dataStructures.successfulApis());
+                    dataStructures.successfulApis(),
+                    failedApis
+            );
             futures.add(yr);
         }
 
@@ -239,15 +247,40 @@ public class WeatherServiceImpl implements WeatherService {
                     }),
                     dataStructures.mergedWeatherData(),
                     dataStructures.updateCountMap(),
-                    dataStructures.successfulApis())
+                    dataStructures.successfulApis(),
+                    failedApis
+                    )
             );
             futures.add(fmi);
         }
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
+        if(dataStructures.mergedWeatherData().isEmpty()) {
+            handleApiFailures(failedApis, enabledApis);
+        }
+
         if (dataStructures.mergedWeatherData().isEmpty()) {
-            throw new WeatherNotFilledException("Could not connect to any weather API. API Status: " + apiStatusCache.getApiStatus());
+            if (enabledApis.size() == 1 && failedApis.size() == 1 && failedApis.containsKey(enabledApis.get(0))) {
+                // Single API request and it failed; rethrow the original exception
+                Throwable originalException = failedApis.values().iterator().next();
+                if (originalException instanceof RateLimitExceededException) {
+                    throw (RateLimitExceededException) originalException;
+                } else {
+                    throw new WeatherNotFilledException("Failed to fetch weather data for " + enabledApis + ".");
+                }
+            } else if (enabledApis.size() == failedApis.size() && failedApis.values().stream().allMatch(e -> e instanceof RateLimitExceededException)) {
+                // All APIs hit rate limits
+                throw new RateLimitExceededException(
+                        "All requested APIs hit rate limits: " + failedApis.keySet()
+                );
+            } else {
+                // General failure
+                throw new WeatherNotFilledException(
+                        "Could not connect to any weather API. Failed APIs: " + failedApis.keySet() +
+                                ". API Status: " + apiStatusCache.getApiStatus()
+                );
+            }
         }
 
         calculateAverages(dataStructures.mergedWeatherData(), dataStructures.updateCountMap());
@@ -270,11 +303,12 @@ public class WeatherServiceImpl implements WeatherService {
             CompletableFuture<Weather> weatherFuture,
             Map<ZonedDateTime, Weather.WeatherData> mergedWeatherData,
             Map<String, Map<ZonedDateTime, Map<String, Integer>>> updateCountMap,
-            List<String> successfulApis) {
+            List<String> successfulApis,
+            Map<String, Throwable> failedApis) {
 
         return CompletableFuture.runAsync(() -> weatherFuture
                 .exceptionally(e -> {
-                    log.error("Failed to fetch weather data from {}", apiName, e);
+                    failedApis.put(apiName, e.getCause());
                     return null;
                 })
                 .thenAccept(weather -> {
@@ -454,6 +488,24 @@ public class WeatherServiceImpl implements WeatherService {
 
     private String getKey(String cityName, List<String> enabledApis){
         return cityName.toLowerCase() + String.join("_", enabledApis);
+    }
+
+    private void handleApiFailures(Map<String, Throwable> failedApis, List<String> enabledApis) {
+            if (enabledApis.size() == 1 && failedApis.size() == 1 && failedApis.containsKey(enabledApis.get(0))) {
+                Throwable originalException = failedApis.values().iterator().next();
+                if (originalException instanceof RateLimitExceededException) {
+                    throw (RateLimitExceededException) originalException;
+                } else {
+                    throw new WeatherNotFilledException("Failed to fetch weather data for " + enabledApis.get(0) + ".");
+                }
+            } else if (enabledApis.size() == failedApis.size() && failedApis.values().stream().allMatch(e -> e instanceof RateLimitExceededException)) {
+                throw new MultipleRateLimitExceededException(failedApis);
+            } else {
+                throw new WeatherNotFilledException(
+                        "Could not connect to any weather API. Failed APIs: " + failedApis.keySet() +
+                                ". API Status: " + apiStatusCache.getApiStatus()
+                );
+            }
     }
 
 }

@@ -1,9 +1,7 @@
 package com.example.weatherapi.ratelimits;
 
-import io.github.bucket4j.Bandwidth;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.time.Duration;
 
 // https://www.smhi.se/en/services/open-data/conditions-of-use-1.33347
 // Smhi open data API rate limiter
@@ -11,11 +9,15 @@ import java.time.Duration;
 @Component
 public class SmhiRateLimiter extends RateLimiter {
 
-    public SmhiRateLimiter() {
+    public SmhiRateLimiter(
+            @Value("${smhi.rate-limiter.minimum-request-interval-ms:200}") long timePerRequestMs,
+            @Value("${smhi.rate-limiter.burst-capacity:1000}") long burstCapacity,
+            @Value("${smhi.rate-limiter.daily-capacity:10000}") long dailyCapacity
+    ) {
         super("Smhi",
-                Bandwidth.builder().capacity(1).refillIntervally(1, Duration.ofMillis(200)).initialTokens(1).build(),
-                Bandwidth.builder().capacity(600).refillIntervally(600, Duration.ofMinutes(5)).initialTokens(600).build(),
-                Bandwidth.builder().capacity(10000).refillIntervally(10000, Duration.ofDays(1)).initialTokens(10000).build()
+                createRequestBandwidth(timePerRequestMs),
+                createBurstBandwidth(burstCapacity),
+                createDailyBandwidth(dailyCapacity)
         );
     }
 }

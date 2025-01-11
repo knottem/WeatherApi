@@ -1,11 +1,12 @@
 package com.example.weatherapi.api;
 
-import com.example.weatherapi.api.ratelimits.FmiRateLimiter;
+import com.example.weatherapi.ratelimits.FmiRateLimiter;
 import com.example.weatherapi.domain.City;
 
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherFmi;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.exceptions.RateLimitExceededException;
 import com.example.weatherapi.services.WeatherApiService;
 import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -68,17 +69,22 @@ public class FmiApi {
     }
 
     public Weather getWeatherFMI(double lon, double lat, City city) {
+        // First cache check with validation of api status
         Weather weather = weatherApiService.fetchWeatherData("FMI", city, false, false, true, true);
         if (weather != null) {
             return weather;
         }
+
         try {
             long startTime = System.nanoTime();
             rateLimiter.acquire();
+
+            // Second cache check after rate limiter wait with no validation of api status
             weather = weatherApiService.fetchWeatherData("FMI", city, false, false, true, false);
             if (weather != null) {
                 return weather;
             }
+
             LOG.info("Fetching weather data from the FMI API for city: {}", city.getName());
             WeatherFmi weatherFmi = fetchWeatherFMI(lon, lat, city);
             weather = createBaseWeather(lon, lat, city, "FMI");
@@ -91,9 +97,8 @@ public class FmiApi {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Rate limiter interrupted", e);
         } catch (RuntimeException e) {
-            throw new ApiConnectionException("Rate limit exceeded for FMI, try again later for FMI: " + e.getMessage());
+            throw new RateLimitExceededException(e.getMessage());
         }
-
     }
 
     private WeatherFmi fetchWeatherFMI(double lon, double lat, City city) throws ApiConnectionException {

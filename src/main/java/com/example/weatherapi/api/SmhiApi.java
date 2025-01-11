@@ -1,9 +1,11 @@
 package com.example.weatherapi.api;
 
+import com.example.weatherapi.ratelimits.SmhiRateLimiter;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.exceptions.RateLimitExceededException;
 import com.example.weatherapi.services.WeatherApiService;
 import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,12 +39,14 @@ public class SmhiApi {
     ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
     private static final Logger LOG = LoggerFactory.getLogger(SmhiApi.class);
     private final WeatherApiService weatherApiService;
+    private final SmhiRateLimiter rateLimiter;
     private boolean isTestMode = false;
 
 
     @Autowired
-    public SmhiApi (WeatherApiService weatherApiService) {
+    public SmhiApi (WeatherApiService weatherApiService, SmhiRateLimiter rateLimiter) {
         this.weatherApiService = weatherApiService;
+        this.rateLimiter = rateLimiter;
     }
 
     /**
@@ -74,27 +78,36 @@ public class SmhiApi {
      */
 
     public Weather getWeatherSmhi(double lon, double lat, City city) {
+        // First cache check with validation of api status
         Weather weather = weatherApiService.fetchWeatherData("SMHI", city, true, false, false, true);
         if (weather != null) {
             return weather;
         }
 
-        long startTime = System.nanoTime();
+        try {
+            long startTime = System.nanoTime();
+            rateLimiter.acquire();
 
-        weather = weatherApiService.fetchWeatherData("SMHI", city, true, false, false, false);
-        if (weather != null) {
+            // Second cache check after rate limiter wait with no validation of api status
+            weather = weatherApiService.fetchWeatherData("SMHI", city, true, false, false, false);
+            if (weather != null) {
+                return weather;
+            }
+
+            LOG.info("Fetching weather data from the SMHI API for city: {}", city.getName());
+            WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
+            weather = createBaseWeather(lon, lat, city, "SMHI");
+            addWeatherDataSmhi(weather, weatherSmhi);
+            weatherApiService.saveWeatherData("SMHI", weather, true, false, false);
+            long endTime = System.nanoTime();
+            LOG.debug("SMHI API call took {} ms for city: {}", (endTime - startTime) / 1000000, city.getName());
             return weather;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Rate limiter interrupted", e);
+        } catch (RuntimeException e) {
+            throw new RateLimitExceededException(e.getMessage());
         }
-
-        LOG.info("Fetching weather data from the SMHI API for city: {}", city.getName());
-
-        WeatherSmhi weatherSmhi = fetchWeatherSmhi(lon, lat, city);
-        weather = createBaseWeather(lon, lat, city, "SMHI");
-        addWeatherDataSmhi(weather, weatherSmhi);
-        weatherApiService.saveWeatherData("SMHI", weather, true, false, false);
-        long endTime = System.nanoTime();
-        LOG.debug("SMHI API call took {} ms for city: {}", (endTime - startTime) / 1000000, city.getName());
-        return weather;
     }
 
     /**

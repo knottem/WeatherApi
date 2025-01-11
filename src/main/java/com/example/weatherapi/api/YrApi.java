@@ -1,9 +1,11 @@
 package com.example.weatherapi.api;
 
+import com.example.weatherapi.ratelimits.YrRateLimiter;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.exceptions.RateLimitExceededException;
 import com.example.weatherapi.services.WeatherApiService;
 import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +34,7 @@ public class YrApi {
     ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
     private static final Logger LOG = LoggerFactory.getLogger(YrApi.class);
     private final WeatherApiService weatherApiService;
+    private final YrRateLimiter rateLimiter;
     private final Object lock = new Object();
 
     // Gets the domain and contact info from the application.properties file, contact info is required by the YR API
@@ -42,8 +45,9 @@ public class YrApi {
     private boolean isTestMode = false;
 
     @Autowired
-    public YrApi (WeatherApiService weatherApiService) {
+    public YrApi (WeatherApiService weatherApiService, YrRateLimiter rateLimiter) {
         this.weatherApiService = weatherApiService;
+        this.rateLimiter = rateLimiter;
     }
 
     public void setTestMode(boolean isTestMode) {
@@ -60,18 +64,22 @@ public class YrApi {
     }
 
     public Weather getWeatherYr(double lon, double lat, City city) {
+        // First cache check with validation of api status
         Weather weather = weatherApiService.fetchWeatherData("YR", city, false, true, false, true);
         if(weather != null) {
             return weather;
         }
-        synchronized (lock) {
-            // Check again in case another thread has already fetched the data
+
+        try {
+            long startTime = System.nanoTime();
+            rateLimiter.acquire();
+
+            // Second cache check after rate limiter wait with no validation of api status
             weather = weatherApiService.fetchWeatherData("YR", city, false, true, false, false);
             if (weather != null) {
                 return weather;
             }
             LOG.info("Fetching weather data from the YR API...");
-            long startTime = System.nanoTime();
             WeatherYr weatherYr = fetchWeatherYr(lon, lat, city);
             weather = createBaseWeather(lon, lat, city, "YR");
             addWeatherDataYr(weather, weatherYr);
@@ -79,6 +87,11 @@ public class YrApi {
             long endTime = System.nanoTime();
             LOG.debug("YR API call took {} ms", (endTime - startTime) / 1000000);
             return weather;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Rate limiter interrupted", e);
+        } catch (RuntimeException e) {
+            throw new RateLimitExceededException(e.getMessage());
         }
     }
 

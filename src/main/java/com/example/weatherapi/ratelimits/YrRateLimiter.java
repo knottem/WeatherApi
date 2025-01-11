@@ -1,9 +1,7 @@
 package com.example.weatherapi.ratelimits;
 
-import io.github.bucket4j.Bandwidth;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.time.Duration;
 
 // https://developer.yr.no/doc/TermsOfService/
 // Yr API rate limiter
@@ -11,11 +9,15 @@ import java.time.Duration;
 @Component
 public class YrRateLimiter extends RateLimiter {
 
-    public YrRateLimiter() {
+    public YrRateLimiter(
+            @Value("${yr.rate-limiter.minimum-request-interval-ms:200}") long timePerRequestMs,
+            @Value("${yr.rate-limiter.burst-capacity:1000}") long burstCapacity,
+            @Value("${yr.rate-limiter.daily-capacity:10000}") long dailyCapacity
+    ) {
         super("Yr",
-                Bandwidth.builder().capacity(1).refillIntervally(1, Duration.ofMillis(200)).initialTokens(1).build(),
-                Bandwidth.builder().capacity(600).refillIntervally(600, Duration.ofMinutes(5)).initialTokens(600).build(),
-                Bandwidth.builder().capacity(10000).refillIntervally(10000, Duration.ofDays(1)).initialTokens(10000).build()
+                createRequestBandwidth(timePerRequestMs),
+                createBurstBandwidth(burstCapacity),
+                createDailyBandwidth(dailyCapacity)
         );
     }
 }

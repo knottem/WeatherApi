@@ -204,7 +204,6 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     private Weather getWeatherSingleApi(City city, String s) {
-        log.info("Getting single api thru getWeatherSingleApi");
         if(s.equalsIgnoreCase(API_SMHI)){
             return smhiApi.getWeatherSmhi(city.getLon(), city.getLat(), city);
         } else if(s.equalsIgnoreCase(API_YR)){

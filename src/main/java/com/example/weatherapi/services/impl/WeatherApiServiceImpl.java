@@ -1,91 +1,74 @@
 package com.example.weatherapi.services.impl;
 
+import com.example.weatherapi.cache.ApiStatusCache;
 import com.example.weatherapi.cache.CacheDB;
+import com.example.weatherapi.cache.MemoryCacheUtils;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.exceptions.ApiDisabledException;
-import com.example.weatherapi.repositories.ApiStatusRepository;
 import com.example.weatherapi.services.WeatherApiService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.util.Objects;
+
+import static com.example.weatherapi.util.SunriseUtil.getSunriseSunset;
 
 @Service
 public class WeatherApiServiceImpl implements WeatherApiService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WeatherApiServiceImpl.class);
-
-    private final ApiStatusRepository apiStatusRepository;
+    private final ApiStatusCache apiStatusCache;
+    private final MemoryCacheUtils memoryCacheUtils;
     private final CacheDB cacheDB;
-    private final CacheManager cacheManager;
-    private final String cacheName;
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final ObjectMapper objectMapper;
+    private final Logger LOG;
+
     @Autowired
-    public WeatherApiServiceImpl(ApiStatusRepository apiStatusRepository, CacheDB cacheDB, CacheManager cacheManager) {
-        this.apiStatusRepository = apiStatusRepository;
+    public WeatherApiServiceImpl(
+            ApiStatusCache apiStatusCache,
+            MemoryCacheUtils memoryCacheUtils,
+            CacheDB cacheDB) {
+        this.apiStatusCache = apiStatusCache;
+        this.memoryCacheUtils = memoryCacheUtils;
         this.cacheDB = cacheDB;
-        this.cacheManager = cacheManager;
-        this.cacheName = "cache";
+        this.LOG = LoggerFactory.getLogger(WeatherApiServiceImpl.class);
+        this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     }
 
     @Override
-    @Transactional
-    public Weather fetchWeatherData(String apiName, City city, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
-        String apiLower = apiName.toLowerCase();
+    public Weather fetchWeatherData(String apiName, City city, boolean smhiFlag, boolean yrFlag, boolean fmiFlag, boolean validateApiStatus) {
         String apiUpper = apiName.toUpperCase();
-        String key = city.getName().toLowerCase() + apiLower;
-        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
-                .get(key, Weather.class);
+        String key = getKey(city, apiUpper);
+
+        Weather weatherFromCache = memoryCacheUtils.getWeatherFromCache(key, city.getName(), smhiFlag, yrFlag, fmiFlag);
         if (weatherFromCache != null) {
-            LOG.info("Cache hit for City: {} in the cache, returning cached data for {}", city.getName(), apiLower);
-            return objectMapper.convertValue(weatherFromCache, Weather.class);
-        }
-
-        Weather weatherFromCacheDB = cacheDB.getWeatherFromCache(city.getName(), smhiFlag, yrFlag, fmiFlag);
-        if (weatherFromCacheDB != null) {
-            Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherFromCacheDB);
-            return weatherFromCacheDB;
-        }
-
-        ApiStatus apiStatus = apiStatusRepository.findByApiName(apiUpper);
-        if (apiStatus == null || !apiStatus.isActive()) {
-            LOG.warn("{} API is currently inactive", apiUpper);
-            throw new ApiDisabledException(apiUpper + " API is currently inactive");
-        }
-
-        return null;
-    }
-
-    @Override
-    @Transactional
-    public Weather fetchWeatherDataCached(String apiName, City city) {
-        String apiLower = apiName.toLowerCase();
-        String key = city.getName().toLowerCase() + apiLower;
-        Weather weatherFromCache = Objects.requireNonNull(cacheManager.getCache(cacheName))
-                .get(key, Weather.class);
-        if (weatherFromCache != null) {
-            LOG.info("Cache hit for City: {} in the cache, returning cached data for {}", city.getName(), apiLower);
             return weatherFromCache;
         }
+
+        if (validateApiStatus) {
+            ApiStatus apiStatus = apiStatusCache.getApiStatus(apiUpper);
+            if (apiStatus == null || !apiStatus.isActive()) {
+                LOG.warn("{} API is currently inactive", apiUpper);
+                throw new ApiDisabledException(apiUpper + " API is currently inactive");
+            }
+        }
+
         return null;
     }
 
     @Override
-    @Transactional
     public void saveWeatherData(String apiName, Weather weather, boolean smhiFlag, boolean yrFlag, boolean fmiFlag) {
-        String key = weather.getCity().getName().toLowerCase() + apiName.toLowerCase();
-        cacheDB.save(weather, smhiFlag, yrFlag, fmiFlag);
-        Weather weatherCopy;
-        weatherCopy = objectMapper.convertValue(weather, Weather.class);
-        Objects.requireNonNull(cacheManager.getCache(cacheName)).put(key, weatherCopy);
+        String key = getKey(weather.getCity(), apiName);
+        cacheDB.saveDB(weather, smhiFlag, yrFlag, fmiFlag);
+        getSunriseSunset(weather);
+        memoryCacheUtils.putWeatherInCache(key, objectMapper.convertValue(weather, Weather.class));
+    }
 
+    private String getKey(City city, String apiName) {
+        return city.getName().toLowerCase() + apiName.toUpperCase();
     }
 
 }

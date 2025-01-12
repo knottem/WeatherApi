@@ -1,9 +1,11 @@
 package com.example.weatherapi.api;
 
+import com.example.weatherapi.ratelimits.YrRateLimiter;
 import com.example.weatherapi.domain.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherYr;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.exceptions.RateLimitExceededException;
 import com.example.weatherapi.services.WeatherApiService;
 import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +22,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpResponse;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static com.example.weatherapi.util.WeatherCodeMapper.mapToWeatherCodeYR;
@@ -33,7 +34,7 @@ public class YrApi {
     ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
     private static final Logger LOG = LoggerFactory.getLogger(YrApi.class);
     private final WeatherApiService weatherApiService;
-    private final Object lock = new Object();
+    private final YrRateLimiter rateLimiter;
 
     // Gets the domain and contact info from the application.properties file, contact info is required by the YR API
     @Value("${your.domain}")
@@ -43,8 +44,9 @@ public class YrApi {
     private boolean isTestMode = false;
 
     @Autowired
-    public YrApi (WeatherApiService weatherApiService) {
+    public YrApi (WeatherApiService weatherApiService, YrRateLimiter rateLimiter) {
         this.weatherApiService = weatherApiService;
+        this.rateLimiter = rateLimiter;
     }
 
     public void setTestMode(boolean isTestMode) {
@@ -61,13 +63,18 @@ public class YrApi {
     }
 
     public Weather getWeatherYr(double lon, double lat, City city) {
-        Weather weather = weatherApiService.fetchWeatherData("YR", city, false, true, false);
+        // First cache check with validation of api status
+        Weather weather = weatherApiService.fetchWeatherData("YR", city, false, true, false, true);
         if(weather != null) {
             return weather;
         }
-        synchronized (lock) {
-            // Check again in case another thread has already fetched the data
-            weather = weatherApiService.fetchWeatherDataCached("YR", city);
+
+        try {
+            long startTime = System.nanoTime();
+            rateLimiter.acquire();
+
+            // Second cache check after rate limiter wait with no validation of api status
+            weather = weatherApiService.fetchWeatherData("YR", city, false, true, false, false);
             if (weather != null) {
                 return weather;
             }
@@ -76,7 +83,14 @@ public class YrApi {
             weather = createBaseWeather(lon, lat, city, "YR");
             addWeatherDataYr(weather, weatherYr);
             weatherApiService.saveWeatherData("YR", weather, false, true, false);
+            long endTime = System.nanoTime();
+            LOG.debug("YR API call took {} ms", (endTime - startTime) / 1000000);
             return weather;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Rate limiter interrupted", e);
+        } catch (RuntimeException e) {
+            throw new RateLimitExceededException(e.getMessage());
         }
     }
 
@@ -113,15 +127,13 @@ public class YrApi {
     }
 
     private void addWeatherDataYr(Weather weather, WeatherYr weatherYr) {
-        weatherYr.properties().timeseries().forEach(t -> {
-            weather.addWeatherData(t.time(),
-                        t.data().instant().details().air_temperature(),
-                        mapToWeatherCodeYR(t),
-                        t.data().instant().details().wind_speed(),
-                        t.data().instant().details().wind_from_direction(),
-                        t.data().instant().details().relative_humidity(),
-                    getPrecipitationAmount(t));
-        });
+        weatherYr.properties().timeseries().forEach(t -> weather.addWeatherData(t.time(),
+                    t.data().instant().details().air_temperature(),
+                    mapToWeatherCodeYR(t),
+                    t.data().instant().details().wind_speed(),
+                    t.data().instant().details().wind_from_direction(),
+                    t.data().instant().details().relative_humidity(),
+                getPrecipitationAmount(t)));
     }
 
     private float getPrecipitationAmount(WeatherYr.TimeSeries t) {

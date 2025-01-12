@@ -13,7 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.within;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,9 +36,7 @@ class CityServiceImplTests {
     @Test
     void shouldThrowExceptionWhenCityNameNotFound() {
         // Assert that the exception is thrown
-        CityNotFoundException exception = assertThrows(CityNotFoundException.class, () -> {
-            cityService.getCityByName("notfound");
-        });
+        CityNotFoundException exception = assertThrows(CityNotFoundException.class, () -> cityService.getCityByName("notfound"));
         // Assert the exception message
         assertThat(exception.getMessage()).isEqualTo("City not found: notfound");
     }
@@ -48,9 +45,7 @@ class CityServiceImplTests {
     @Test
     void shouldThrowExceptionWhenCityNameIsNull() {
         // Assert that the exception is thrown
-        CityNotFoundException exception = assertThrows(CityNotFoundException.class, () -> {
-            cityService.getCityByName(null);
-        });
+        CityNotFoundException exception = assertThrows(CityNotFoundException.class, () -> cityService.getCityByName(null));
         // Assert the exception message
         assertThat(exception.getMessage()).isEqualTo("City not found: null");
     }
@@ -73,13 +68,11 @@ class CityServiceImplTests {
     @Test
     void shouldThrowExceptionWhenAddingCityWithExistingName() {
         // Assert that the exception is thrown
-        InvalidCityException exception = assertThrows(InvalidCityException.class, () -> {
-            cityService.addCity(City.builder()
-                    .name("Stockholm")
-                    .lon(18.0686)
-                    .lat(59.3294)
-                    .build());
-        });
+        InvalidCityException exception = assertThrows(InvalidCityException.class, () -> cityService.addCity(City.builder()
+                .name("Stockholm")
+                .lon(18.0686)
+                .lat(59.3294)
+                .build()));
         // Assert the exception message
         assertThat(exception.getMessage()).isEqualTo("City already exists: Stockholm");
     }
@@ -94,7 +87,7 @@ class CityServiceImplTests {
         assertThat(cityService.getAllCities().get(1).getLon()).isEqualTo(11.9675);
         assertThat(cityService.getAllCities().get(1).getLat()).isEqualTo(57.7075);
 
-        // check that the number of cities is atleast 10
+        // check that the number of cities is at least 10
         assertThat(cityService.getAllCities().size()).isGreaterThan(10);
     }
 

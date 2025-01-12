@@ -1,10 +1,12 @@
 package com.example.weatherapi.api;
 
+import com.example.weatherapi.ratelimits.FmiRateLimiter;
 import com.example.weatherapi.domain.City;
 
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherFmi;
 import com.example.weatherapi.exceptions.ApiConnectionException;
+import com.example.weatherapi.exceptions.RateLimitExceededException;
 import com.example.weatherapi.services.WeatherApiService;
 import com.example.weatherapi.util.HttpUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -36,13 +38,16 @@ public class FmiApi {
     XmlMapper xmlMapper = new XmlMapper();
     private static final Logger LOG = LoggerFactory.getLogger(FmiApi.class);
     private final WeatherApiService weatherApiService;
+    private final FmiRateLimiter rateLimiter;
     private boolean isTestMode = false;
-    private final Object lock = new Object();
+
 
     @Autowired
-    public FmiApi (WeatherApiService weatherApiService) {
+    public FmiApi (WeatherApiService weatherApiService, FmiRateLimiter rateLimiter) {
         this.weatherApiService = weatherApiService;
+        this.rateLimiter = rateLimiter;
     }
+
 
     public void setTestMode(boolean isTestMode) {
         this.isTestMode = isTestMode;
@@ -64,22 +69,35 @@ public class FmiApi {
     }
 
     public Weather getWeatherFMI(double lon, double lat, City city) {
-        Weather weather = weatherApiService.fetchWeatherData("FMI", city, false, false, true);
-        if(weather != null) {
+        // First cache check with validation of api status
+        Weather weather = weatherApiService.fetchWeatherData("FMI", city, false, false, true, true);
+        if (weather != null) {
             return weather;
         }
-        synchronized (lock) {
-            // Check again in case another thread has already fetched the data
-            weather = weatherApiService.fetchWeatherDataCached("FMI", city);
-            if(weather != null) {
+
+        try {
+            long startTime = System.nanoTime();
+            rateLimiter.acquire();
+
+            // Second cache check after rate limiter wait with no validation of api status
+            weather = weatherApiService.fetchWeatherData("FMI", city, false, false, true, false);
+            if (weather != null) {
                 return weather;
             }
-            LOG.info("Fetching weather data from the FMI API...");
+
+            LOG.info("Fetching weather data from the FMI API for city: {}", city.getName());
             WeatherFmi weatherFmi = fetchWeatherFMI(lon, lat, city);
             weather = createBaseWeather(lon, lat, city, "FMI");
             addWeatherDataFmi(weather, weatherFmi);
             weatherApiService.saveWeatherData("FMI", weather, false, false, true);
+            long endTime = System.nanoTime();
+            LOG.debug("FMI API call took {} ms for city: {}", (endTime - startTime) / 1000000, city.getName());
             return weather;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Rate limiter interrupted", e);
+        } catch (RuntimeException e) {
+            throw new RateLimitExceededException(e.getMessage());
         }
     }
 

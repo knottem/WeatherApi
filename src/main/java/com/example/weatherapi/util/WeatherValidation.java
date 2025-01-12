@@ -1,36 +1,20 @@
 package com.example.weatherapi.util;
 
+import com.example.weatherapi.cache.ApiStatusCache;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.exceptions.ApiDisabledException;
 import com.example.weatherapi.exceptions.InvalidApiUsageException;
-import com.example.weatherapi.repositories.ApiStatusRepository;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 public class WeatherValidation {
 
     private WeatherValidation(){
         throw new IllegalStateException("Utility class");
-    }
-
-    private static final Logger log = LoggerFactory.getLogger(WeatherValidation.class);
-
-    private static final Cache<String, List<ApiStatus>> apiStatusCache = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.MINUTES)
-            .build();
-
-
-    public static void invalidCache() {
-        apiStatusCache.invalidateAll();
     }
 
     public static boolean isWeatherValid(ZonedDateTime timeStamp, int minutes, Clock clock) {
@@ -45,15 +29,12 @@ public class WeatherValidation {
      * Validates the provided APIs and returns the list of active APIs.
      *
      * @param enabledApis         the APIs enabled by the user
-     * @param apiStatusRepository the repository to fetch API statuses
+     * @param apiStatusCache the cache of API statuses
      * @return a list of active API names
      */
-    public static List<String> validateApis(List<String> enabledApis, ApiStatusRepository apiStatusRepository) {
+    public static List<String> validateApis(List<String> enabledApis, ApiStatusCache apiStatusCache) {
 
-        List<ApiStatus> apis = apiStatusCache.get("apiStatus", key -> {
-            log.info("Fetching API status from the database");
-            return apiStatusRepository.findAll();
-        });
+        List<ApiStatus> apis = apiStatusCache.getAllApiStatuses();
 
         Set<String> inactiveApiNames = new HashSet<>();
         Set<String> allValidApis = new HashSet<>();
@@ -94,7 +75,7 @@ public class WeatherValidation {
     }
 
     /**
-     * Validates that no inactive APIs are enabled.
+     * Validates that no inactive APIs are used.
      *
      * @param enabledApis      the APIs enabled by the user
      * @param inactiveApiNames the set of inactive API names

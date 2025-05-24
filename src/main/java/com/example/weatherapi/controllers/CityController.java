@@ -1,6 +1,8 @@
 package com.example.weatherapi.controllers;
 
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
+import com.example.weatherapi.domain.city.CitySearchRequest;
+import com.example.weatherapi.domain.city.CitySearchResponse;
 import com.example.weatherapi.domain.dto.CityDto;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.services.CityService;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping(path ="/city")
 public class CityController {
 
     private final CityService cityService;
@@ -20,30 +23,34 @@ public class CityController {
         this.cityService = cityService;
     }
 
-    @GetMapping(path = "/city/{name}")
+    @GetMapping(path = "/{name}")
     public CityEntity retrieveCity(@PathVariable final String name) {
         return cityService.getCityByName(name);
     }
 
-    @PostMapping(path = "/city/create")
+    @PostMapping(path = "/create")
     public ResponseEntity<CityEntity> addCity(@Valid @RequestBody City city) {
         return new ResponseEntity<>(cityService.addCity(city), HttpStatus.CREATED);
     }
 
-    @GetMapping(path = "/city/all")
+    @GetMapping(path = "/all")
     public List<CityEntity> retrieveAllCities() {
         return cityService.getAllCities();
     }
 
-    @DeleteMapping(path = "/city/delete/{name}")
+    @DeleteMapping(path = "/delete/{name}")
     public ResponseEntity<String> deleteCity(@PathVariable final String name) {
         return new ResponseEntity<>(cityService.deleteCity(name), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/city/names")
+    @GetMapping(path = "/names")
     public List<CityDto> retrieveAllCityNames() {
         return cityService.getAllCityNames();
     }
 
+    @PostMapping(path = "/search")
+    public CitySearchResponse searchCity(@Valid @RequestBody CitySearchRequest request){
+        return cityService.searchCity(request.lat(), request.lon());
+    }
 
 }

@@ -45,6 +45,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/status/**").permitAll()
                 .requestMatchers("/actuator/health").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/names").permitAll()
+                .requestMatchers("/city/search").permitAll()
                 .requestMatchers("/city/all").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
                 .requestMatchers("/city/delete/**").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/create").hasRole(UserRole.ADMIN.toString())

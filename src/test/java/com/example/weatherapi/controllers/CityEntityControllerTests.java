@@ -1,10 +1,14 @@
 package com.example.weatherapi.controllers;
 
+import com.example.weatherapi.domain.city.City;
+import com.example.weatherapi.domain.city.CitySearchRequest;
 import com.example.weatherapi.domain.UserRole;
 import com.example.weatherapi.domain.dto.CityDto;
 import com.example.weatherapi.domain.entities.AuthEntity;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.ErrorResponse;
+import com.google.testing.junit.testparameterinjector.junit5.TestParameterInjectorTest;
+import com.google.testing.junit.testparameterinjector.junit5.TestParameters;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +31,7 @@ import static io.restassured.RestAssured.given;
 import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -550,6 +555,24 @@ class CityEntityControllerTests {
             }
         });
     }
+
+    // Test Case 25: Search City should return correct closest City
+    @TestParameterInjectorTest
+    @TestParameters("{city: 'Stockholm', lat: 59.33, lon: 18.07}")
+    @TestParameters("{city: 'Vimmerby', lat: 57.66, lon: 15.85}")
+    @TestParameters("{city: 'Rågsved', lat: 59.25, lon: 18.03}")
+    @TestParameters("{city: 'Göteborg', lat: 57.707, lon: 11.96}")
+    void searchCity_ShouldReturnClosestCity(String city, double lat, double lon) {
+        ResponseEntity<City> response = restTemplate.postForEntity("http://localhost:" + port + endpoint + "/search",
+                new HttpEntity<>(CitySearchRequest.builder().lat(lat).lon(lon).build()),
+                City.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        City result = response.getBody();
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo(city);
+    }
+
+
 
 
 }

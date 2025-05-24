@@ -1,6 +1,6 @@
 package com.example.weatherapi.services;
 
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.exceptions.CityNotFoundException;
 import com.example.weatherapi.exceptions.InvalidCityException;

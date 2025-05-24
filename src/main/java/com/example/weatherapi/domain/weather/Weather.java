@@ -1,6 +1,6 @@
 package com.example.weatherapi.domain.weather;
 
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,8 +1,9 @@
 package com.example.weatherapi.controllers;
 
-import com.example.weatherapi.domain.ApiStatusDto;
+import com.example.weatherapi.domain.dto.ApiStatusDto;
 import com.example.weatherapi.repositories.ApiStatusRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +19,7 @@ public class StatusController {
         this.apiStatusRepository = apiStatusRepository;
     }
 
-    @RequestMapping(path = "/api")
+    @GetMapping(path = "/api")
     public ResponseEntity<List<ApiStatusDto>> getApiStatus(){
         return ResponseEntity.ok(apiStatusRepository.findAll().stream().map(a ->
                                 new ApiStatusDto(a.getApiName(), a.isActive())).toList());

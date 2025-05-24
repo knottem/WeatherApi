@@ -1,6 +1,7 @@
 package com.example.weatherapi.services;
 
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
+import com.example.weatherapi.domain.city.CitySearchResponse;
 import com.example.weatherapi.domain.dto.CityDto;
 import com.example.weatherapi.domain.entities.CityEntity;
 
@@ -12,4 +13,5 @@ public interface CityService {
     List<CityEntity> getAllCities();
     String deleteCity(String name);
     List<CityDto> getAllCityNames();
+    CitySearchResponse searchCity(double lat, double lon);
 }

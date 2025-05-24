@@ -6,7 +6,7 @@ import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.cache.ApiStatusCache;
 import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.cache.MemoryCacheUtils;
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.exceptions.InvalidApiUsageException;

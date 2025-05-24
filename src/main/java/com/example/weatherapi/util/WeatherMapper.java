@@ -1,6 +1,6 @@
 package com.example.weatherapi.util;
 
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.domain.entities.WeatherDataEntity;
 import com.example.weatherapi.domain.entities.WeatherEntity;

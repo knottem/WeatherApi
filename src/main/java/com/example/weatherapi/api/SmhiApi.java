@@ -1,7 +1,7 @@
 package com.example.weatherapi.api;
 
 import com.example.weatherapi.ratelimits.SmhiRateLimiter;
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.exceptions.ApiConnectionException;

@@ -1,4 +1,4 @@
-package com.example.weatherapi.domain;
+package com.example.weatherapi.domain.dto;
 
 import lombok.Data;
 

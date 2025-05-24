@@ -1,6 +1,6 @@
 package com.example.weatherapi.api;
 
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherFmi;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;

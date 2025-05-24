@@ -46,6 +46,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/actuator/health").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/names").permitAll()
                 .requestMatchers("/city/search").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/city/all").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
                 .requestMatchers("/city/delete/**").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/create").hasRole(UserRole.ADMIN.toString())

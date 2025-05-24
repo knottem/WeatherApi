@@ -9,10 +9,7 @@ import com.example.weatherapi.cache.MemoryCacheUtils;
 import com.example.weatherapi.domain.city.City;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.domain.weather.Weather;
-import com.example.weatherapi.exceptions.InvalidApiUsageException;
-import com.example.weatherapi.exceptions.MultipleRateLimitExceededException;
-import com.example.weatherapi.exceptions.RateLimitExceededException;
-import com.example.weatherapi.exceptions.WeatherNotFilledException;
+import com.example.weatherapi.exceptions.*;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
 import com.example.weatherapi.util.DataStructures;
@@ -106,6 +103,9 @@ public class WeatherServiceImpl implements WeatherService {
                 .map(ApiStatus::getApiName)
                 .sorted()
                 .toList();
+        if(enabledApis.isEmpty()){
+            throw new ApiDisabledException("All apis are disabled");
+        }
 
         String key;
         if (isAllApisEnabled(enabledApis)) {

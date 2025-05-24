@@ -209,6 +209,7 @@ You can create one using the template provided in the README.
 ## TODO
 
 - [ ] Add 0auth2 for city management using perhaps Firebase(https://firebase.google.com/docs/auth)
+- [ ] Add docs for errors
 
 ## Status
 

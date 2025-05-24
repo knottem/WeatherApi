@@ -6,6 +6,8 @@ import com.example.weatherapi.domain.city.CitySearchResponse;
 import com.example.weatherapi.domain.dto.CityDto;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.services.CityService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path ="/city")
+@Tag(name = "City", description = "City management endpoints")
 public class CityController {
 
     private final CityService cityService;
@@ -23,6 +26,7 @@ public class CityController {
         this.cityService = cityService;
     }
 
+    @Operation(summary = "Get a city by name")
     @GetMapping(path = "/{name}")
     public CityEntity retrieveCity(@PathVariable final String name) {
         return cityService.getCityByName(name);

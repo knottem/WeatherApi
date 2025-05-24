@@ -1,12 +1,11 @@
 package com.example.weatherapi.exceptions.handlers;
 
-import com.example.weatherapi.domain.ErrorResponse;
 import com.example.weatherapi.exceptions.*;
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -15,8 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
@@ -28,34 +26,40 @@ public class CustomExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(CustomExceptionHandler.class);
 
     // Helper method to create error response that can be used in all exception handlers
-    private ResponseEntity<ErrorResponse> createErrorResponse(HttpStatus status, String errorMessage, WebRequest request) {
-        return ResponseEntity.status(status).body(ErrorResponse.builder()
-                .timestamp(ZonedDateTime.now(ZoneId.of("UTC")))
-                .error(errorMessage)
-                .status(status.value())
-                .path(URLDecoder.decode(request.getDescription(false).substring(4), StandardCharsets.UTF_8))
-                .build());
+    private ProblemDetail createProblemDetail(HttpStatus status, String message, WebRequest request, String type) {
+        ProblemDetail problem = ProblemDetail.forStatus(status);
+        problem.setType(URI.create(type));
+        problem.setTitle(message);
+        problem.setProperty("timestamp", ZonedDateTime.now(ZoneId.of("UTC")));
+        return problem;
+    }
+
+    private String generateTypeFromException(Throwable ex) {
+        return "urn:problem-type:" + ex.getClass().getSimpleName()
+                .replace("Exception", "")
+                .replaceAll("([a-z])([A-Z])", "$1-$2")
+                .toLowerCase();
     }
 
     // Exception handler for all exceptions that are not handled by other exception handlers, might not want to show the exception message to the user
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
+    public ProblemDetail handleException(Exception ex, WebRequest request) {
         logger.error("Unexpected error occurred", ex);
-        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please try again later.", request);
+        return createProblemDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred. Please try again later.", request, generateTypeFromException(ex));
     }
 
     // Exception for InvalidApiUsageException
     @ExceptionHandler(InvalidApiUsageException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidApiUsageException(InvalidApiUsageException ex, WebRequest request) {
+    public ProblemDetail handleInvalidApiUsageException(InvalidApiUsageException ex, WebRequest request) {
         logger.error(ex.getMessage());
-        return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+        return createProblemDetail(HttpStatus.BAD_REQUEST, ex.getMessage(), request, generateTypeFromException(ex));
     }
 
     // Exception handler for ApiDisabledException
     @ExceptionHandler(ApiDisabledException.class)
-    public ResponseEntity<ErrorResponse> handleApiDisabledException(ApiDisabledException ex, WebRequest request) {
+    public ProblemDetail handleApiDisabledException(ApiDisabledException ex, WebRequest request) {
         logger.warn(ex.getMessage());
-        return createErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);
+        return createProblemDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request, generateTypeFromException(ex));
     }
 
     // Exception handler for ClientAbortException
@@ -66,55 +70,55 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(CityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCityNotFoundException(CityNotFoundException ex, WebRequest request) {
+    public ProblemDetail handleCityNotFoundException(CityNotFoundException ex, WebRequest request) {
         logger.error(ex.getMessage());
-        return createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);
+        return createProblemDetail(HttpStatus.NOT_FOUND, ex.getMessage(), request, generateTypeFromException(ex));
     }
 
     @ExceptionHandler(InvalidCityException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidCityException(InvalidCityException ex, WebRequest request) {
+    public ProblemDetail handleInvalidCityException(InvalidCityException ex, WebRequest request) {
         logger.error(ex.getMessage());
-        return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+        return createProblemDetail(HttpStatus.BAD_REQUEST, ex.getMessage(), request, generateTypeFromException(ex));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, WebRequest request) {
+    public ProblemDetail handleHttpMessageNotReadable(HttpMessageNotReadableException ex, WebRequest request) {
         logger.error(ex.getMessage());
-        return createErrorResponse(HttpStatus.BAD_REQUEST, "Request body is missing or not readable", request);
+        return createProblemDetail(HttpStatus.BAD_REQUEST, "Request body is missing or not readable", request, generateTypeFromException(ex));
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex, WebRequest request) {
+    public ProblemDetail handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex, WebRequest request) {
         logger.error(ex.getMessage());
-        return createErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported Media Type: " + ex.getMessage(), request);
+        return createProblemDetail(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported Media Type: " + ex.getMessage(), request, generateTypeFromException(ex));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+    public ProblemDetail handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
         logger.error(ex.getMessage());
-        return createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);
+        return createProblemDetail(HttpStatus.NOT_FOUND, ex.getMessage(), request, generateTypeFromException(ex));
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex, WebRequest request) {
+    public ProblemDetail handleUserAlreadyExistsException(UserAlreadyExistsException ex, WebRequest request) {
         logger.error(ex.getMessage());
-        return createErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+        return createProblemDetail(HttpStatus.BAD_REQUEST, ex.getMessage(), request, generateTypeFromException(ex));
     }
 
     @ExceptionHandler(WeatherNotFilledException.class)
-    public ResponseEntity<ErrorResponse> handleWeatherNotFilledException(WeatherNotFilledException ex, WebRequest request) {
+    public ProblemDetail handleWeatherNotFilledException(WeatherNotFilledException ex, WebRequest request) {
         logger.error(ex.getMessage());
-        return createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);
+        return createProblemDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request,generateTypeFromException(ex));
     }
 
     @ExceptionHandler(RateLimitExceededException.class)
-    public ResponseEntity<ErrorResponse> handleRateLimitExceededException(RateLimitExceededException ex, WebRequest request) {
+    public ProblemDetail handleRateLimitExceededException(RateLimitExceededException ex, WebRequest request) {
         logger.warn(ex.getMessage());
-        return createErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);
+        return createProblemDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request, generateTypeFromException(ex));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, WebRequest request) {
+    public ProblemDetail handleMethodArgumentNotValid(MethodArgumentNotValidException ex, WebRequest request) {
         // Get all validation errors and join them into a single string sorted by alphabetical order of the field name,
         // so that the error messages are always in the same order
         // only show the first error message for each field, so that the error messages are not too long
@@ -129,7 +133,7 @@ public class CustomExceptionHandler {
         // Log the validation errors
         logger.error("Validation failed: {}", errors);
 
-        return createErrorResponse(HttpStatus.BAD_REQUEST, errors, request);
+        return createProblemDetail(HttpStatus.BAD_REQUEST, errors, request, generateTypeFromException(ex));
     }
 
     // Helper method to format rejected value, if the rejected value is null or empty string, it will be ignored

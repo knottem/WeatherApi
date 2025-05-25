@@ -78,7 +78,8 @@ class CityEntityControllerTests {
                 .then()
                 .statusCode(404)
                 .assertThat()
-                .body("title", equalTo("City not found: CITYNOTFOUND"))
+                .body("title", equalTo("Not Found"))
+                .body("detail", equalTo("City not found: CITYNOTFOUND"))
                 .body("status", equalTo(404))
                 .body("instance", equalTo(endpoint + "/CITYNOTFOUND"));
 
@@ -119,7 +120,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("City already exists: Stockholm");
+        assertThat(response.getBody().getDetail()).isEqualTo("City already exists: Stockholm");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
     }
@@ -139,7 +140,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("City name cannot be null or empty");
+        assertThat(response.getBody().getDetail()).isEqualTo("City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
     }
@@ -159,7 +160,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("City name cannot be null or empty");
+        assertThat(response.getBody().getDetail()).isEqualTo("City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
     }
@@ -179,7 +180,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Invalid value: 91.0, Latitude must be between 55 and 71");
+        assertThat(response.getBody().getDetail()).isEqualTo("Invalid value: 91.0, Latitude must be between 55 and 71");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
     }
@@ -199,7 +200,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Invalid value: 181.0, Longitude must be between 4 and 32");
+        assertThat(response.getBody().getDetail()).isEqualTo("Invalid value: 181.0, Longitude must be between 4 and 32");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
     }
@@ -218,7 +219,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Longitude cannot be null");
+        assertThat(response.getBody().getDetail()).isEqualTo("Longitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
     }
@@ -237,7 +238,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Latitude cannot be null");
+        assertThat(response.getBody().getDetail()).isEqualTo("Latitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
     }
@@ -256,7 +257,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("City name cannot be null or empty");
+        assertThat(response.getBody().getDetail()).isEqualTo("City name cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
     }
@@ -273,7 +274,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle())
+        assertThat(response.getBody().getDetail())
                 .isEqualTo("City name cannot be null or empty, Longitude cannot be null, Latitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
@@ -305,7 +306,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle())
+        assertThat(response.getBody().getDetail())
                 .isEqualTo("Unsupported Media Type: Content-Type 'application/x-www-form-urlencoded;charset=UTF-8' is not supported");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
@@ -325,7 +326,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle())
+        assertThat(response.getBody().getDetail())
                 .isEqualTo("City name cannot be null or empty, Longitude cannot be null, Latitude cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
@@ -345,7 +346,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle())
+        assertThat(response.getBody().getDetail())
                 .isEqualTo("Request body is missing or not readable");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
@@ -365,7 +366,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle())
+        assertThat(response.getBody().getDetail())
                 .isEqualTo("Request body is missing or not readable");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/create");
@@ -412,7 +413,7 @@ class CityEntityControllerTests {
 
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response2.getBody()).isNotNull();
-        assertThat(response2.getBody().getTitle()).isEqualTo("City not found: " + cityToTest);
+        assertThat(response2.getBody().getDetail()).isEqualTo("City not found: " + cityToTest);
         assertThat(response2.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(decode(Objects.requireNonNull(response2.getBody().getInstance()).toString(), StandardCharsets.UTF_8)).isEqualTo(endpoint + "/" + cityToTest);
     }
@@ -429,7 +430,7 @@ class CityEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("City not found: " + cityToTest);
+        assertThat(response.getBody().getDetail()).isEqualTo("City not found: " + cityToTest);
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/delete/" + cityToTest);
     }
@@ -453,7 +454,7 @@ class CityEntityControllerTests {
 
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response2.getBody()).isNotNull();
-        assertThat(response2.getBody().getTitle()).isEqualTo("City not found: UppSAla");
+        assertThat(response2.getBody().getDetail()).isEqualTo("City not found: UppSAla");
         assertThat(response2.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(Objects.requireNonNull(response2.getBody().getInstance()).toString()).isEqualTo(endpoint + "/UppSAla" );
     }
@@ -479,7 +480,7 @@ class CityEntityControllerTests {
 
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response2.getBody()).isNotNull();
-        assertThat(response2.getBody().getTitle()).isEqualTo("City not found: " + cityToTest);
+        assertThat(response2.getBody().getDetail()).isEqualTo("City not found: " + cityToTest);
         assertThat(response2.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(decode(Objects.requireNonNull(response2.getBody().getInstance()).toString(), StandardCharsets.UTF_8)).isEqualTo(endpoint + "/" + cityToTest);
     }

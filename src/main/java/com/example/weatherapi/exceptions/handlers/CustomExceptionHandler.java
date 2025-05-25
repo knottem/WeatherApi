@@ -29,7 +29,8 @@ public class CustomExceptionHandler {
     private ProblemDetail createProblemDetail(HttpStatus status, String message, WebRequest request, String type) {
         ProblemDetail problem = ProblemDetail.forStatus(status);
         problem.setType(URI.create(type));
-        problem.setTitle(message);
+        problem.setTitle(status.getReasonPhrase());
+        problem.setDetail(message);
         problem.setProperty("timestamp", ZonedDateTime.now(ZoneId.of("UTC")));
         return problem;
     }

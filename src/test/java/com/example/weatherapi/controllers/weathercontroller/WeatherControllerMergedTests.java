@@ -97,7 +97,8 @@ class WeatherControllerMergedTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("City not found: " + cityToTest.toLowerCase());
+        assertThat(response.getBody().getTitle()).isEqualTo("Not Found");
+        assertThat(response.getBody().getDetail()).isEqualTo("City not found: " + cityToTest.toLowerCase());
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo("/api/v1/weather/" + cityToTest);
     }

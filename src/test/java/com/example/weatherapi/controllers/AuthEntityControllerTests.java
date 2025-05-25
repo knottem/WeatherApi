@@ -3,7 +3,6 @@ package com.example.weatherapi.controllers;
 import com.example.weatherapi.domain.Auth;
 import com.example.weatherapi.domain.UserRole;
 import com.example.weatherapi.domain.entities.AuthEntity;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,6 +41,7 @@ class AuthEntityControllerTests {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getTitle()).isEqualTo("Forbidden");
+        assertThat(response.getBody().getDetail()).isEqualTo("Access Denied");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/all");
     }
@@ -99,7 +99,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("User not found with username: doesnotexist");
+        assertThat(response.getBody().getDetail()).isEqualTo("User not found with username: doesnotexist");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint);
     }
@@ -139,7 +139,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Invalid value: te, Username must be between 4 and 20 characters long");
+        assertThat(response.getBody().getDetail()).isEqualTo("Invalid value: te, Username must be between 4 and 20 characters long");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -158,7 +158,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Invalid value: testtesttesttesttesttesttesttest, Username must be between 4 and 20 characters long");
+        assertThat(response.getBody().getDetail()).isEqualTo("Invalid value: testtesttesttesttesttesttesttest, Username must be between 4 and 20 characters long");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -177,7 +177,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Password must be between 8 and 30 characters long");
+        assertThat(response.getBody().getDetail()).isEqualTo("Password must be between 8 and 30 characters long");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -196,7 +196,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Password must be between 8 and 30 characters long");
+        assertThat(response.getBody().getDetail()).isEqualTo("Password must be between 8 and 30 characters long");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -215,7 +215,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
+        assertThat(response.getBody().getDetail()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -234,7 +234,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
+        assertThat(response.getBody().getDetail()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -253,7 +253,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
+        assertThat(response.getBody().getDetail()).isEqualTo("Password must contain at least one uppercase letter, one lowercase letter, and one digit");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -271,7 +271,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Role cannot be null");
+        assertThat(response.getBody().getDetail()).isEqualTo("Role cannot be null");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -289,7 +289,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Username cannot be null or empty");
+        assertThat(response.getBody().getDetail()).isEqualTo("Username cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -307,7 +307,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Password cannot be null or empty");
+        assertThat(response.getBody().getDetail()).isEqualTo("Password cannot be null or empty");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -326,7 +326,7 @@ class AuthEntityControllerTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("User already exists: admin");
+        assertThat(response.getBody().getDetail()).isEqualTo("User already exists: admin");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
     }
@@ -347,7 +347,7 @@ class AuthEntityControllerTests {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/adduser");
-        assertThat(response.getBody().getTitle()).isEqualTo("Password must be between 8 and 30 characters long, Invalid value: te, Username must be between 4 and 20 characters long");
+        assertThat(response.getBody().getDetail()).isEqualTo("Password must be between 8 and 30 characters long, Invalid value: te, Username must be between 4 and 20 characters long");
     }
 
 }

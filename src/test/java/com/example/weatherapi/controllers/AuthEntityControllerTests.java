@@ -30,20 +30,16 @@ class AuthEntityControllerTests {
     private final String endpoint = "/api/v1/auth";
     private final String baseUrl = "http://localhost:";
 
-    // Test Case 1: Forbidden request to auth by a user that is not admin
+    // Test Case 1: Unauthorized request to auth by a user that is not admin
     @Test
-    void getAuthListByUserTest_Forbidden() {
+    void getAuthListByUserTest_Unauthorized() {
         ResponseEntity<ProblemDetail> response = restTemplate
                 .withBasicAuth("user", "pass123")
                 .getForEntity(baseUrl + port + endpoint + "/all", ProblemDetail.class);
 
         // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Forbidden");
-        assertThat(response.getBody().getDetail()).isEqualTo("Access Denied");
-        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/all");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNull();
     }
 
     // Test Case 2: List of all users

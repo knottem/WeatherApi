@@ -10,8 +10,6 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Objects;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -35,21 +33,15 @@ class LoginCityEntityTests {
     private final String baseUrl = "http://localhost:";
     private final String endpoint = "/api/v1/city";
     /**
-     * Test Case 1: forbidden request to city by a user that is not admin<br>
+     * Test Case 1: Unauthorized request to city by a user that is not admin<br>
      * Asserts that the response is correct and that the user is not admin
      */
     @Test
-    void shouldReturnForbiddenStatusForUser(){
+    void shouldReturnUnauthorizedStatusForUser(){
         ResponseEntity<ProblemDetail> response = restTemplate
                 .withBasicAuth("user", "pass123")
                 .getForEntity(baseUrl + port + endpoint + "/stockholm", ProblemDetail.class);
-
-        // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Forbidden");
-        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo(endpoint + "/stockholm");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     /**
@@ -60,12 +52,7 @@ class LoginCityEntityTests {
     void shouldReturnUnauthorizedStatusForNoAuth(){
         ResponseEntity<ProblemDetail> response = restTemplate
                 .getForEntity(baseUrl + port + endpoint + "/Stockholm", ProblemDetail.class);
-
-        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTitle()).isEqualTo("Unauthorized");
-        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 
     /**

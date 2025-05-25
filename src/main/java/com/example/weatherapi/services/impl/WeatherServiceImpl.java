@@ -155,6 +155,10 @@ public class WeatherServiceImpl implements WeatherService {
 
         List<String> allActiveApis = validateApis(enabledApis, apiStatusCache);
 
+        if(allActiveApis.isEmpty()) {
+            throw new ApiDisabledException("All apis are disabled");
+        }
+
         if (new HashSet<>(allActiveApis).equals(new HashSet<>(enabledApis))){
             return getWeatherMerged(cityName);
         }

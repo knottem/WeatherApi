@@ -7,9 +7,14 @@ import com.example.weatherapi.domain.dto.CityDto;
 import com.example.weatherapi.domain.entities.CityEntity;
 import com.example.weatherapi.services.CityService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +32,12 @@ public class CityController {
     }
 
     @Operation(summary = "Get a city by name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved a city data", content = @Content(schema = @Schema(implementation = CityEntity.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No City was found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "503", description = "Service Unavailable", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
     @GetMapping(path = "/{name}")
     public CityEntity retrieveCity(@PathVariable final String name) {
         return cityService.getCityByName(name);

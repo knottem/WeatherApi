@@ -58,10 +58,14 @@ public class WeatherController {
                     "If `apis` is provided, only those APIs will be used."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved weather data", content = @Content(schema = @Schema(implementation = Weather.class))),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "404", description = "City not found", content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "503", description = "Service Unavailable", content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved weather data", content =
+                    @Content(schema = @Schema(implementation = Weather.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content =
+                    @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "404", description = "City not found", content =
+                    @Content(schema = @Schema(implementation = ProblemDetail.class))),
+            @ApiResponse(responseCode = "503", description = "Service Unavailable", content =
+                    @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @GetMapping(path = "/{city}")
     public ResponseEntity<Weather> getWeather(

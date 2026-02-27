@@ -1,17 +1,14 @@
 package com.example.weatherapi.login;
 
-import com.example.weatherapi.domain.ErrorResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,22 +33,15 @@ class LoginCityEntityTests {
     private final String baseUrl = "http://localhost:";
     private final String endpoint = "/api/v1/city";
     /**
-     * Test Case 1: forbidden request to city by a user that is not admin<br>
+     * Test Case 1: Unauthorized request to city by a user that is not admin<br>
      * Asserts that the response is correct and that the user is not admin
      */
     @Test
-    void shouldReturnForbiddenStatusForUser(){
-        ResponseEntity<ErrorResponse> response = restTemplate
+    void shouldReturnUnauthorizedStatusForUser(){
+        ResponseEntity<ProblemDetail> response = restTemplate
                 .withBasicAuth("user", "pass123")
-                .getForEntity(baseUrl + port + endpoint + "/stockholm", ErrorResponse.class);
-
-        // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Forbidden");
-        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-        assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/stockholm");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
+                .getForEntity(baseUrl + port + endpoint + "/stockholm", ProblemDetail.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     /**
@@ -60,16 +50,9 @@ class LoginCityEntityTests {
      */
     @Test
     void shouldReturnUnauthorizedStatusForNoAuth(){
-        ResponseEntity<ErrorResponse> response = restTemplate
-                .getForEntity(baseUrl + port + endpoint + "/Stockholm", ErrorResponse.class);
-
-        // Assert
+        ResponseEntity<ProblemDetail> response = restTemplate
+                .getForEntity(baseUrl + port + endpoint + "/Stockholm", ProblemDetail.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Unauthorized");
-        assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-        assertThat(response.getBody().getPath()).isEqualTo(endpoint +"/Stockholm");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 
     /**
@@ -79,16 +62,14 @@ class LoginCityEntityTests {
      */
     @Test
     void shouldReturnUnauthorizedStatusForWrongPassword(){
-        ResponseEntity<ErrorResponse> response = restTemplate
+        ResponseEntity<ProblemDetail> response = restTemplate
                 .withBasicAuth("admin", "wrongpassword")
-                .getForEntity(baseUrl + port + endpoint + "/Stockholm", ErrorResponse.class);
+                .getForEntity(baseUrl + port + endpoint + "/Stockholm", ProblemDetail.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("Unauthorized");
+        assertThat(response.getBody().getTitle()).isEqualTo("Unauthorized");
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
-        assertThat(response.getBody().getPath()).isEqualTo(endpoint + "/Stockholm");
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 }

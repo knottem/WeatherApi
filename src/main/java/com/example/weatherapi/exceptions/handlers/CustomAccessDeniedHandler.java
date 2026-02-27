@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
@@ -23,14 +24,17 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        StringBuilder logMessage = new StringBuilder();
-        logMessage.append("endpoint: ").append(requestURI);
-        logMessage.append(" from IP: ").append(request.getHeader("X-Forwarded-For"));
-        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
-        if(username != null){
-            logMessage.append(" by user: ").append(username);
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null) {
+            ip = request.getRemoteAddr();
         }
-        logger.warn("Unauthorized access attempt to {}", logMessage);
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+        String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
+        logger.warn("Unauthorized access attempt to endpoint: {} from IP: {}{}",
+                requestURI, ip, username != null ? " by user: " + username : "");
+        // Return 401 Unauthorized with no response body
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+        response.setContentLength(0);
+        response.flushBuffer();
     }
 }

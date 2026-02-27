@@ -2,6 +2,7 @@ package com.example.weatherapi.domain.weather;
 
 import com.example.weatherapi.domain.city.City;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ import java.util.*;
 //This is the final representation of the data that is returned to the user after the data has been fetched from the APIs and merged
 public class Weather {
 
+    @Schema(example = "Merged weather for Stockholm from FMI, SMHI and YR")
     private String message;
 
     private ZonedDateTime timestamp;

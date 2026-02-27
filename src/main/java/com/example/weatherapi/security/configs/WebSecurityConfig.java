@@ -2,11 +2,13 @@ package com.example.weatherapi.security.configs;
 
 import com.example.weatherapi.domain.UserRole;
 import com.example.weatherapi.exceptions.handlers.CustomAccessDeniedHandler;
+import com.example.weatherapi.exceptions.handlers.CustomAuthenticationEntryPoint;
 import com.example.weatherapi.security.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,16 +26,14 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final CustomUserDetailsService customUserDetailsService;
-
-    @Autowired
-    public WebSecurityConfig(CustomUserDetailsService customUserDetailsService){
-        this.customUserDetailsService = customUserDetailsService;
-    }
-
     @Bean
     public CustomAccessDeniedHandler customAccessDeniedHandler() {
         return new CustomAccessDeniedHandler();
+    }
+
+    @Bean
+    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {
+        return new CustomAuthenticationEntryPoint();
     }
 
     @Bean
@@ -46,6 +46,11 @@ public class WebSecurityConfig {
                 .requestMatchers("/actuator/health").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/names").permitAll()
                 .requestMatchers("/city/search").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/swagger-ui.html").permitAll()
+                .requestMatchers("/v3/api-docs/swagger-config").permitAll()
+                .requestMatchers("/v3/api-docs/public").permitAll()
+                .requestMatchers("/v3/api-docs/authenticated").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
                 .requestMatchers("/city/all").hasAnyRole(UserRole.ADMIN.toString(), UserRole.USER.toString())
                 .requestMatchers("/city/delete/**").hasRole(UserRole.ADMIN.toString())
                 .requestMatchers("/city/create").hasRole(UserRole.ADMIN.toString())
@@ -55,6 +60,7 @@ public class WebSecurityConfig {
 
         //Adding custom access denied handler to be able to log unauthorized access attempts.
         http.exceptionHandling(e -> e
+                .authenticationEntryPoint(customAuthenticationEntryPoint())
                 .accessDeniedHandler(customAccessDeniedHandler())
         );
 
@@ -69,9 +75,13 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth, PasswordEncoder passwordEncoder) throws Exception {
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
+    @Bean
+    public AuthenticationManager authenticationManager(CustomUserDetailsService customUserDetailsService,
+                                                       PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(customUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return new ProviderManager(provider);
     }
 
     @Bean

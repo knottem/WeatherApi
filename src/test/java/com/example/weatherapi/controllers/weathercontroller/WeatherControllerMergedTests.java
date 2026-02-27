@@ -3,9 +3,7 @@ package com.example.weatherapi.controllers.weathercontroller;
 import com.example.weatherapi.api.FmiApi;
 import com.example.weatherapi.api.SmhiApi;
 import com.example.weatherapi.api.YrApi;
-import com.example.weatherapi.domain.ErrorResponse;
 import com.example.weatherapi.domain.weather.Weather;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import static com.example.weatherapi.utilitytests.WeatherTestUtils.*;
@@ -94,16 +91,16 @@ class WeatherControllerMergedTests {
     @Test
     void getWeatherByCityMergedTest_NotFound() {
         String cityToTest = "Stockholm123";
-        ResponseEntity<ErrorResponse> response = restTemplate
-                .getForEntity("http://localhost:" + port + "/api/v1/weather/" + cityToTest, ErrorResponse.class);
+        ResponseEntity<ProblemDetail> response = restTemplate
+                .getForEntity("http://localhost:" + port + "/api/v1/weather/" + cityToTest, ProblemDetail.class);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getError()).isEqualTo("City not found: " + cityToTest.toLowerCase());
+        assertThat(response.getBody().getTitle()).isEqualTo("Not Found");
+        assertThat(response.getBody().getDetail()).isEqualTo("City not found: " + cityToTest.toLowerCase());
         assertThat(response.getBody().getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        assertThat(response.getBody().getPath()).isEqualTo("/api/v1/weather/" + cityToTest);
-        assertThat(response.getBody().getTimestamp()).isBeforeOrEqualTo(ZonedDateTime.now(ZoneId.of("UTC")));
+        assertThat(Objects.requireNonNull(response.getBody().getInstance()).toString()).isEqualTo("/api/v1/weather/" + cityToTest);
     }
 
     // Test Case 5: Hit the endpoint several times to make sure the cache works

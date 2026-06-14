@@ -121,6 +121,7 @@ public class WeatherServiceImpl implements WeatherService {
 
         log.debug("Thread attempting to acquire lock for City: {}", cityName);
 
+        // Keep locks cached (bounded city set → small fixed map) makes a tiny difference in response time
         Lock lock = locks.computeIfAbsent(key, k -> new ReentrantLock());
         lock.lock();
 

@@ -43,7 +43,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/weather/**").permitAll()
                 .requestMatchers("/status/**").permitAll()
-                .requestMatchers("/actuator/health").hasRole(UserRole.ADMIN.toString())
+                .requestMatchers("/actuator/health/**").permitAll()
                 .requestMatchers("/city/names").permitAll()
                 .requestMatchers("/city/search").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()

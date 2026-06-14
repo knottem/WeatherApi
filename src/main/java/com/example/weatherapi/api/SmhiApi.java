@@ -1,7 +1,7 @@
 package com.example.weatherapi.api;
 
 import com.example.weatherapi.ratelimits.SmhiRateLimiter;
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
 import com.example.weatherapi.domain.weather.Weather;
 import com.example.weatherapi.domain.weather.WeatherSmhi;
 import com.example.weatherapi.exceptions.ApiConnectionException;
@@ -58,7 +58,7 @@ public class SmhiApi {
     }
 
     private URL getUrlSmhi(double lon, double lat) throws IOException {
-        return new URL("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"
+        return new URL("https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/" +
                 + lon + "/lat/" + lat + "/data.json");
     }
 
@@ -133,7 +133,7 @@ public class SmhiApi {
                 return mapper.readValue(response.body(), WeatherSmhi.class);
             }
         } catch (Exception e) {
-            LOG.error("Could not connect to SMHI API");
+            LOG.error("Could not connect to SMHI API: {}", e.getMessage());
             throw new ApiConnectionException("Could not connect to SMHI API, please contact the site administrator");
         }
     }
@@ -145,21 +145,26 @@ public class SmhiApi {
      * @param weatherSmhi the WeatherSmhi object for the location
      */
     private void addWeatherDataSmhi(Weather weather, WeatherSmhi weatherSmhi) {
-        weatherSmhi.timeSeries().forEach(t ->
-            weather.addWeatherData(t.validTime(),
-                    t.parameters().stream().filter(p -> p.name().equals("t"))
-                            .map(p -> p.values().get(0)).findFirst().orElse(0f),
-                    t.parameters().stream().filter(p -> p.name().equals("Wsymb2"))
-                            .map(p -> p.values().get(0).intValue()).findFirst().orElse(0),
-                    t.parameters().stream().filter(p -> p.name().equals("ws"))
-                            .map(p -> p.values().get(0)).findFirst().orElse(0f),
-                    t.parameters().stream().filter(p -> p.name().equals("wd"))
-                            .map(p -> p.values().get(0)).findFirst().orElse(0f),
-                    t.parameters().stream().filter(p -> p.name().equals("r"))
-                            .map(p -> p.values().get(0)).findFirst().orElse(0f),
-                    (t.parameters().stream().filter(p -> p.name().equals("pmin"))
-                            .map(p -> p.values().get(0)).findFirst().orElse(0f)
-                            + t.parameters().stream().filter(p -> p.name().equals("pmax"))
-                            .map(p -> p.values().get(0)).findFirst().orElse(0f)) / 2));
+        weatherSmhi.timeSeries().forEach(t -> {
+            WeatherSmhi.Data d = t.data();
+
+            weather.addWeatherData(
+                    t.time(),
+                    valueOrDefault(d.air_temperature()),
+                    intValueOrDefault(d.symbol_code()),
+                    valueOrDefault(d.wind_speed()),
+                    valueOrDefault(d.wind_from_direction()),
+                    valueOrDefault(d.relative_humidity()),
+                    (valueOrDefault(d.precipitation_amount_min()) + valueOrDefault(d.precipitation_amount_max())) / 2
+            );
+        });
+    }
+
+    private float valueOrDefault(Float value) {
+        return value != null ? value : (float) 0.0;
+    }
+
+    private int intValueOrDefault(Integer value) {
+        return value != null ? value : 0;
     }
 }

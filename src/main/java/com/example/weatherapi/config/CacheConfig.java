@@ -1,4 +1,4 @@
-package com.example.weatherapi.cache;
+package com.example.weatherapi.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +28,8 @@ public class CacheConfig {
         return Caffeine.newBuilder()
                 .initialCapacity(100)
                 .maximumSize(2000)
-                .expireAfterWrite(Duration.ofMinutes(cacheTimeInMinutes));
+                .expireAfterWrite(Duration.ofMinutes(cacheTimeInMinutes))
+                .recordStats();
     }
 
 }

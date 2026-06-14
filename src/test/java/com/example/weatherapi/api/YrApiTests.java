@@ -1,7 +1,6 @@
 package com.example.weatherapi.api;
 
-import com.example.weatherapi.domain.City;
-import com.example.weatherapi.domain.entities.CityEntity;
+import com.example.weatherapi.domain.city.City;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

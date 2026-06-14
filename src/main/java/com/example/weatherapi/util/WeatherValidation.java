@@ -83,7 +83,7 @@ public class WeatherValidation {
      */
     private static void validateTurnedOffApis(List<String> enabledApis, Set<String> inactiveApiNames) {
         List<String> turnedOffApis = enabledApis.stream()
-                .filter(inactiveApiNames    ::contains)
+                .filter(inactiveApiNames::contains)
                 .toList();
 
         if (!turnedOffApis.isEmpty()) {

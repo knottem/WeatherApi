@@ -17,7 +17,7 @@
   - [Made by](#made-by)
 
 ## Description
-his is a weather REST API that provides weather information for cities, including temperature, precipitation, and wind data. The API intelligently merges data from multiple sources like SMHI, YR, and FMI to provide reliable and comprehensive weather forecasts.
+This is a weather REST API that provides weather information for cities, including temperature, precipitation, and wind data. The API intelligently merges data from multiple sources like SMHI, YR, and FMI to provide reliable and comprehensive weather forecasts.
 
 This project is a side hobby to learn more about Spring Boot, REST APIs, and Dockerized deployments.
 
@@ -209,6 +209,7 @@ You can create one using the template provided in the README.
 ## TODO
 
 - [ ] Add 0auth2 for city management using perhaps Firebase(https://firebase.google.com/docs/auth)
+- [ ] Add docs for errors
 
 ## Status
 

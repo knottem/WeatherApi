@@ -1,8 +1,10 @@
 package com.example.weatherapi.services.impl;
 
+import com.example.weatherapi.cache.CityCache;
+import com.example.weatherapi.domain.city.CitySearchResponse;
 import com.example.weatherapi.domain.dto.CityDto;
 import com.example.weatherapi.domain.entities.CityEntity;
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
 import com.example.weatherapi.exceptions.CityNotFoundException;
 import com.example.weatherapi.exceptions.InvalidCityException;
 import com.example.weatherapi.repositories.CityRepository;
@@ -11,24 +13,26 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import static com.example.weatherapi.util.CityMapper.toEntity;
+import static com.example.weatherapi.util.GeoUtils.haversine;
+import static java.util.Comparator.comparingDouble;
 
 @Service
 public class CityServiceImpl implements CityService {
 
     private final CityRepository cityRepository;
+    private final CityCache cityCache;
 
     private final Logger logger = LoggerFactory.getLogger(CityServiceImpl.class);
 
     @Autowired
-    public CityServiceImpl(CityRepository cityRepository) {
+    public CityServiceImpl(CityRepository cityRepository, CityCache cityCache) {
+        this.cityCache = cityCache;
         this.cityRepository = cityRepository;
     }
 
@@ -69,16 +73,16 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    @Cacheable("cache")
     public List<CityDto> getAllCityNames() {
-        return cityRepository.findAllCityNames().stream()
-                .filter(result -> result[0] != null) // Filter out null values (Should not happen since city names are mandatory)
-                .map(result -> CityDto.builder()
-                        .name((String) result[0])
-                        .en(result[1] != null ? (String) result[1] : null) // English name
-                        .build())
-                .sorted(Comparator.comparing(CityDto::getName)) // Sort names alphabetically
-                .toList();
+        return cityCache.getAllCitiesDto();
+    }
+
+    @Override
+    public CitySearchResponse searchCity(double lat, double lng) {
+        return cityCache.getAllCities().stream()
+                .min(comparingDouble(city -> haversine(lat, lng, city.getLat(), city.getLon())))
+                .map(cityEntity -> new CitySearchResponse(cityEntity.getName(), cityEntity.getLat(), cityEntity.getLon()))
+                .orElse(null);
     }
 
 }

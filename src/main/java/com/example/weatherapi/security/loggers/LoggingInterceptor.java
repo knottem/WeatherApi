@@ -19,14 +19,10 @@ public class LoggingInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String endpoint = URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8);
         if(!endpoint.contains("/error")) {
-            StringBuilder logMessage = new StringBuilder();
-            logMessage.append("Endpoint: ").append(endpoint);
-            logMessage.append(" from IP: ").append(request.getHeader("X-Forwarded-For"));
+            String ipAddress = request.getHeader("X-Forwarded-For");
+            if(ipAddress == null) ipAddress = request.getRemoteAddr();
             String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
-            if (username != null) {
-                logMessage.append(" by user: ").append(username);
-            }
-            LOG.info("Accessed: {}", logMessage);
+            LOG.info("Accessed: Endpoint: [{}] from IP: [{}]{}", endpoint, ipAddress, username != null ? " by user: [" + username + "]" : "");
         }
         return true;
     }

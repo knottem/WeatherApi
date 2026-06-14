@@ -6,13 +6,10 @@ import com.example.weatherapi.api.YrApi;
 import com.example.weatherapi.cache.ApiStatusCache;
 import com.example.weatherapi.cache.CacheDB;
 import com.example.weatherapi.cache.MemoryCacheUtils;
-import com.example.weatherapi.domain.City;
+import com.example.weatherapi.domain.city.City;
 import com.example.weatherapi.domain.entities.ApiStatus;
 import com.example.weatherapi.domain.weather.Weather;
-import com.example.weatherapi.exceptions.InvalidApiUsageException;
-import com.example.weatherapi.exceptions.MultipleRateLimitExceededException;
-import com.example.weatherapi.exceptions.RateLimitExceededException;
-import com.example.weatherapi.exceptions.WeatherNotFilledException;
+import com.example.weatherapi.exceptions.*;
 import com.example.weatherapi.services.CityService;
 import com.example.weatherapi.services.WeatherService;
 import com.example.weatherapi.util.DataStructures;
@@ -106,6 +103,9 @@ public class WeatherServiceImpl implements WeatherService {
                 .map(ApiStatus::getApiName)
                 .sorted()
                 .toList();
+        if(enabledApis.isEmpty()){
+            throw new ApiDisabledException("All apis are disabled");
+        }
 
         String key;
         if (isAllApisEnabled(enabledApis)) {
@@ -121,6 +121,7 @@ public class WeatherServiceImpl implements WeatherService {
 
         log.debug("Thread attempting to acquire lock for City: {}", cityName);
 
+        // Keep locks cached (bounded city set → small fixed map) makes a tiny difference in response time
         Lock lock = locks.computeIfAbsent(key, k -> new ReentrantLock());
         lock.lock();
 
@@ -154,6 +155,10 @@ public class WeatherServiceImpl implements WeatherService {
         }
 
         List<String> allActiveApis = validateApis(enabledApis, apiStatusCache);
+
+        if(allActiveApis.isEmpty()) {
+            throw new ApiDisabledException("All apis are disabled");
+        }
 
         if (new HashSet<>(allActiveApis).equals(new HashSet<>(enabledApis))){
             return getWeatherMerged(cityName);

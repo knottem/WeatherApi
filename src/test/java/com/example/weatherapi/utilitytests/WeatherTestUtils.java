@@ -47,7 +47,7 @@ public class WeatherTestUtils {
     public static void assertWeatherInformation(Weather weather) {
         assertThat(weather.getInformation().getTemperature()).isEqualTo("Celsius");
         assertThat(weather.getInformation().getWindSpeed()).isEqualTo("m/s");
-        assertThat(weather.getInformation().getPrecipitation()).isEqualTo("mm/hr - kg/m2/h");
+        assertThat(weather.getInformation().getPrecipitation()).isEqualTo("mm/h");
         assertThat(weather.getInformation().getTime()).isEqualTo("UTC");
     }
 

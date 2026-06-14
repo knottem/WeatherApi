@@ -35,6 +35,23 @@ public class City {
     private Double lon;
 
 
+    @Schema(description = "Sunrise times for the next 10 days in UTC, ordered chronologically (ISO-8601)", example = """
+    [
+      "2026-02-28T06:10:30Z",
+      "2026-03-01T06:07:39Z",
+      "2026-03-02T06:04:48Z"
+    ]
+    """
+    )
     private List<ZonedDateTime> sunriseList;
+
+    @Schema(description = "Sunset times for the next 10 days in UTC, ordered chronologically (ISO-8601)", example = """
+    [
+      "2026-02-28T16:37:01Z",
+      "2026-03-01T16:39:28Z",
+      "2026-03-02T16:41:54Z"
+    ]
+    """
+    )
     private List<ZonedDateTime> sunsetList;
 }

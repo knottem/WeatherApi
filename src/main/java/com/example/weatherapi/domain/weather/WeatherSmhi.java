@@ -1,20 +1,25 @@
 package com.example.weatherapi.domain.weather;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record WeatherSmhi(
         ZonedDateTime createdTime,
         ZonedDateTime referenceTime,
         Geometry geometry,
         List<TimeSerie> timeSeries
 ) {
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record TimeSerie(
             ZonedDateTime time,
             ZonedDateTime intervalParametersStartTime,
             Data data
     ) { }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record Data(
             Float air_temperature,
             Float wind_from_direction,
@@ -35,12 +40,14 @@ public record WeatherSmhi(
             Float precipitation_amount_min,
             Float precipitation_amount_max,
             Float precipitation_amount_median,
+            Float precipitation_amount_mean_deterministic,
             Float probability_of_precipitation,
             Float precipitation_frozen_part,
             Float predominant_precipitation_type_at_surface,
             Integer symbol_code
     ) { }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record Geometry(
             String type,
             List<Float> coordinates

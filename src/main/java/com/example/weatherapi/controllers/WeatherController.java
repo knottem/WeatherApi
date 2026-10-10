@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * Controller that handles the requests to the api, redirects the requests to the service layer
- * <p>
+ *
  * @author Erik Wallenius
  * @see <a href="https://github.com/knottem/WeatherApi">Repository Link</a>
  */

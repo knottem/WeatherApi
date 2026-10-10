@@ -6,6 +6,15 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
+/**
+ * Represents a request to search for a city based on its geographical coordinates.
+ * This record is used to encapsulate the latitude and longitude parameters required for the search.
+ * <p>
+ * The latitude must be between 55 and 71 degrees, and the longitude must be between 4 and 32 degrees.
+ * </p>
+ * @author Erik Wallenius
+ * @see <a href="https://github.com/knottem/WeatherApi">Repository Link</a>
+ */
 @Builder
 public record CitySearchRequest(
 

@@ -11,16 +11,46 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Utility class for validating weather data freshness and requested weather APIs.
+ *
+ * @author Erik Wallenius
+ * @see <a href="https://github.com/knottem/WeatherApi">Repository Link</a>
+ */
 public class WeatherValidation {
 
     private WeatherValidation(){
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Checks whether weather data is still considered valid based on its timestamp
+     * and the specified validity period.
+     * <p>
+     * The supplied clock is used to determine the current time, allowing the
+     * validation logic to be tested with a fixed or custom clock.
+     *
+     * @param timeStamp the timestamp of the weather data
+     * @param minutes the number of minutes for which the weather data remains valid
+     * @param clock the clock used to determine the current time
+     * @return {@code true} if the weather data is newer than the validity threshold,
+     *         otherwise {@code false}
+     */
     public static boolean isWeatherValid(ZonedDateTime timeStamp, int minutes, Clock clock) {
         return ZonedDateTime.now(clock).minusMinutes(minutes).isBefore(timeStamp);
     }
 
+    /**
+     * Checks whether weather data is still considered valid based on its timestamp
+     * and the specified validity period.
+     * <p>
+     * The current UTC time is used when determining whether the data is valid.
+     *
+     * @param timeStamp the timestamp of the weather data
+     * @param minutes the number of minutes for which the weather data remains valid
+     * @return {@code true} if the weather data is newer than the validity threshold,
+     *         otherwise {@code false}
+     */
     public static boolean isWeatherValid(ZonedDateTime timeStamp, int minutes) {
         return isWeatherValid(timeStamp, minutes, Clock.systemUTC());
     }

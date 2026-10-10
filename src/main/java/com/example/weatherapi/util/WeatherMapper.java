@@ -95,7 +95,6 @@ public class WeatherMapper {
                 .timestamp(weatherEntity.getTimeStamp())
                 .city(toModel(weatherEntity.getCity()))
                 .weatherData(convertToWeatherDataMap(weatherEntity.getWeatherDataList()))
-                .weatherSources(getWeatherSources(latestWeatherApiEntity))
                 .build();
     }
 

@@ -29,7 +29,7 @@ import static com.example.weatherapi.util.WeatherMapper.createBaseWeather;
 /**
  * This class handles all the communication with the smhi api.<br>
  * It contains methods for fetching the weather from the smhi api and creating the Weather object for the location.
- * <p>
+ *
  * @author Erik Wallenius
  * @see <a href="https://github.com/knottem/WeatherApi">Repository Link</a>
  */

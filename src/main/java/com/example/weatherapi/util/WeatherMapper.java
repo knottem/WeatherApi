@@ -150,14 +150,12 @@ public class WeatherMapper {
             weather = Weather.builder()
                     .message("Weather for location Lon: " + lon + " and Lat: " + lat + " from: " + api)
                     .timestamp(ZonedDateTime.now(ZoneOffset.UTC))
-                    .weatherSources(List.of(api))
                     .build();
         } else {
             weather = Weather.builder()
                     .message("Weather for " + city.getName() + " with location Lon: " + city.getLon() + " and Lat: " + city.getLat() + " from: " + api)
                     .city(city)
                     .timestamp(ZonedDateTime.now(ZoneOffset.UTC))
-                    .weatherSources(List.of(api))
                     .build();
         }
         return weather;
